@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Тропы забытого королевства | RPG</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 100%);
+            font-family: 'Courier New', 'Segoe UI', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+        }
+        .game-wrapper {
+            max-width: 650px;
+            width: 100%;
+            background: #0f0e17;
+            border-radius: 32px;
+            padding: 16px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.6);
+            border: 1px solid #4a3f2c;
+        }
+        .stats-panel {
+            background: #1e1b2b;
+            border-radius: 20px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            color: #f7d44a;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #f7d44a66;
+        }
+        .stat {
+            background: #00000066;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+        .inventory-bar {
+            background: #2a2438;
+            border-radius: 16px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            color: #b8c7e7;
+            font-size: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+        .inventory-bar span {
+            background: #0f0b18;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+        .game-area {
+            background: #0b0914;
+            border-radius: 24px;
+            padding: 18px;
+            min-height: 350px;
+        }
+        .location-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #f2c94c;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .description {
+            background: #16122a;
+            padding: 14px;
+            border-radius: 20px;
+            color: #dad5f0;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin: 12px 0;
+        }
+        .combat-area {
+            background: #2a1e2e;
+            border-radius: 20px;
+            padding: 12px;
+            margin: 12px 0;
+        }
+        .enemy-name {
+            color: #ff8c6b;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        button {
+            background: #3a2c45;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #f0e6d0;
+            cursor: pointer;
+            font-family: monospace;
+            transition: 0.08s linear;
+            flex: 1 0 auto;
+        }
+        button:active {
+            transform: scale(0.96);
+            background: #5c4670;
+        }
+        .reset-btn {
+            background: #5a3e2e;
+            margin-top: 12px;
+            width: 100%;
+        }
+        hr {
+            border-color: #4a3f4a;
+        }
+        .message-log {
+            background: #00000077;
+            border-radius: 16px;
+            padding: 8px;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: #bdaa88;
+        }
+        .class-select {
+            text-align: center;
+            padding: 20px;
+        }
+        .class-btn {
+            background: #2f4f4f;
+            margin: 5px;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="game-wrapper" id="rpgGame"></div>
+
+<script>
+    // ========== RPG "ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА" ==========
+    // НЕТ ВИДИМОЙ МОНЕТИЗАЦИИ. ТОЛЬКО ИГРА.
+    
+    // ---------- КЛАССЫ ----------
+    const CLASSES = {
+        warrior: { name: "Воин", hp: 32, maxHp: 32, str: 8, def: 4, mana: 0, icon: "⚔️", startItem: "стальной меч" },
+        mage: { name: "Маг", hp: 24, maxHp: 24, str: 4, def: 2, mana: 10, icon: "🔮", startItem: "посох чародея" },
+        rogue: { name: "Вор", hp: 28, maxHp: 28, str: 6, def: 3, mana: 5, icon: "🗡️", startItem: "кинжал теней" }
+    };
+
+    // МОНСТРЫ
+    const ENEMIES = {
+        goblin: { name: "Гоблин-ворюга", hp: 18, str: 5, def: 2, exp: 35, gold: 12, icon: "👺" },
+        wolf: { name: "Лесной волк", hp: 22, str: 7, def: 3, exp: 45, gold: 15, icon: "🐺" },
+        skeleton: { name: "Древний скелет", hp: 30, str: 8, def: 4, exp: 65, gold: 25, icon: "💀" },
+        bandit: { name: "Разбойник", hp: 26, str: 7, def: 5, exp: 55, gold: 30, icon: "🏴‍☠️" }
+    };
+
+    // ЛОКАЦИИ
+    const LOCATIONS = {
+        village: {
+            name: "🏘️ Деревня Эхо",
+            desc: "Тихая деревня у подножия гор. Здесь можно отдохнуть и купить зелья.",
+            actions: [
+                { text: "🌲 Пойти в тёмный лес", target: "forest", type: "travel" },
+                { text: "🏛️ Посетить старую часовню", target: "chapel", type: "travel" },
+                { text: "🛌 Отдохнуть в таверне (восстановить HP за 10 монет)", type: "rest", cost: 10, heal: true },
+                { text: "🧪 Купить зелье лечения (20 монет)", type: "buyPotion", cost: 20 }
+            ]
+        },
+        forest: {
+            name: "🌳 Тёмный лес",
+            desc: "Густая чаща. Слышен вой волков. Тропа ведёт вглубь.",
+            actions: [
+                { text: "🐺 Искать волков (случайный бой)", type: "fight", enemyId: "wolf" },
+                { text: "🗡️ Напасть на гоблинов", type: "fight", enemyId: "goblin" },
+                { text: "⬅ Вернуться в деревню", target: "village", type: "travel" },
+                { text: "🍄 Поискать травы", type: "herbGather" }
+            ]
+        },
+        chapel: {
+            name: "⛪ Старая часовня",
+            desc: "Заброшенная часовня. Сквозь трещины пробивается лунный свет.",
+            actions: [
+                { text: "💀 Сразиться со скелетами", type: "fight", enemyId: "skeleton" },
+                { text: "🕯️ Помолиться (бесплатное лечение раз в час)", type: "pray", cooldown: true },
+                { text: "⬅ Выйти в деревню", target: "village", type: "travel" },
+                { text: "🔍 Обыскать алтарь", type: "searchAltar" }
+            ]
+        },
+        boss_den: {
+            name: "🐉 Логово Гнолла",
+            desc: "Мрачная пещера. В глубине слышится рычание. Финальный страж!",
+            actions: [
+                { text: "⚔️ Вызвать Гнолла-предводителя (ФИНАЛЬНЫЙ БОЙ)", type: "fight", enemyId: "bandit", isBoss: true },
+                { text: "⬅ Убежать в деревню", target: "village", type: "travel" }
+            ]
+        }
+    };
+
+    // состояние игры
+    let game = {
+        initialized: false,
+        className: null,
+        stats: null,
+        inventory: [],
+        location: "village",
+        gold: 30,
+        level: 1,
+        exp: 0,
+        expToNext: 100,
+        message: "Добро пожаловать в RPG! Выбери класс.",
+        inCombat: false,
+        combatEnemy: null,
+        enemyCurrentHp: 0,
+        lastPray: 0,
+        potionCount: 1
+    };
+
+    function saveGame() {
+        try {
+            const saveData = {
+                className: game.className,
+                stats: game.stats,
+                inventory: game.inventory,
+                location: game.location,
+                gold: game.gold,
+                level: game.level,
+                exp: game.exp,
+                expToNext: game.expToNext,
+                potionCount: game.potionCount,
+                lastPray: game.lastPray
+            };
+            localStorage.setItem("rpg_save", JSON.stringify(saveData));
+        } catch(e) {}
+    }
+
+    function loadGame() {
+        const raw = localStorage.getItem("rpg_save");
+        if(raw) {
+            try {
+                const data = JSON.parse(raw);
+                if(data.className && CLASSES[data.className]) {
+                    game.className = data.className;
+                    game.stats = data.stats;
+                    game.inventory = data.inventory || [];
+                    game.location = data.location || "village";
+                    game.gold = data.gold || 30;
+                    game.level = data.level || 1;
+                    game.exp = data.exp || 0;
+                    game.expToNext = data.expToNext || 100;
+                    game.potionCount = data.potionCount || 1;
+                    game.lastPray = data.lastPray || 0;
+                    game.initialized = true;
+                    game.message = "Загрузка сохранения. Продолжим путь!";
+                    return true;
+                }
+            } catch(e) {}
+        }
+        return false;
+    }
+
+    function gainExp(amount) {
+        game.exp += amount;
+        game.message += ` +${amount} опыта. `;
+        while(game.exp >= game.expToNext) {
+            game.exp -= game.expToNext;
+            game.level++;
+            // повышение характеристик
+            game.stats.maxHp += 6;
+            game.stats.hp = game.stats.maxHp;
+            game.stats.str += 2;
+            game.stats.def += 1;
+            game.expToNext = Math.floor(game.expToNext * 1.2);
+            game.message += `✨ ПОВЫШЕНИЕ УРОВНЯ ${game.level}! ✨ Здоровье и сила возросли. `;
+        }
+        saveGame();
+        renderGame();
+    }
+
+    function healFull() {
+        game.stats.hp = game.stats.maxHp;
+        game.message = "Вы полностью восстановили здоровье.";
+        renderGame();
+    }
+
+    function addItem(item) {
+        if(!game.inventory.includes(item)) {
+            game.inventory.push(item);
+            game.message += ` + ${item}`;
+        } else {
+            game.message += ` У вас уже есть ${item}.`;
+        }
+        saveGame();
+    }
+
+    function removeItem(item) {
+        const idx = game.inventory.indexOf(item);
+        if(idx !== -1) game.inventory.splice(idx,1);
+        saveGame();
+    }
+
+    function startFight(enemyId, isBoss = false) {
+        const enemy = JSON.parse(JSON.stringify(ENEMIES[enemyId]));
+        if(!enemy) return;
+        if(isBoss) enemy.hp += 12, enemy.str += 4, enemy.name = "🗿 Гнолл-вождь 🗿";
+        game.inCombat = true;
+        game.combatEnemy = enemy;
+        game.enemyCurrentHp = enemy.hp;
+        game.message = `⚔️ БОЙ: ${enemy.icon} ${enemy.name} (❤️ ${enemy.hp} / ⚔️ ${enemy.str}) ⚔️`;
+        renderGame();
+    }
+
+    function combatAction(action) {
+        if(!game.inCombat) return;
+        const enemy = game.combatEnemy;
+        if(game.enemyCurrentHp <= 0) {
+            // победа
+            let goldReward = enemy.gold + Math.floor(Math.random() * 10);
+            game.gold += goldReward;
+            gainExp(enemy.exp);
+            game.message = `🏆 Победа! +${goldReward} монет, +${enemy.exp} опыта.🏆`;
+            if(enemy.name.includes("Гнолл")) {
+                game.message += " Ты победил финального босса! Поздравляю! Теперь можно начать заново.";
+                addItem("Амулет героя");
+            }
+            game.inCombat = false;
+            game.combatEnemy = null;
+            saveGame();
+            renderGame();
+            return;
+        }
+        if(game.stats.hp <= 0) {
+            game.message = "💀 Ты погиб... Игра перезапущена. 💀";
+            resetGameFull();
+            return;
+        }
+
+        if(action === "attack") {
+            let dmg = Math.max(1, game.stats.str + Math.floor(Math.random() * 5) - enemy.def);
+            game.enemyCurrentHp -= dmg;
+            game.message = `⚡ Вы нанесли ${dmg} урона ${enemy.name}.`;
+            // ответ врага
+            let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random()*4) - game.stats.def);
+            game.stats.hp -= enemyDmg;
+            game.message += ` ${enemy.name} атакует и наносит ${enemyDmg} урона. Ваше HP: ${game.stats.hp}/${game.stats.maxHp}`;
+        } 
+        else if(action === "potion") {
+            if(game.potionCount > 0) {
+                let heal = 15 + Math.floor(Math.random() * 10);
+                game.stats.hp = Math.min(game.stats.maxHp, game.stats.hp + heal);
+                game.potionCount--;
+                game.message = `💊 Вы выпили зелье, восстановили ${heal} HP. Осталось зелий: ${game.potionCount}`;
+                // враг атакует
+                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random()*4) - game.stats.def);
+                game.stats.hp -= enemyDmg;
+                game.message += ` ${enemy.name} атакует и наносит ${enemyDmg} урона. HP: ${game.stats.hp}`;
+            } else {
+                game.message = "Нет зелий!";
+                renderGame();
+                return;
+            }
+        }
+        saveGame();
+        renderGame();
+    }
+
+    function resetGameFull() {
+        localStorage.removeItem("rpg_save");
+        game.initialized = false;
+        game.className = null;
+        game.inCombat = false;
+        renderGame();
+    }
+
+    function initGame(className) {
+        const c = CLASSES[className];
+        game.className = className;
+        game.stats = {
+            hp: c.hp,
+            maxHp: c.maxHp,
+            str: c.str,
+            def: c.def,
+            mana: c.mana
+        };
+        game.inventory = [c.startItem];
+        game.location = "village";
+        game.gold = 25;
+        game.level = 1;
+        game.exp = 0;
+        game.expToNext = 100;
+        game.potionCount = 2;
+        game.message = `Ты выбрал ${c.name}! Начинай приключение.`;
+        game.initialized = true;
+        game.inCombat = false;
+        saveGame();
+        renderGame();
+    }
+
+    function performLocationAction(action) {
+        if(game.inCombat) {
+            game.message = "Сначала закончи бой!";
+            renderGame();
+            return;
+        }
+        if(action.type === "travel" && action.target) {
+            game.location = action.target;
+            game.message = `🚶 Переход в ${LOCATIONS[action.target].name}`;
+            renderGame();
+        }
+        else if(action.type === "fight") {
+            startFight(action.enemyId, action.isBoss || false);
+        }
+        else if(action.type === "rest") {
+            if(game.gold >= (action.cost||10)) {
+                game.gold -= (action.cost||10);
+                healFull();
+                game.message = `Отдых в таверне. -${action.cost} монет. Здоровье восстановлено.`;
+            } else {
+                game.message = `Не хватает ${action.cost} монет.`;
+                renderGame();
+            }
+        }
+        else if(action.type === "buyPotion") {
+            if(game.gold >= 20) {
+                game.gold -= 20;
+                game.potionCount++;
+                game.message = "Куплено зелье лечения!";
+            } else {
+                game.message = "Не хватает 20 монет.";
+            }
+            renderGame();
+        }
+        else if(action.type === "herbGather") {
+            if(Math.random()<0.6) {
+                game.potionCount++;
+                game.message = "Вы нашли целебные травы +1 зелье!";
+            } else {
+                game.message = "Ничего не найдено.";
+            }
+            renderGame();
+        }
+        else if(action.type === "pray") {
+            let now = Date.now();
+            if(!game.lastPray || (now - game.lastPray) > 3600000) {
+                healFull();
+                game.lastPray = now;
+                game.message = "Молитва исцелила вас.";
+            } else {
+                let minLeft = Math.ceil((3600000 - (now - game.lastPray))/60000);
+                game.message = `Боги ещё не готовы. Подожди ${minLeft} минут.`;
+            }
+            renderGame();
+        }
+        else if(action.type === "searchAltar") {
+            if(Math.random()<0.4) {
+                game.gold += 50;
+                game.message = "Вы нашли подношение: +50 монет!";
+            } else {
+                addItem("святой символ");
+            }
+            renderGame();
+        }
+    }
+
+    function renderGame() {
+        const container = document.getElementById("rpgGame");
+        if(!game.initialized) {
+            let classHtml = `<div class="class-select"><h2 style="color:#ffd966">Выбери класс</h2>`;
+            for(let [id, cls] of Object.entries(CLASSES)) {
+                classHtml += `<button class="class-btn" data-class="${id}">${cls.icon} ${cls.name} ❤️${cls.hp} ⚔️${cls.str}</button> `;
+            }
+            classHtml += `<br><button id="loadBtn" style="background:#4a5a6e">📀 Загрузить сохранение</button></div>`;
+            container.innerHTML = classHtml;
+            document.querySelectorAll('[data-class]').forEach(btn=>{
+                btn.addEventListener('click',()=> initGame(btn.getAttribute('data-class')));
+            });
+            document.getElementById("loadBtn")?.addEventListener('click',()=>{
+                if(loadGame()) renderGame(); else alert("Нет сохранения");
+            });
+            return;
+        }
+
+        const stats = game.stats;
+        const loc = LOCATIONS[game.location];
+        let actionsHtml = `<div class="actions">`;
+        if(!game.inCombat) {
+            for(let act of loc.actions) {
+                let btnText = act.text;
+                actionsHtml += `<button data-act='${JSON.stringify(act)}'>${btnText}</button>`;
+            }
+            if(game.location !== "boss_den" && game.level >= 3) {
+                actionsHtml += `<button data-act='{"type":"travel","target":"boss_den","text":"🐉 Пойти в логово босса"}'>🐉 Пойти в логово босса</button>`;
+            }
+        } else {
+            // боевые кнопки
+            actionsHtml += `<button id="attackBtn">⚔️ Атаковать</button>`;
+            actionsHtml += `<button id="potionBtn">💊 Зелье (${game.potionCount})</button>`;
+        }
+        actionsHtml += `</div>`;
+
+        let invHtml = `<div class="inventory-bar">🎒 ${game.inventory.map(i=>`<span>${i}</span>`).join('')} <span>🧪 зелья: ${game.potionCount}</span> <span>💰 ${game.gold} монет</span></div>`;
+
+        let combatBlock = "";
+        if(game.inCombat && game.combatEnemy) {
+            combatBlock = `<div class="combat-area"><span class="enemy-name">${game.combatEnemy.icon} ${game.combatEnemy.name}</span> ❤️ ${game.enemyCurrentHp}/${game.combatEnemy.hp}<br>⚔️ Сила врага: ${game.combatEnemy.str}</div>`;
+        }
+
+        let fullHtml = `
+            <div class="stats-panel">
+                <span class="stat">❤️ ${stats.hp}/${stats.maxHp}</span>
+                <span class="stat">⚔️ ${stats.str}</span>
+                <span class="stat">🛡️ ${stats.def}</span>
+                <span class="stat">⭐ ур.${game.level}</span>
+                <span class="stat">📖 опыт ${game.exp}/${game.expToNext}</span>
+            </div>
+            ${invHtml}
+            <div class="game-area">
+                <div class="location-title">${loc.name}</div>
+                <div class="description">📜 ${loc.desc}</div>
+                ${combatBlock}
+                <div class="message-log">💬 ${game.message}</div>
+                ${actionsHtml}
+                <button id="resetGameBtn" class="reset-btn">🔄 Начать новую игру</button>
+            </div>
+        `;
+        container.innerHTML = fullHtml;
+
+        if(!game.inCombat) {
+            document.querySelectorAll('[data-act]').forEach(btn=>{
+                btn.addEventListener('click', (e)=>{
+                    const act = JSON.parse(btn.getAttribute('data-act'));
+                    performLocationAction(act);
+                });
+            });
+        } else {
+            document.getElementById("attackBtn")?.addEventListener('click',()=> combatAction("attack"));
+            document.getElementById("potionBtn")?.addEventListener('click',()=> combatAction("potion"));
+        }
+        document.getElementById("resetGameBtn")?.addEventListener('click', resetGameFull);
+    }
+
+    renderGame();
+</script>
+</body>
+</html>
