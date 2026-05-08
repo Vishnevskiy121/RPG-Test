@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>RPG | Тропы забытого королевства | 1000 этажей | 50 боссов</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; }
+        body {
+            background: linear-gradient(135deg, #0a0f1a 0%, #1a1f2e 100%);
+            font-family: 'Courier New', 'Segoe UI', monospace;
+            margin: 0;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game-container {
+            max-width: 1300px;
+            width: 100%;
+            background: #0f0e17e6;
+            backdrop-filter: blur(2px);
+            border-radius: 32px;
+            padding: 16px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.6);
+            border: 1px solid #f7d44a66;
+        }
+        @keyframes runAnim { 0% { transform: translateX(0px); } 50% { transform: translateX(8px); } 100% { transform: translateX(0px); } }
+        @keyframes idleAnim { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
+        @keyframes attackAnim { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+        @keyframes dodgeAnim { 0% { transform: translateX(0px); } 50% { transform: translateX(-15px); } 100% { transform: translateX(0px); } }
+        .character-running { animation: runAnim 0.25s ease-in-out infinite; display: inline-block; font-size: 3.5rem; filter: drop-shadow(0 0 8px gold); }
+        .character-idle { animation: idleAnim 1s ease-in-out infinite; display: inline-block; font-size: 3rem; }
+        .character-attack { animation: attackAnim 0.2s ease-out; display: inline-block; font-size: 3.2rem; }
+        .character-dodge { animation: dodgeAnim 0.2s ease-out; display: inline-block; font-size: 3rem; }
+        .stats-panel {
+            background: #1e1b2bcc;
+            border-radius: 20px;
+            padding: 10px;
+            margin-bottom: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            font-size: 0.65rem;
+        }
+        .stat { background: #00000099; padding: 4px 10px; border-radius: 20px; margin: 2px; color: #f7d44a; }
+        .energy-bar { background: #2a1a2aaa; border-radius: 20px; height: 6px; margin-top: 4px; overflow: hidden; }
+        .energy-fill { background: linear-gradient(90deg, #4cff4c, #aaffaa); height: 100%; transition: width 0.2s; }
+        .energy-fill.travel { background: linear-gradient(90deg, #ffaa44, #ffcc88); }
+        .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .tab-btn { background: #2a2438; padding: 6px 12px; border-radius: 30px; cursor: pointer; font-size: 0.7rem; }
+        .tab-btn.active { background: #f7d44a; color: #1e1b2b; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .location-btn { background: #3a2c45; margin: 5px; font-size: 0.65rem; padding: 6px 10px; }
+        .location-btn.locked { opacity: 0.5; cursor: not-allowed; background: #5a3e2e; }
+        .location-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; margin: 10px 0; max-height: 280px; overflow-y: auto; }
+        .admin-panel { background: #2c1e2ecc; border-radius: 20px; padding: 12px; margin-top: 15px; border: 2px solid #ff00ff; display: none; }
+        .admin-panel.show { display: block; }
+        .admin-input { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 20px; padding: 5px 10px; width: 100px; margin: 5px; }
+        .referral-panel, .quest-panel, .npc-panel, .craft-panel { background: #1a3a2acc; border-radius: 20px; padding: 12px; margin-top: 10px; border: 1px solid gold; }
+        .message-log { background: #000000aa; border-radius: 16px; padding: 8px; margin-top: 12px; font-size: 0.7rem; color: #bdaa88; max-height: 100px; overflow-y: auto; }
+        .character-form { text-align: center; padding: 20px; }
+        .character-form input { display: block; margin: 15px auto; padding: 12px; width: 80%; background: #1e1b2b; color: #f7d44a; border: 1px solid #f7d44a; border-radius: 30px; font-size: 1rem; text-align: center; }
+        .sprite-area { text-align: center; font-size: 3.5rem; background: #00000055; border-radius: 50px; padding: 15px; margin-bottom: 15px; }
+        button { background: #3a2c45; border: none; padding: 6px 10px; border-radius: 40px; font-size: 0.7rem; font-weight: bold; color: white; cursor: pointer; transition: 0.08s linear; margin: 3px; }
+        button:active { transform: scale(0.96); }
+        .reset-btn { background: #5a3e2e; }
+        .run-btn { background: #2f6b4a; }
+        .dungeon-floor-select { background: #1a1530; border-radius: 20px; padding: 10px; margin: 10px 0; }
+        .equipment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; max-height: 300px; overflow-y: auto; padding: 8px; background: #16122a; border-radius: 20px; }
+        .equip-item { background: #2a2438; padding: 6px; border-radius: 12px; text-align: center; font-size: 0.6rem; cursor: pointer; border: 1px solid #f7d44a55; }
+        .equip-item.equipped { background: #4a7a3c; border: 2px solid gold; }
+        .dialog-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); backdrop-filter: blur(8px);
+            z-index: 10001; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .dialog-window {
+            max-width: 500px; width: 100%;
+            background: linear-gradient(145deg, #2a2a3e, #1a1a2e);
+            border-radius: 40px; border: 2px solid #f7d44a;
+            overflow: hidden;
+        }
+        .dialog-header { background: #3a2a3e; padding: 15px; text-align: center; border-bottom: 2px solid #f7d44a; }
+        .npc-avatar { font-size: 3.5rem; filter: drop-shadow(0 0 10px gold); }
+        .npc-name { font-size: 1.3rem; font-weight: bold; color: #f7d44a; }
+        .dialog-body { padding: 20px; }
+        .dialog-text { background: #0f0b1acc; border-radius: 20px; padding: 15px; color: #e8e8f0; border-left: 4px solid #f7d44a; font-size: 0.9rem; }
+        .dialog-footer { padding: 15px; border-top: 1px solid #f7d44a55; }
+        .dialog-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+        .dialog-btn { background: #3a2c45; border: 1px solid #f7d44a; padding: 6px 12px; border-radius: 40px; color: #f7d44a; cursor: pointer; font-size: 0.7rem; }
+        .dialog-btn:hover { background: #f7d44a; color: #1a1a2e; }
+        .rarity-common { color: #aaa; }
+        .rarity-rare { color: #4488ff; }
+        .rarity-epic { color: #aa44ff; }
+        .rarity-legendary { color: #ffaa00; }
+        .rarity-mythic { color: #ff44ff; text-shadow: 0 0 3px white; }
+    </style>
+</head>
+<body>
+<div class="game-container" id="rpgGame"></div>
+
+<script>
+    // ===================== ЛОКАЦИИ (30+ штук) =====================
+    const LOCATIONS = {
+        village: { name: "🏘️ Деревня", icon: "🏘️", enemies: ["goblin", "rat", "wolf"], energyCost: 5, requiredLevel: 1 },
+        forest: { name: "🌳 Лес", icon: "🌳", enemies: ["wolf", "bear", "spider", "goblin"], energyCost: 8, requiredLevel: 1 },
+        mountains: { name: "⛰️ Горы", icon: "⛰️", enemies: ["orc", "troll", "giant", "eagle"], energyCost: 10, requiredLevel: 3 },
+        swamp: { name: "🪷 Болото", icon: "🪷", enemies: ["skeleton", "ghost", "necromancer", "snake"], energyCost: 10, requiredLevel: 5 },
+        desert: { name: "🏜️ Пустыня", icon: "🏜️", enemies: ["scorpion", "mummy", "sandworm", "lizard"], energyCost: 10, requiredLevel: 7 },
+        castle: { name: "🏰 Замок", icon: "🏰", enemies: ["knight", "ghost", "guardian", "wizard"], energyCost: 12, requiredLevel: 10 },
+        dungeonLoc: { name: "🏚️ Подземелье", icon: "🏚️", isDungeon: true, energyCost: 5, requiredLevel: 1 },
+        temple: { name: "⛩️ Храм", icon: "⛩️", enemies: ["spirit", "guardian", "monk", "priest"], energyCost: 12, requiredLevel: 15 },
+        volcano: { name: "🌋 Вулкан", icon: "🌋", enemies: ["demon", "fireElemental", "magman", "hellhound"], energyCost: 15, requiredLevel: 20 },
+        icy_cave: { name: "❄️ Ледяная пещера", icon: "❄️", enemies: ["iceElemental", "whiteDragon", "frostGiant", "snowWolf"], energyCost: 15, requiredLevel: 25 },
+        dark_city: { name: "🌑 Теневой город", icon: "🌑", enemies: ["shadow", "assassin", "phantom", "darkMage"], energyCost: 12, requiredLevel: 30 },
+        elven_forest: { name: "🍃 Эльфийский лес", icon: "🍃", enemies: ["elf", "forestSpirit", "dryad", "unicorn"], energyCost: 10, requiredLevel: 35 },
+        dwarven_mines: { name: "⛏️ Гномьи шахты", icon: "⛏️", enemies: ["troll", "golem", "dwarf", "caveCrawler"], energyCost: 12, requiredLevel: 40 },
+        sky_temple: { name: "☁️ Небесный храм", icon: "☁️", enemies: ["angel", "celestial", "seraph", "holyKnight"], energyCost: 18, requiredLevel: 45 },
+        abyss: { name: "🔥 Бездна", icon: "🔥", enemies: ["demonLord", "void", "abyssDragon", "chaosBeast"], energyCost: 20, requiredLevel: 75 },
+        crystal_caves: { name: "💎 Хрустальные пещеры", icon: "💎", enemies: ["crystalGolem", "gemSpider", "crystalWorm", "shardElemental"], energyCost: 14, requiredLevel: 50 },
+        ancient_ruins: { name: "🏛️ Древние руины", icon: "🏛️", enemies: ["ancientGuardian", "stoneStatue", "ruinSpirit", "timeWizard"], energyCost: 16, requiredLevel: 55 },
+        golden_fields: { name: "🌾 Золотые поля", icon: "🌾", enemies: ["goldGolem", "goldenScarab", "treasureHunter", "goldenDragon"], energyCost: 12, requiredLevel: 60 },
+        storm_peaks: { name: "⛈️ Грозовые пики", icon: "⛈️", enemies: ["thunderBird", "stormElemental", "lightningWyrm", "cloudGiant"], energyCost: 18, requiredLevel: 65 },
+        dragon_isle: { name: "🐉 Остров драконов", icon: "🐉", enemies: ["dragonkin", "wyvern", "drake", "ancientDragon"], energyCost: 20, requiredLevel: 70 },
+        astral_plane: { name: "🌌 Астральный план", icon: "🌌", enemies: ["astralBeast", "voidWalker", "starElemental", "cosmicHorror"], energyCost: 22, requiredLevel: 80 },
+        dream_realm: { name: "💤 Королевство снов", icon: "💤", enemies: ["nightmare", "dreamEater", "sleepDemon", "dreamWeaver"], energyCost: 18, requiredLevel: 85 },
+        shadow_realm: { name: "🌑 Царство теней", icon: "🌑", enemies: ["shadowLord", "darknessElemental", "umbraBeast", "nightStalker"], energyCost: 20, requiredLevel: 90 },
+        divine_kingdom: { name: "✨ Божественное королевство", icon: "✨", enemies: ["angelLord", "divineKnight", "holyDragon", "godlyMessenger"], energyCost: 25, requiredLevel: 95 },
+        final_void: { name: "🌀 Финальная пустота", icon: "🌀", enemies: ["voidKing", "enderDragon", "chaosLord", "godEater"], energyCost: 30, requiredLevel: 100 }
+    };
+
+    // ===================== ВРАГИ (50+ типов) =====================
+    const ENEMIES = {
+        goblin: { name: "Гоблин", baseHp: 20, baseStr: 7, baseDef: 3, exp: 30, gold: 15, icon: "👺", dropItems: ["common", "herb"] },
+        rat: { name: "Крыса", baseHp: 15, baseStr: 5, baseDef: 2, exp: 20, gold: 10, icon: "🐀", dropItems: ["common", "herb"] },
+        wolf: { name: "Волк", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐺", dropItems: ["common", "wood"] },
+        bear: { name: "Медведь", baseHp: 40, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "🐻", dropItems: ["common", "wood", "herb"] },
+        spider: { name: "Паук", baseHp: 22, baseStr: 8, baseDef: 4, exp: 40, gold: 18, icon: "🕷️", dropItems: ["common", "herb", "mushroom"] },
+        orc: { name: "Орк", baseHp: 35, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "👹", dropItems: ["rare", "ore"] },
+        troll: { name: "Тролль", baseHp: 50, baseStr: 15, baseDef: 8, exp: 100, gold: 50, icon: "🗿", dropItems: ["rare", "ore", "wood"] },
+        giant: { name: "Великан", baseHp: 70, baseStr: 18, baseDef: 10, exp: 140, gold: 70, icon: "🏔️", dropItems: ["rare", "ore", "crystal"] },
+        eagle: { name: "Орёл", baseHp: 28, baseStr: 11, baseDef: 5, exp: 55, gold: 25, icon: "🦅", dropItems: ["common", "wood", "feather"] },
+        skeleton: { name: "Скелет", baseHp: 30, baseStr: 10, baseDef: 5, exp: 55, gold: 25, icon: "💀", dropItems: ["rare", "bone", "essence_small"] },
+        ghost: { name: "Призрак", baseHp: 35, baseStr: 14, baseDef: 4, exp: 80, gold: 35, icon: "👻", dropItems: ["rare", "essence_small", "cloth"] },
+        necromancer: { name: "Некромант", baseHp: 40, baseStr: 13, baseDef: 6, exp: 90, gold: 45, icon: "🧙", dropItems: ["rare", "essence_small", "crystal"] },
+        snake: { name: "Змея", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐍", dropItems: ["common", "herb", "mushroom"] },
+        scorpion: { name: "Скорпион", baseHp: 28, baseStr: 11, baseDef: 7, exp: 60, gold: 30, icon: "🦂", dropItems: ["rare", "ore", "crystal"] },
+        mummy: { name: "Мумия", baseHp: 45, baseStr: 12, baseDef: 9, exp: 85, gold: 40, icon: "🧻", dropItems: ["rare", "cloth", "essence_small"] },
+        sandworm: { name: "Песчаный червь", baseHp: 55, baseStr: 16, baseDef: 8, exp: 110, gold: 55, icon: "🪱", dropItems: ["rare", "ore", "essence_small"] },
+        lizard: { name: "Ящер", baseHp: 30, baseStr: 10, baseDef: 6, exp: 50, gold: 25, icon: "🦎", dropItems: ["common", "herb", "mushroom"] },
+        knight: { name: "Черный рыцарь", baseHp: 60, baseStr: 18, baseDef: 12, exp: 150, gold: 80, icon: "⚔️", dropItems: ["epic", "essence_medium", "ore"] },
+        wizard: { name: "Маг", baseHp: 45, baseStr: 20, baseDef: 6, exp: 130, gold: 70, icon: "🧙‍♂️", dropItems: ["epic", "essence_medium", "crystal"] },
+        spirit: { name: "Дух", baseHp: 30, baseStr: 8, baseDef: 8, exp: 50, gold: 25, icon: "✨", dropItems: ["rare", "essence_small", "cloth"] },
+        monk: { name: "Монах", baseHp: 50, baseStr: 14, baseDef: 10, exp: 100, gold: 50, icon: "🥋", dropItems: ["rare", "herb", "essence_small"] },
+        priest: { name: "Жрец", baseHp: 55, baseStr: 12, baseDef: 12, exp: 120, gold: 60, icon: "⛪", dropItems: ["rare", "essence_small", "cloth"] },
+        demon: { name: "Демон", baseHp: 65, baseStr: 22, baseDef: 10, exp: 180, gold: 90, icon: "👹🔥", dropItems: ["epic", "essence_medium", "crystal"] },
+        fireElemental: { name: "Огненный элементаль", baseHp: 55, baseStr: 20, baseDef: 8, exp: 160, gold: 75, icon: "🔥", dropItems: ["epic", "essence_medium", "crystal"] },
+        magman: { name: "Магман", baseHp: 70, baseStr: 21, baseDef: 11, exp: 190, gold: 95, icon: "🌋", dropItems: ["epic", "essence_medium", "ore"] },
+        hellhound: { name: "Адская гончая", baseHp: 60, baseStr: 23, baseDef: 9, exp: 170, gold: 85, icon: "🐕‍🔥", dropItems: ["epic", "essence_medium", "crystal"] },
+        iceElemental: { name: "Ледяной элементаль", baseHp: 60, baseStr: 18, baseDef: 12, exp: 170, gold: 80, icon: "❄️", dropItems: ["epic", "essence_medium", "crystal"] },
+        whiteDragon: { name: "Белый дракон", baseHp: 100, baseStr: 28, baseDef: 15, exp: 350, gold: 200, icon: "🐉❄️", dropItems: ["legendary", "essence_large", "crystal"] },
+        frostGiant: { name: "Ледяной великан", baseHp: 90, baseStr: 25, baseDef: 14, exp: 280, gold: 150, icon: "⛄", dropItems: ["epic", "essence_medium", "ore"] },
+        snowWolf: { name: "Снежный волк", baseHp: 50, baseStr: 17, baseDef: 8, exp: 130, gold: 65, icon: "🐺❄️", dropItems: ["rare", "essence_small", "herb"] },
+        shadow: { name: "Тень", baseHp: 40, baseStr: 16, baseDef: 6, exp: 100, gold: 50, icon: "🌑", dropItems: ["rare", "essence_small", "cloth"] },
+        assassin: { name: "Ассасин", baseHp: 45, baseStr: 20, baseDef: 8, exp: 120, gold: 60, icon: "🗡️", dropItems: ["epic", "essence_medium", "cloth"] },
+        phantom: { name: "Фантом", baseHp: 50, baseStr: 18, baseDef: 7, exp: 140, gold: 70, icon: "👤", dropItems: ["epic", "essence_medium", "cloth"] },
+        darkMage: { name: "Тёмный маг", baseHp: 55, baseStr: 22, baseDef: 8, exp: 160, gold: 80, icon: "⚫🧙", dropItems: ["epic", "essence_medium", "crystal"] },
+        elf: { name: "Тёмный эльф", baseHp: 50, baseStr: 17, baseDef: 10, exp: 130, gold: 65, icon: "🏹", dropItems: ["rare", "essence_small", "wood"] },
+        forestSpirit: { name: "Лесной дух", baseHp: 35, baseStr: 12, baseDef: 12, exp: 90, gold: 40, icon: "🍃", dropItems: ["rare", "herb", "essence_small"] },
+        dryad: { name: "Дриада", baseHp: 45, baseStr: 14, baseDef: 11, exp: 110, gold: 55, icon: "🌿", dropItems: ["rare", "herb", "wood"] },
+        unicorn: { name: "Единорог", baseHp: 60, baseStr: 16, baseDef: 13, exp: 150, gold: 100, icon: "🦄", dropItems: ["epic", "essence_medium", "crystal"] },
+        golem: { name: "Каменный голем", baseHp: 80, baseStr: 22, baseDef: 18, exp: 220, gold: 120, icon: "🗿", dropItems: ["epic", "essence_medium", "ore"] },
+        dwarf: { name: "Дворф", baseHp: 55, baseStr: 18, baseDef: 14, exp: 140, gold: 75, icon: "⛏️", dropItems: ["rare", "ore", "essence_small"] },
+        caveCrawler: { name: "Пещерный ползун", baseHp: 50, baseStr: 15, baseDef: 10, exp: 120, gold: 60, icon: "🕷️", dropItems: ["rare", "herb", "mushroom"] },
+        angel: { name: "Падший ангел", baseHp: 75, baseStr: 24, baseDef: 14, exp: 250, gold: 150, icon: "😇", dropItems: ["legendary", "essence_large", "crystal"] },
+        celestial: { name: "Небесный страж", baseHp: 90, baseStr: 26, baseDef: 16, exp: 300, gold: 180, icon: "✨", dropItems: ["legendary", "essence_large", "crystal"] },
+        seraph: { name: "Серафим", baseHp: 85, baseStr: 28, baseDef: 15, exp: 320, gold: 190, icon: "👼", dropItems: ["legendary", "essence_large", "crystal"] },
+        holyKnight: { name: "Святой рыцарь", baseHp: 100, baseStr: 27, baseDef: 18, exp: 350, gold: 200, icon: "🛡️✨", dropItems: ["legendary", "essence_large", "ore"] },
+        demonLord: { name: "Повелитель демонов (БОСС)", baseHp: 150, baseStr: 35, baseDef: 20, exp: 500, gold: 300, icon: "👑🔥", dropItems: ["mythic", "essence_divine", "crystal"] },
+        void: { name: "Властелин пустоты (БОСС)", baseHp: 200, baseStr: 40, baseDef: 25, exp: 700, gold: 500, icon: "🌌", dropItems: ["mythic", "essence_divine", "crystal"] },
+        abyssDragon: { name: "Дракон Бездны (БОСС)", baseHp: 300, baseStr: 50, baseDef: 30, exp: 1000, gold: 800, icon: "🐉🔥", dropItems: ["mythic", "essence_divine", "crystal"] },
+        crystalGolem: { name: "Хрустальный голем", baseHp: 90, baseStr: 24, baseDef: 20, exp: 250, gold: 140, icon: "💎🗿", dropItems: ["epic", "essence_medium", "crystal"] },
+        gemSpider: { name: "Самоцветный паук", baseHp: 55, baseStr: 18, baseDef: 10, exp: 160, gold: 90, icon: "🕷️💎", dropItems: ["rare", "crystal", "essence_small"] },
+        goldGolem: { name: "Золотой голем", baseHp: 120, baseStr: 28, baseDef: 22, exp: 400, gold: 1000, icon: "🥇🗿", dropItems: ["legendary", "essence_large", "ore"] },
+        thunderBird: { name: "Громовая птица", baseHp: 70, baseStr: 26, baseDef: 12, exp: 220, gold: 120, icon: "⚡🐦", dropItems: ["epic", "essence_medium", "crystal"] },
+        dragonkin: { name: "Драконид", baseHp: 80, baseStr: 25, baseDef: 15, exp: 260, gold: 150, icon: "🐉🧑", dropItems: ["epic", "essence_medium", "crystal"] },
+        wyvern: { name: "Виверна", baseHp: 95, baseStr: 30, baseDef: 16, exp: 320, gold: 180, icon: "🦎🐉", dropItems: ["legendary", "essence_large", "crystal"] },
+        ancientDragon: { name: "Древний дракон", baseHp: 200, baseStr: 45, baseDef: 25, exp: 600, gold: 400, icon: "🐉👑", dropItems: ["legendary", "essence_large", "crystal"] },
+        astralBeast: { name: "Астральный зверь", baseHp: 120, baseStr: 32, baseDef: 18, exp: 400, gold: 250, icon: "✨🐻", dropItems: ["legendary", "essence_large", "crystal"] },
+        nightmare: { name: "Кошмар", baseHp: 100, baseStr: 30, baseDef: 15, exp: 350, gold: 200, icon: "🌙🐴", dropItems: ["legendary", "essence_large", "crystal"] },
+        shadowLord: { name: "Повелитель теней", baseHp: 150, baseStr: 38, baseDef: 22, exp: 500, gold: 350, icon: "🌑👑", dropItems: ["legendary", "essence_large", "crystal"] },
+        angelLord: { name: "Владыка ангелов", baseHp: 180, baseStr: 42, baseDef: 28, exp: 700, gold: 500, icon: "😇👑", dropItems: ["legendary", "essence_large", "crystal"] },
+        voidKing: { name: "Король пустоты", baseHp: 250, baseStr: 55, baseDef: 35, exp: 1000, gold: 800, icon: "🌌👑", dropItems: ["mythic", "essence_divine", "crystal"] },
+        enderDragon: { name: "Дракон края", baseHp: 350, baseStr: 60, baseDef: 40, exp: 1500, gold: 1200, icon: "🐉🌌", dropItems: ["mythic", "essence_divine", "crystal"] },
+        chaosLord: { name: "Повелитель хаоса", baseHp: 400, baseStr: 70, baseDef: 45, exp: 2000, gold: 1500, icon: "🌀👑", dropItems: ["mythic", "essence_divine", "crystal"] }
+    };
+
+    // ===================== NPC =====================
+    const NPCS = [
+        { name: "Кузнец Гром", icon: "⚒️", avatar: "🔨", type: "blacksmith",
+          items: [
+            { name: "Стальной меч", type: "weapon", strBonus: 15, rarity: "rare", price: 5000 },
+            { name: "Мифриловая кираса", type: "armor", defBonus: 12, rarity: "rare", price: 8000 },
+            { name: "Лук эльфов", type: "weapon", strBonus: 18, rarity: "epic", price: 25000 },
+            { name: "Доспех паладина", type: "armor", defBonus: 18, rarity: "epic", price: 40000 },
+            { name: "Пламенный меч", type: "weapon", strBonus: 35, rarity: "legendary", price: 500000 },
+            { name: "Броня дракона", type: "armor", defBonus: 30, rarity: "legendary", price: 500000 }
+          ] },
+        { name: "Алхимик Морган", icon: "🧪", avatar: "⚗️", type: "alchemist" },
+        { name: "Трактирщик Грим", icon: "🍺", avatar: "🧔‍♂️", type: "tavern" },
+        { name: "Странник Олдрин", icon: "🗡️", avatar: "🧙‍♂️", type: "wanderer" },
+        { name: "Мастер крафта", icon: "🔨", avatar: "🛠️", type: "crafter" }
+    ];
+
+    // ===================== ИГРОВОЕ СОСТОЯНИЕ =====================
+    let game = {
+        initialized: false,
+        telegramId: null,
+        profileName: "",
+        gold: 500,
+        level: 1,
+        exp: 0,
+        expToNext: 100,
+        combatEnergy: 100,
+        maxCombatEnergy: 100,
+        travelEnergy: 50,
+        maxTravelEnergy: 50,
+        weapon: { name: "Ржавый меч", strBonus: 2, rarity: "common" },
+        armor: { name: "Кожаная броня", defBonus: 2, rarity: "common" },
+        helmet: { name: "Кожаный шлем", defBonus: 1, rarity: "common" },
+        gloves: { name: "Кожаные перчатки", defBonus: 1, rarity: "common" },
+        boots: { name: "Кожаные сапоги", defBonus: 1, rarity: "common" },
+        cloak: { name: "Поношенный плащ", defBonus: 1, rarity: "common" },
+        inventory: [
+            { name: "Ржавый меч", type: "weapon", strBonus: 2, rarity: "common" },
+            { name: "Кожаная броня", type: "armor", defBonus: 2, rarity: "common" }
+        ],
+        resources: {
+            "Малая эссенция": 0, "Средняя эссенция": 0, "Великая эссенция": 0, "Искра богов": 0,
+            "Целебная трава": 5, "Магический гриб": 3, "Мифический цветок": 0,
+            "Медная руда": 0, "Железная руда": 0, "Мифриловая руда": 0,
+            "Обычная древесина": 0, "Твёрдая древесина": 0, "Древесина мирового древа": 0,
+            "Хлопковая ткань": 0, "Шёлковая ткань": 0, "Магическая ткань": 0,
+            "Малый кристалл": 0, "Средний кристалл": 0, "Великий кристалл": 0
+        },
+        potions: { weak: 3, medium: 1, strong: 0 },
+        message: "",
+        inCombat: false,
+        combatEnemy: null,
+        enemyCurrentHp: 0,
+        location: "village",
+        dungeonFloor: 1,
+        maxUnlockedFloor: 1,
+        activeTab: "game",
+        isAdmin: false,
+        animationState: "idle",
+        isRunning: false,
+        referralCode: "",
+        referredBy: ""
+    };
+
+    // ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================
+    function generateReferralCode() {
+        return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    function getTelegramId() {
+        if (window.Telegram && Telegram.WebApp) {
+            return Telegram.WebApp.initDataUnsafe?.user?.id || null;
+        }
+        return localStorage.getItem("telegram_id") || null;
+    }
+
+    function saveProfile() {
+        if (!game.profileName) return;
+        localStorage.setItem(`rpg_${game.telegramId || game.profileName}`, JSON.stringify(game));
+    }
+
+    function loadProfile(id) {
+        let raw = localStorage.getItem(`rpg_${id}`);
+        if (raw) {
+            let data = JSON.parse(raw);
+            Object.assign(game, data);
+            game.isAdmin = (game.profileName === "vlados-vladosik");
+            game.initialized = true;
+            game.message = `С возвращением, ${game.profileName}!`;
+            renderGame();
+            return true;
+        }
+        return false;
+    }
+
+    function createNewProfile(profileName) {
+        if (!profileName.trim()) { alert("Введите имя героя!"); return false; }
+        if (!/^[a-zA-Zа-яА-Я0-9_]+$/.test(profileName)) {
+            alert("Имя может содержать только буквы, цифры и _");
+            return false;
+        }
+        
+        game.profileName = profileName;
+        game.telegramId = getTelegramId();
+        game.gold = 500;
+        game.level = 1;
+        game.exp = 0;
+        game.expToNext = 100;
+        game.combatEnergy = 100;
+        game.maxCombatEnergy = 100;
+        game.travelEnergy = 50;
+        game.maxTravelEnergy = 50;
+        game.weapon = { name: "Ржавый меч", strBonus: 2, rarity: "common" };
+        game.armor = { name: "Кожаная броня", defBonus: 2, rarity: "common" };
+        game.inventory = [
+            { name: "Ржавый меч", type: "weapon", strBonus: 2, rarity: "common" },
+            { name: "Кожаная броня", type: "armor", defBonus: 2, rarity: "common" }
+        ];
+        game.resources = {
+            "Малая эссенция": 0, "Средняя эссенция": 0, "Великая эссенция": 0, "Искра богов": 0,
+            "Целебная трава": 5, "Магический гриб": 3, "Мифический цветок": 0,
+            "Медная руда": 0, "Железная руда": 0, "Мифриловая руда": 0,
+            "Обычная древесина": 0, "Твёрдая древесина": 0, "Древесина мирового древа": 0,
+            "Хлопковая ткань": 0, "Шёлковая ткань": 0, "Магическая ткань": 0,
+            "Малый кристалл": 0, "Средний кристалл": 0, "Великий кристалл": 0
+        };
+        game.potions = { weak: 3, medium: 1, strong: 0 };
+        game.location = "village";
+        game.dungeonFloor = 1;
+        game.maxUnlockedFloor = 1;
+        game.referralCode = generateReferralCode();
+        game.isAdmin = (profileName === "vlados-vladosik");
+        game.message = `✨ Добро пожаловать, ${profileName}! ✨\n\n💡 Помни: крафт даёт огромное преимущество в подземелье! Без хорошего оружия будет очень тяжело.`;
+        game.initialized = true;
+        saveProfile();
+        renderGame();
+        return true;
+    }
+
+    function getEnemy(enemyId, isDungeon = false, floor = 1) {
+        let base = ENEMIES[enemyId];
+        if (!base) return null;
+        let levelBonus = Math.floor(game.level / 2);
+        let dungeonBonus = isDungeon ? Math.floor(floor / 10) : 0;
+        let dodgeChance = isDungeon && floor % 20 === 0 ? 15 : (isDungeon ? 10 : 5);
+        return {
+            name: base.name,
+            hp: base.baseHp + levelBonus * 5 + dungeonBonus * 10,
+            str: base.baseStr + levelBonus * 2 + dungeonBonus * 2,
+            def: base.baseDef + levelBonus + dungeonBonus,
+            exp: base.exp + levelBonus * 10 + dungeonBonus * 5,
+            gold: base.gold + levelBonus * 5 + dungeonBonus * 10,
+            icon: base.icon,
+            id: enemyId,
+            dodgeChance: dodgeChance,
+            isBoss: (isDungeon && floor % 20 === 0)
+        };
+    }
+
+    function getLocationEnemy() {
+        let loc = LOCATIONS[game.location];
+        if (!loc || loc.isDungeon) return null;
+        let enemies = loc.enemies;
+        if (!enemies || enemies.length === 0) return null;
+        let enemyId = enemies[Math.floor(Math.random() * enemies.length)];
+        return getEnemy(enemyId, false);
+    }
+
+    function getDungeonEnemy(floor) {
+        let isBoss = (floor % 20 === 0);
+        let bossNames = ["Дракон", "Лич", "Голем", "Титан", "Демон Бездны", "Кошмар", "Фантом", "Хаос"];
+        if (isBoss) {
+            let bossIndex = Math.floor(floor / 20) % bossNames.length;
+            return {
+                name: `👑 БОСС ${bossNames[bossIndex]} 👑`,
+                hp: 100 + floor * 5 + game.level * 10,
+                str: 30 + Math.floor(floor / 2) + game.level * 3,
+                def: 20 + Math.floor(floor / 3) + game.level * 2,
+                exp: 200 + floor * 5 + game.level * 30,
+                gold: 200 + floor * 10,
+                icon: "👑",
+                id: `boss_${floor}`,
+                isBoss: true,
+                dodgeChance: 15
+            };
+        } else {
+            let enemies = ["goblin", "skeleton", "orc", "troll", "demon", "ghost", "wolf", "spider"];
+            let enemyId = enemies[floor % enemies.length];
+            let base = ENEMIES[enemyId];
+            let levelBonus = Math.floor(floor / 5) + Math.floor(game.level / 2);
+            return {
+                name: base.name,
+                hp: base.baseHp + levelBonus * 4,
+                str: base.baseStr + levelBonus * 2,
+                def: base.baseDef + levelBonus,
+                exp: base.exp + levelBonus * 8,
+                gold: base.gold + levelBonus * 5,
+                icon: base.icon,
+                id: enemyId,
+                isBoss: false,
+                dodgeChance: 5
+            };
+        }
+    }
+
+    function getTotalDefense() {
+        return (game.armor?.defBonus || 0) + (game.helmet?.defBonus || 0) + 
+               (game.gloves?.defBonus || 0) + (game.boots?.defBonus || 0) + (game.cloak?.defBonus || 0);
+    }
+
+    function getTotalStrength() {
+        return game.weapon?.strBonus || 2;
+    }
+
+    function getCurrentStats() {
+        return {
+            hp: game.combatEnergy,
+            maxHp: game.maxCombatEnergy,
+            str: 10 + game.level * 2 + getTotalStrength(),
+            def: 5 + game.level + getTotalDefense()
+        };
+    }
+
+    function spendTravelEnergy(cost) {
+        if (game.travelEnergy >= cost) {
+            game.travelEnergy -= cost;
+            return true;
+        }
+        game.message = "❌ Недостаточно энергии для путешествий! Купи эль в таверне.";
+        renderGame();
+        return false;
+    }
+
+    function spendCombatEnergy(cost) {
+        if (game.combatEnergy >= cost) {
+            game.combatEnergy -= cost;
+            return true;
+        }
+        game.message = "❌ Недостаточно боевой энергии! Со временем восстановится.";
+        renderGame();
+        return false;
+    }
+
+    function autoRestoreEnergy() {
+        if (!game.initialized || game.inCombat) return;
+        let restored = false;
+        if (game.combatEnergy < game.maxCombatEnergy) {
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 1);
+            restored = true;
+        }
+        if (game.travelEnergy < game.maxTravelEnergy) {
+            game.travelEnergy = Math.min(game.maxTravelEnergy, game.travelEnergy + 1);
+            restored = true;
+        }
+        if (restored) {
+            saveProfile();
+            renderGame();
+        }
+    }
+
+    setInterval(autoRestoreEnergy, 120000);
+
+    function gainExp(amount) {
+        game.exp += amount;
+        game.message += ` +${amount}✨`;
+        while (game.exp >= game.expToNext) {
+            game.exp -= game.expToNext;
+            game.level++;
+            game.maxCombatEnergy += 5;
+            game.maxTravelEnergy += 2;
+            game.combatEnergy = game.maxCombatEnergy;
+            game.travelEnergy = game.maxTravelEnergy;
+            game.expToNext = Math.floor(game.expToNext * 1.2);
+            game.message += ` ✨ УРОВЕНЬ ${game.level}! ✨`;
+            saveProfile();
+        }
+        renderGame();
+    }
+
+    function dropResources(enemy, isDungeon, floor) {
+        let drops = [];
+        let dropChance = Math.random();
+        
+        // Золото всегда
+        drops.push(`${enemy.gold}💰`);
+        
+        // Ресурсы для крафта оружия только с 100+ этажа в подземелье
+        if (isDungeon && floor >= 100 && enemy.isBoss) {
+            if (Math.random() < 0.7) {
+                let resources = ["Малая эссенция", "Средняя эссенция", "Великая эссенция", "Железная руда", "Мифриловая руда", "Твёрдая древесина", "Средний кристалл"];
+                let res = resources[Math.floor(Math.random() * resources.length)];
+                game.resources[res] = (game.resources[res] || 0) + 1;
+                drops.push(`📦 ${res}`);
+            }
+        }
+        
+        // Ингредиенты для зелий (всегда могут выпасть)
+        if (Math.random() < 0.25) {
+            game.resources["Целебная трава"] = (game.resources["Целебная трава"] || 0) + 1;
+            drops.push(`🌿 Целебная трава`);
+        }
+        if (Math.random() < 0.15) {
+            game.resources["Магический гриб"] = (game.resources["Магический гриб"] || 0) + 1;
+            drops.push(`🍄 Магический гриб`);
+        }
+        if (isDungeon && floor >= 50 && Math.random() < 0.08) {
+            game.resources["Мифический цветок"] = (game.resources["Мифический цветок"] || 0) + 1;
+            drops.push(`🌸 Мифический цветок`);
+        }
+        
+        // Зелья
+        if (Math.random() < 0.2) {
+            game.potions.weak = (game.potions.weak || 0) + 1;
+            drops.push(`🧪 Слабое зелье`);
+        }
+        if (Math.random() < 0.1) {
+            game.potions.medium = (game.potions.medium || 0) + 1;
+            drops.push(`🧪 Среднее зелье`);
+        }
+        if (isDungeon && floor >= 100 && Math.random() < 0.05) {
+            game.potions.strong = (game.potions.strong || 0) + 1;
+            drops.push(`🧪 Мощное зелье`);
+        }
+        
+        if (drops.length > 0) game.message += ` + ${drops.join(", ")}`;
+        saveProfile();
+    }
+
+    function combatAction(action) {
+        if (!game.inCombat) return;
+        let enemy = game.combatEnemy;
+        let stats = getCurrentStats();
+        
+        // Проверка на победу
+        if (game.enemyCurrentHp <= 0) {
+            let rewardGold = enemy.gold;
+            game.gold += rewardGold;
+            gainExp(enemy.exp);
+            dropResources(enemy, game.location === "dungeon", game.dungeonFloor);
+            
+            let energyBack = 5;
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
+            game.message = `🏆 Победа! +${rewardGold}💰 +${enemy.exp}✨ +${energyBack}⚡`;
+            
+            if (game.location === "dungeon") {
+                game.dungeonFloor++;
+                if (game.dungeonFloor > game.maxUnlockedFloor) game.maxUnlockedFloor = game.dungeonFloor;
+            }
+            
+            game.inCombat = false;
+            game.combatEnemy = null;
+            if (game.combatEnergy < 0) game.combatEnergy = 0;
+            saveProfile();
+            renderGame();
+            return;
+        }
+        
+        // Проверка на поражение
+        if (stats.hp <= 0) {
+            let energyBack = 2;
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
+            game.message = `💀 Поражение... Возвращено ${energyBack}⚡ боевой энергии`;
+            game.inCombat = false;
+            renderGame();
+            return;
+        }
+        
+        if (action === "use_potion") {
+            let potionUsed = false;
+            if (game.potions.strong > 0) {
+                let heal = 50;
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + heal);
+                game.potions.strong--;
+                game.message = `💊 Мощное зелье +${heal} HP! Осталось: ${game.potions.strong}`;
+                potionUsed = true;
+            } else if (game.potions.medium > 0) {
+                let heal = 25;
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + heal);
+                game.potions.medium--;
+                game.message = `🧪 Среднее зелье +${heal} HP! Осталось: ${game.potions.medium}`;
+                potionUsed = true;
+            } else if (game.potions.weak > 0) {
+                let heal = 10;
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + heal);
+                game.potions.weak--;
+                game.message = `🍃 Слабое зелье +${heal} HP! Осталось: ${game.potions.weak}`;
+                potionUsed = true;
+            } else {
+                game.message = "❌ Нет зелий!";
+                renderGame();
+                return;
+            }
+            
+            if (potionUsed) {
+                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
+                let dodgeChance = Math.random() * 100;
+                if (dodgeChance < game.isAdmin ? 20 : 10) {
+                    game.message += ` ✨ Уворот! Враг промахнулся!`;
+                    setAnimation("dodge");
+                } else {
+                    game.combatEnergy -= enemyDmg;
+                    game.message += ` | Враг атакует → -${Math.floor(enemyDmg)} HP`;
+                    if (game.combatEnergy < 0) game.combatEnergy = 0;
+                }
+            }
+            saveProfile();
+            renderGame();
+            return;
+        }
+        
+        if (action === "attack") {
+            let dodgeChance = Math.random() * 100;
+            if (dodgeChance < enemy.dodgeChance) {
+                game.message = `✨ ${enemy.name} увернулся от атаки! ✨`;
+                setAnimation("dodge");
+                saveProfile();
+                renderGame();
+                return;
+            }
+            
+            let dmg = Math.max(1, stats.str + Math.floor(Math.random() * 8) - enemy.def);
+            game.enemyCurrentHp -= dmg;
+            game.message = `⚡ Урон ${Math.floor(dmg)} по ${enemy.name}`;
+            setAnimation("attack");
+            
+            let enemyDodge = Math.random() * 100;
+            if (enemyDodge < 10) {
+                game.message += ` ✨ Ты увернулся от атаки врага! ✨`;
+                setAnimation("dodge");
+            } else {
+                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
+                game.combatEnergy -= enemyDmg;
+                game.message += ` | Враг атакует → -${Math.floor(enemyDmg)} HP`;
+                if (game.combatEnergy < 0) game.combatEnergy = 0;
+            }
+            saveProfile();
+            renderGame();
+            return;
+        }
+        
+        saveProfile();
+        renderGame();
+    }
+
+    function startLocationFight() {
+        let enemy = getLocationEnemy();
+        if (enemy && spendCombatEnergy(10)) {
+            game.inCombat = true;
+            game.combatEnemy = enemy;
+            game.enemyCurrentHp = enemy.hp;
+            game.message = `⚔️ БОЙ: ${enemy.icon} ${enemy.name} (❤️ ${enemy.hp} / ⚔️ ${enemy.str})`;
+            renderGame();
+        } else if (!enemy) {
+            game.message = "❌ Здесь нет врагов!";
+            renderGame();
+        }
+    }
+
+    function startDungeonFight() {
+        if (game.dungeonFloor > 1000) {
+            game.message = "🎉 Поздравляю! Ты прошёл всё подземелье из 1000 этажей!";
+            renderGame();
+            return;
+        }
+        let enemy = getDungeonEnemy(game.dungeonFloor);
+        if (spendCombatEnergy(10)) {
+            game.inCombat = true;
+            game.combatEnemy = enemy;
+            game.enemyCurrentHp = enemy.hp;
+            game.message = `⚔️ БОЙ: ${enemy.icon} ${enemy.name} (❤️ ${enemy.hp} / ⚔️ ${enemy.str})${enemy.isBoss ? " 🏆 БОСС 🏆" : ""}`;
+            renderGame();
+        }
+    }
+
+    function goToFloor(floor) {
+        floor = Math.min(1000, Math.max(1, floor));
+        if (game.isAdmin) {
+            game.dungeonFloor = floor;
+            if (floor > game.maxUnlockedFloor) game.maxUnlockedFloor = floor;
+            game.message = `👑 Админ: переход на ${floor} этаж`;
+            renderGame();
+            return;
+        }
+        if (floor <= game.maxUnlockedFloor) {
+            game.dungeonFloor = floor;
+            game.message = `📍 Переход на ${floor} этаж`;
+            renderGame();
+        } else {
+            game.message = `❌ Нельзя перейти на ${floor} этаж! Ты прошёл только ${game.maxUnlockedFloor}.`;
+            renderGame();
+        }
+    }
+
+    function changeLocation(locKey) {
+        let loc = LOCATIONS[locKey];
+        if (!loc) return;
+        if (game.level < loc.requiredLevel && !game.isAdmin) {
+            game.message = `❌ Требуется ${loc.requiredLevel} уровень для посещения ${loc.name}!`;
+            renderGame();
+            return;
+        }
+        if (spendTravelEnergy(loc.energyCost)) {
+            game.location = locKey;
+            game.message = `🚶 Переход в ${loc.name} (-${loc.energyCost} энергии)`;
+            renderGame();
+        }
+    }
+
+    function buyItem(item) {
+        if (game.gold >= item.price) {
+            game.gold -= item.price;
+            game.inventory.push({ ...item });
+            game.message = `✅ Вы купили ${item.name} за ${item.price}💰!`;
+            if (item.type === "weapon") game.weapon = { name: item.name, strBonus: item.strBonus, rarity: item.rarity };
+            if (item.type === "armor") game.armor = { name: item.name, defBonus: item.defBonus, rarity: item.rarity };
+            saveProfile();
+            renderGame();
+        } else {
+            game.message = `❌ Не хватает ${item.price - game.gold}💰 для покупки ${item.name}!`;
+            renderGame();
+        }
+    }
+
+    function craftPotion(type) {
+        if (type === "weak" && game.resources["Целебная трава"] >= 1 && game.resources["Магический гриб"] >= 1 && game.gold >= 50) {
+            game.resources["Целебная трава"]--;
+            game.resources["Магический гриб"]--;
+            game.gold -= 50;
+            game.potions.weak += 3;
+            game.message = "🍃 Скрафчено 3 слабых зелья! (+10 HP каждое)";
+        } else if (type === "medium" && game.resources["Целебная трава"] >= 2 && game.resources["Магический гриб"] >= 2 && game.resources["Мифический цветок"] >= 1 && game.gold >= 150) {
+            game.resources["Целебная трава"] -= 2;
+            game.resources["Магический гриб"] -= 2;
+            game.resources["Мифический цветок"]--;
+            game.gold -= 150;
+            game.potions.medium += 3;
+            game.message = "🌿 Скрафчено 3 средних зелья! (+25 HP каждое)";
+        } else if (type === "strong" && game.resources["Целебная трава"] >= 3 && game.resources["Магический гриб"] >= 3 && game.resources["Мифический цветок"] >= 2 && game.gold >= 300) {
+            game.resources["Целебная трава"] -= 3;
+            game.resources["Магический гриб"] -= 3;
+            game.resources["Мифический цветок"] -= 2;
+            game.gold -= 300;
+            game.potions.strong += 3;
+            game.message = "🌸 Скрафчено 3 мощных зелья! (+50 HP каждое)";
+        } else {
+            game.message = "❌ Не хватает ресурсов для крафта зелий! Нужны: трава, грибы, цветы.";
+        }
+        saveProfile();
+        renderGame();
+    }
+
+    function equipItem(item, slot) {
+        if (item.type === "weapon") game.weapon = item;
+        if (item.type === "armor") game.armor = item;
+        if (slot === "helmet") game.helmet = item;
+        if (slot === "gloves") game.gloves = item;
+        if (slot === "boots") game.boots = item;
+        if (slot === "cloak") game.cloak = item;
+        game.message = `🔧 Экипировано: ${item.name}`;
+        saveProfile();
+        renderGame();
+    }
+
+    function startDialog(npc) {
+        let dialogHtml = `
+            <div class="dialog-overlay" id="dialogOverlay">
+                <div class="dialog-window">
+                    <div class="dialog-header">
+                        <div class="npc-avatar">${npc.avatar}</div>
+                        <div class="npc-name">${npc.name} ${npc.icon}</div>
+                    </div>
+                    <div class="dialog-body">
+                        <div class="dialog-text">
+                            ${npc.type === "blacksmith" ? "Здравствуй, путник! Я кузнец Гром. Могу продать тебе оружие и броню. Легендарные предметы стоят 500 000 золота!" :
+                              npc.type === "alchemist" ? "Я Алхимик Морган. Могу скрафтить зелья из трав, грибов и цветов. Крафт 3 зелий стоит 50-300 монет + ресурсы!" :
+                              npc.type === "tavern" ? "Добро пожаловать в таверну! Могу продать эль за 250 монет (+5 энергии путешествий)" :
+                              npc.type === "crafter" ? "Я Мастер крафта. Собирай ресурсы с боссов 100+ этажа и создавай мифическое оружие!" :
+                              "Приветствую, странник! Исследуй подземелье, сражайся с боссами и становись сильнее!"}
+                        </div>
+                    </div>
+                    <div class="dialog-footer">
+                        <div class="dialog-buttons">
+                            ${npc.type === "blacksmith" ? npc.items.map(item => `<button class="dialog-btn" onclick="buyItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">${item.name} - ${item.price}💰</button>`).join('') : ""}
+                            ${npc.type === "alchemist" ? `<button class="dialog-btn" onclick="craftPotion('weak')">🍃 Слабое зелье (3 шт) - 50💰 + трава + гриб</button>
+                                                         <button class="dialog-btn" onclick="craftPotion('medium')">🌿 Среднее зелье (3 шт) - 150💰 + 2 травы + 2 гриба + цветок</button>
+                                                         <button class="dialog-btn" onclick="craftPotion('strong')">🌸 Мощное зелье (3 шт) - 300💰 + 3 травы + 3 гриба + 2 цветка</button>` : ""}
+                            ${npc.type === "tavern" ? `<button class="dialog-btn" onclick="buyEnergy()">🍺 Купить эль за 250💰 (+5 энергии)</button>` : ""}
+                            <button class="dialog-btn dialog-close" onclick="closeDialog()">🚪 Закрыть</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', dialogHtml);
+    }
+
+    function buyEnergy() {
+        if (game.gold >= 250) {
+            game.gold -= 250;
+            game.travelEnergy = Math.min(game.maxTravelEnergy, game.travelEnergy + 5);
+            game.message = "🍺 Вы выпили эль! +5 энергии путешествий!";
+            saveProfile();
+            renderGame();
+            closeDialog();
+        } else {
+            game.message = "❌ Не хватает 250 золота на эль!";
+            renderGame();
+        }
+    }
+
+    function closeDialog() {
+        document.getElementById("dialogOverlay")?.remove();
+    }
+
+    function adminAddGold(amount) {
+        if (game.isAdmin) {
+            game.gold += amount;
+            game.message = `👑 Админ: +${amount} золота`;
+            saveProfile();
+            renderGame();
+        }
+    }
+
+    function adminAddExp(amount) {
+        if (game.isAdmin) gainExp(amount);
+    }
+
+    function adminHeal() {
+        if (game.isAdmin) {
+            game.combatEnergy = game.maxCombatEnergy;
+            game.travelEnergy = game.maxTravelEnergy;
+            game.message = "👑 Админ: полное исцеление";
+            renderGame();
+        }
+    }
+
+    function adminAddFloor() {
+        if (game.isAdmin) {
+            game.dungeonFloor = Math.min(1000, game.dungeonFloor + 10);
+            game.maxUnlockedFloor = Math.max(game.maxUnlockedFloor, game.dungeonFloor);
+            game.message = `👑 Админ: +10 этажей (${game.dungeonFloor}/1000)`;
+            renderGame();
+        }
+    }
+
+    function adminGiveItem() {
+        if (!game.isAdmin) return;
+        let itemName = document.getElementById("adminItemName")?.value;
+        let itemType = document.getElementById("adminItemType")?.value;
+        let itemBonus = parseInt(document.getElementById("adminItemBonus")?.value);
+        if (itemName) {
+            let item = { name: itemName, type: itemType, strBonus: itemBonus, defBonus: itemBonus, rarity: "mythic" };
+            game.inventory.push(item);
+            game.message = `👑 Админ: выдал ${itemName}`;
+            saveProfile();
+            renderGame();
+        }
+    }
+
+    function shareReferral() {
+        let link = `https://t.me/share/url?url=${encodeURIComponent("https://t.me/ТВОЙ_БОТ/game")}&text=🎮 Играй в RPG "Тропы забытого королевства"! Мой реферальный код: ${game.referralCode}`;
+        window.open(link, '_blank');
+        game.message = "📤 Реферальная ссылка отправлена!";
+        renderGame();
+    }
+
+    function setAnimation(anim) {
+        game.animationState = anim;
+        let spriteDiv = document.getElementById("characterSprite");
+        if (spriteDiv) {
+            let emoji = "⚔️";
+            spriteDiv.innerHTML = `<div class="character-${anim}">${emoji}</div>`;
+        }
+        if (anim === "attack") setTimeout(() => {
+            if (game.animationState === "attack") setAnimation(game.isRunning ? "running" : "idle");
+        }, 200);
+        if (anim === "dodge") setTimeout(() => {
+            if (game.animationState === "dodge") setAnimation(game.isRunning ? "running" : "idle");
+        }, 200);
+    }
+
+    function renderGame() {
+        const container = document.getElementById("rpgGame");
+        let stats = getCurrentStats();
+        
+        if (!game.initialized) {
+            let telegramId = getTelegramId();
+            if (telegramId && loadProfile(telegramId)) return;
+            
+            let html = `<div class="character-form"><h2 style="color:#f7d44a">⚔️ ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА ⚔️</h2>
+                <div class="message-log" style="margin-bottom:15px;">💡 Придумывайте свой ник с умом, не используя спец символы. Ваше имя закрепится за вами, Герой!</div>
+                <input type="text" id="playerName" placeholder="Имя героя" maxlength="20">
+                <input type="text" id="refCode" placeholder="Реферальный код (если есть)">
+                <button id="createBtn">🚀 НАЧАТЬ ПРИКЛЮЧЕНИЕ</button>
+                <div class="message-log">✨ Без крафта подземелье пройти почти невозможно! Крафти оружие у Мастера крафта!</div>`;
+            container.innerHTML = html;
+            document.getElementById("createBtn")?.addEventListener("click", () => {
+                let name = document.getElementById("playerName").value;
+                let refCode = document.getElementById("refCode").value;
+                createNewProfile(name);
+                if (refCode) {
+                    game.referredBy = refCode;
+                    game.gold += 100;
+                    game.message = `🎉 По реферальному коду! +100 золота!`;
+                    saveProfile();
+                }
+            });
+            return;
+        }
+        
+        let combatEnergyPercent = (game.combatEnergy / game.maxCombatEnergy) * 100;
+        let travelEnergyPercent = (game.travelEnergy / game.maxTravelEnergy) * 100;
+        let currentLoc = LOCATIONS[game.location];
+        
+        let combatBlock = "";
+        if (game.inCombat && game.combatEnemy) {
+            combatBlock = `<div style="background:#2a1e2e; border-radius:20px; padding:12px; margin:12px 0;">
+                <span style="color:#ff8c6b;">${game.combatEnemy.icon} ${game.combatEnemy.name}</span> ❤️ ${Math.floor(game.enemyCurrentHp)}/${game.combatEnemy.hp}<br>
+                ⚔️ ${game.combatEnemy.str} | 🛡️ ${game.combatEnemy.def} | ✨ Уворот: ${game.combatEnemy.dodgeChance}%
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <button id="attackBtn" style="background:#8b3c2c;">⚔️ АТАКОВАТЬ</button>
+                    <button id="potionBtn" style="background:#2f6b4a;">💊 ЗЕЛЬЕ (С:${game.potions.weak} СР:${game.potions.medium} М:${game.potions.strong})</button>
+                </div>
+            </div>`;
+        }
+        
+        let adminHtml = "";
+        if (game.isAdmin) {
+            adminHtml = `<div class="admin-panel show">
+                <b>👑 АДМИН-ПАНЕЛЬ</b><br>
+                <input type="number" id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500">
+                <button onclick="adminAddGold(parseInt(document.getElementById('adminGoldAmount').value))">+💰</button>
+                <input type="number" id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300">
+                <button onclick="adminAddExp(parseInt(document.getElementById('adminExpAmount').value))">+✨</button>
+                <button onclick="adminHeal()">💚 Исцелить</button>
+                <button onclick="adminAddFloor()">📈 +10 этажей</button><br>
+                <input type="text" id="adminItemName" class="admin-input" placeholder="Название" style="width:120px;">
+                <select id="adminItemType" class="admin-input"><option value="weapon">Оружие</option><option value="armor">Броня</option></select>
+                <input type="number" id="adminItemBonus" class="admin-input" placeholder="Бонус" value="50">
+                <button onclick="adminGiveItem()">🎁 Выдать предмет</button>
+            </div>`;
+        }
+        
+        let tabsHtml = `<div class="tabs">
+            <div class="tab-btn ${game.activeTab === 'game' ? 'active' : ''}" data-tab="game">⚔️ Игра</div>
+            <div class="tab-btn ${game.activeTab === 'character' ? 'active' : ''}" data-tab="character">👤 Персонаж</div>
+            <div class="tab-btn ${game.activeTab === 'tavern' ? 'active' : ''}" data-tab="tavern">🍺 Таверна</div>
+            <div class="tab-btn ${game.activeTab === 'craft' ? 'active' : ''}" data-tab="craft">🔨 Крафт</div>
+        </div>`;
+        
+        let gameTab = `<div id="tab-game" class="tab-content ${game.activeTab === 'game' ? 'active' : ''}">
+            <div class="sprite-area" id="characterSprite"><div class="character-idle">⚔️</div></div>
+            <div class="stats-panel">
+                <span class="stat">❤️ ${Math.floor(stats.hp)}/${stats.maxHp}</span>
+                <span class="stat">⚔️ ${stats.str}</span>
+                <span class="stat">🛡️ ${stats.def}</span>
+                <span class="stat">⭐${game.level}</span>
+                <span class="stat">📖${game.exp}/${game.expToNext}</span>
+                <span class="stat">💰${game.gold}</span>
+                <span class="stat">👤${game.profileName}</span>
+            </div>
+            <div><span>⚡ Боевая энергия: ${game.combatEnergy}/${game.maxCombatEnergy}</span><div class="energy-bar"><div class="energy-fill" style="width:${combatEnergyPercent}%"></div></div></div>
+            <div><span>🚶 Энергия путешествий: ${game.travelEnergy}/${game.maxTravelEnergy}</span><div class="energy-bar"><div class="energy-fill travel" style="width:${travelEnergyPercent}%"></div></div></div>
+            <div style="background:#1a1530; border-radius:20px; padding:12px; margin:12px 0;">
+                <div style="font-size:1.2rem;">${currentLoc.icon} ${currentLoc.name}</div>
+                <div style="font-size:0.75rem;">${currentLoc.desc || "Исследуй эту локацию"}</div>
+                ${!currentLoc.isDungeon ? `<button id="fightLocationBtn" style="margin-top:10px;">⚔️ ИССЛЕДОВАТЬ (10⚡)</button>` : `
+                    <div class="dungeon-floor-select">
+                        <b>🏚️ ПОДЗЕМЕЛЬЕ (1000 этажей)</b>
+                        <div><input type="number" id="floorInput" min="1" max="1000" value="${game.dungeonFloor}" style="width:80px;">
+                        <button id="goToFloorBtn">Перейти</button>
+                        <button id="fightDungeonBtn">⚔️ Сражаться (${game.dungeonFloor} этаж)</button></div>
+                        <div>📊 Пройдено: ${game.maxUnlockedFloor} этажей | 👑 Босс каждый 20 этаж</div>
+                        <div style="font-size:0.65rem; margin-top:5px;">💡 Ресурсы для крафта оружия выпадают с боссов на 100+ этаже!</div>
+                    </div>
+                `}
+            </div>
+            <div class="location-grid">
+                ${Object.entries(LOCATIONS).map(([key, loc]) => {
+                    let available = game.level >= loc.requiredLevel || game.isAdmin;
+                    return `<button class="location-btn ${!available ? 'locked' : ''}" onclick="${available ? `changeLocation('${key}')` : ''}" ${!available ? 'disabled' : ''}>${loc.icon} ${loc.name}${!available ? ` 🔒${loc.requiredLevel}` : ''}</button>`;
+                }).join('')}
+            </div>
+            ${combatBlock}
+            <div class="message-log">💬 ${game.message}</div>
+            <div class="actions">
+                <button id="runToggleBtn" class="run-btn">${game.isRunning ? "🚶 ВЫКЛ" : "🏃‍♂️ ВКЛ"}</button>
+                <button id="resetBtn" class="reset-btn">🔄 Сброс</button>
+            </div>
+            ${adminHtml}
+        </div>`;
+        
+        let characterTab = `<div id="tab-character" class="tab-content ${game.activeTab === 'character' ? 'active' : ''}">
+            <h3 style="color:gold; text-align:center;">👤 ПЕРСОНАЖ</h3>
+            <div class="stats-panel" style="justify-content:center;">
+                <span class="stat">❤️ ${Math.floor(stats.hp)}/${stats.maxHp}</span>
+                <span class="stat">⚔️ ${stats.str}</span>
+                <span class="stat">🛡️ ${stats.def}</span>
+                <span class="stat">⭐${game.level}</span>
+                <span class="stat">📖${game.exp}/${game.expToNext}</span>
+            </div>
+            <div class="equipment-grid">
+                <div class="equip-item equipped"><b>⚔️ Оружие</b><br>${game.weapon?.name || "Нет"}<br>+${game.weapon?.strBonus || 0} силы<br><span class="rarity-${game.weapon?.rarity}">${game.weapon?.rarity || "common"}</span></div>
+                <div class="equip-item equipped"><b>🛡️ Броня</b><br>${game.armor?.name || "Нет"}<br>+${game.armor?.defBonus || 0} защиты<br><span class="rarity-${game.armor?.rarity}">${game.armor?.rarity || "common"}</span></div>
+                <div class="equip-item equipped"><b>⛑️ Шлем</b><br>${game.helmet?.name || "Нет"}<br>+${game.helmet?.defBonus || 0} защиты</div>
+                <div class="equip-item equipped"><b>🧤 Перчатки</b><br>${game.gloves?.name || "Нет"}<br>+${game.gloves?.defBonus || 0} защиты</div>
+                <div class="equip-item equipped"><b>👢 Сапоги</b><br>${game.boots?.name || "Нет"}<br>+${game.boots?.defBonus || 0} защиты</div>
+                <div class="equip-item equipped"><b>🧥 Плащ</b><br>${game.cloak?.name || "Нет"}<br>+${game.cloak?.defBonus || 0} защиты</div>
+                ${game.inventory.filter(i => i.name !== game.weapon?.name && i.name !== game.armor?.name && i.name !== game.helmet?.name && i.name !== game.gloves?.name && i.name !== game.boots?.name && i.name !== game.cloak?.name).map(item => `
+                    <div class="equip-item" onclick="equipItem(${JSON.stringify(item).replace(/"/g, '&quot;')}, '${item.type === "weapon" ? "weapon" : item.type === "armor" ? "armor" : item.name.includes("шлем") ? "helmet" : item.name.includes("перчатки") ? "gloves" : item.name.includes("сапоги") ? "boots" : "cloak"}')">
+                        <b>${item.type === "weapon" ? "⚔️" : "🛡️"} ${item.name}</b><br>${item.strBonus ? `+${item.strBonus} силы` : `+${item.defBonus} защиты`}<br><span class="rarity-${item.rarity}">${item.rarity}</span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="craft-panel" style="margin-top:10px;">
+                <b>📦 РЕСУРСЫ</b>
+                <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:5px;">
+                    <span>🪨 Медная: ${game.resources["Медная руда"] || 0}</span>
+                    <span>⚙️ Железная: ${game.resources["Железная руда"] || 0}</span>
+                    <span>💎 Мифрил: ${game.resources["Мифриловая руда"] || 0}</span>
+                    <span>🌿 Древесина: ${game.resources["Обычная древесина"] || 0}</span>
+                    <span>🌳 Твёрдая: ${game.resources["Твёрдая древесина"] || 0}</span>
+                    <span>🧵 Ткань: ${game.resources["Хлопковая ткань"] || 0}</span>
+                    <span>✨ Маг.ткань: ${game.resources["Магическая ткань"] || 0}</span>
+                    <span>💠 М.кристалл: ${game.resources["Малый кристалл"] || 0}</span>
+                    <span>🔷 Ср.кристалл: ${game.resources["Средний кристалл"] || 0}</span>
+                    <span>🔮 Вел.кристалл: ${game.resources["Великий кристалл"] || 0}</span>
+                    <span style="color:#aa44ff;">🧪 Мал.эссенция: ${game.resources["Малая эссенция"] || 0}</span>
+                    <span style="color:#aa44ff;">🔮 Ср.эссенция: ${game.resources["Средняя эссенция"] || 0}</span>
+                    <span style="color:#ffaa00;">💎 Вел.эссенция: ${game.resources["Великая эссенция"] || 0}</span>
+                    <span style="color:#ff44ff;">👑 Искра богов: ${game.resources["Искра богов"] || 0}</span>
+                    <span>🌿 Трава: ${game.resources["Целебная трава"] || 0}</span>
+                    <span>🍄 Гриб: ${game.resources["Магический гриб"] || 0}</span>
+                    <span>🌸 Миф.цветок: ${game.resources["Мифический цветок"] || 0}</span>
+                </div>
+            </div>
+        </div>`;
+        
+        let tavernTab = `<div id="tab-tavern" class="tab-content ${game.activeTab === 'tavern' ? 'active' : ''}">
+            <h3 style="color:gold; text-align:center;">🍺 ТАВЕРНА</h3>
+            <div class="npc-panel">
+                <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                    ${NPCS.map(npc => `<button onclick="startDialog(${JSON.stringify(npc).replace(/"/g, '&quot;')})">💬 ${npc.icon} ${npc.name}</button>`).join('')}
+                </div>
+            </div>
+            <div class="referral-panel">
+                <b>📤 РЕФЕРАЛЬНАЯ ПРОГРАММА</b>
+                <p>Твой код: <b style="color:gold;">${game.referralCode}</b></p>
+                <button onclick="shareReferral()">📢 Пригласить друга</button>
+                <p style="font-size:10px;">👉 Друг введёт код и получит +100💰! Ты получишь +50💰.</p>
+            </div>
+            <div style="margin-top:10px; text-align:center;">
+                <div class="stat">🧪 Зелья: Слабые: ${game.potions.weak} | Средние: ${game.potions.medium} | Мощные: ${game.potions.strong}</div>
+            </div>
+        </div>`;
+        
+        let craftTab = `<div id="tab-craft" class="tab-content ${game.activeTab === 'craft' ? 'active' : ''}">
+            <h3 style="color:gold; text-align:center;">🔨 МАСТЕРСКАЯ КРАФТА</h3>
+            <div class="craft-panel">
+                <b style="color:#ff44ff;">МИФИЧЕСКОЕ ОРУЖИЕ (требует 5-8 ресурсов, выпадают с боссов 100+ этажа)</b>
+                <div style="margin-top:10px;">
+                    <div class="equip-item" style="margin-bottom:5px;" onclick="alert('Для крафта нужно: 5 Великих эссенций, 3 Искры богов, 5 Мифриловой руды, 5 Древесины мирового древа, 5 Магической ткани')">
+                        <b>⚔️ Меч Богов</b> - +200 силы (Мифический)
+                    </div>
+                    <div class="equip-item" style="margin-bottom:5px;" onclick="alert('Для крафта нужно: 5 Великих эссенций, 2 Искры богов, 8 Великих кристаллов')">
+                        <b>⚔️ Копье Судьбы</b> - +180 силы (Мифический)
+                    </div>
+                    <div class="equip-item" style="margin-bottom:5px;" onclick="alert('Для крафта нужно: 4 Великих эссенции, 3 Искры богов, 6 Мифриловой руды, 4 Магической ткани')">
+                        <b>🛡️ Доспех Бога</b> - +150 защиты (Мифический)
+                    </div>
+                </div>
+                <div style="margin-top:15px; font-size:11px; color:#aaa;">
+                    💡 Ресурсы выпадают с боссов начиная с 100 этажа подземелья!
+                    💡 Чем выше этаж, тем больше шанс выпадения редких ресурсов!
+                    💡 Крафт мифических предметов откроет путь к вершине подземелья!
+                </div>
+            </div>
+        </div>`;
+        
+        container.innerHTML = `${tabsHtml}${gameTab}${characterTab}${tavernTab}${craftTab}`;
+        
+        document.querySelectorAll(".tab-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                game.activeTab = btn.getAttribute("data-tab");
+                renderGame();
+            });
+        });
+        
+        document.getElementById("fightLocationBtn")?.addEventListener("click", startLocationFight);
+        document.getElementById("fightDungeonBtn")?.addEventListener("click", startDungeonFight);
+        document.getElementById("goToFloorBtn")?.addEventListener("click", () => {
+            let floor = parseInt(document.getElementById("floorInput")?.value || game.dungeonFloor);
+            goToFloor(floor);
+        });
+        document.getElementById("attackBtn")?.addEventListener("click", () => combatAction("attack"));
+        document.getElementById("potionBtn")?.addEventListener("click", () => combatAction("use_potion"));
+        document.getElementById("runToggleBtn")?.addEventListener("click", () => {
+            game.isRunning = !game.isRunning;
+            game.message = game.isRunning ? "🏃‍♂️ РЕЖИМ БЕГА!" : "🚶 Обычный шаг.";
+            setAnimation(game.isRunning ? "running" : "idle");
+            renderGame();
+        });
+        document.getElementById("resetBtn")?.addEventListener("click", () => {
+            localStorage.removeItem(`rpg_${game.telegramId || game.profileName}`);
+            game.initialized = false;
+            renderGame();
+        });
+        
+        setAnimation(game.animationState);
+    }
+    
+    window.changeLocation = changeLocation;
+    window.startDialog = startDialog;
+    window.buyItem = buyItem;
+    window.craftPotion = craftPotion;
+    window.buyEnergy = buyEnergy;
+    window.closeDialog = closeDialog;
+    window.adminAddGold = adminAddGold;
+    window.adminAddExp = adminAddExp;
+    window.adminHeal = adminHeal;
+    window.adminAddFloor = adminAddFloor;
+    window.adminGiveItem = adminGiveItem;
+    window.shareReferral = shareReferral;
+    window.equipItem = equipItem;
+    
+    renderGame();
+</script>
+</body>
+</html>
