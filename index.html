@@ -100,7 +100,7 @@
             min-width: 55px;
         }
         .tab-btn.active { background: #f7d44a; color: #1e1b2b; }
-[09.05.2026 6:04] Young_Sunshine❤️: .tab-content { display: none; }
+        .tab-content { display: none; }
         .tab-content.active { display: block; }
         .location-grid {
             display: flex;
@@ -189,7 +189,7 @@
         .completed-badge { background: #2a6b4a; color: gold; padding: 2px 6px; border-radius: 20px; font-size: 0.55rem; margin-left: 4px; }
         hr { border-color: #f7d44a55; margin: 8px 0; }
         .resource-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 5px 0; }
-[09.05.2026 6:04] Young_Sunshine❤️: .resource-badge { background: #1e1b2b; padding: 4px 8px; border-radius: 20px; font-size: 0.6rem; }
+        .resource-badge { background: #1e1b2b; padding: 4px 8px; border-radius: 20px; font-size: 0.6rem; }
         .top-row { display: flex; justify-content: space-between; background: #1a1530; padding: 10px; border-radius: 16px; margin-bottom: 8px; }
         .top-place { font-weight: bold; color: gold; }
     </style>
@@ -264,7 +264,7 @@
         knight: { name: "Рыцарь", icon: "⚔️", weapon: "Копьё", strBonus: 5, hpBonus: 7, defBonus: 5, dodgeBonus: 0 },
         priest: { name: "Жрец", icon: "⛪", weapon: "Святой символ", strBonus: 3, hpBonus: 5, defBonus: 5, dodgeBonus: 0, healBonus: 10 },
         shaman: { name: "Шаман", icon: "🥁", weapon: "Тотемы", strBonus: 4, hpBonus: 5, defBonus: 2, dodgeBonus: 5 },
-[09.05.2026 6:04] Young_Sunshine❤️: demonologist: { name: "Демонолог", icon: "😈", weapon: "Гримуар", strBonus: 6, hpBonus: 4, defBonus: 0, dodgeBonus: 0 },
+        demonologist: { name: "Демонолог", icon: "😈", weapon: "Гримуар", strBonus: 6, hpBonus: 4, defBonus: 0, dodgeBonus: 0 },
         swordsman: { name: "Мечник", icon: "🗡️", weapon: "Длинный меч", strBonus: 5, hpBonus: 6, defBonus: 2, dodgeBonus: 3 },
         spearman: { name: "Копейщик", icon: "🔱", weapon: "Копьё", strBonus: 4, hpBonus: 7, defBonus: 3, dodgeBonus: 2 },
         assassin: { name: "Ассасин", icon: "🗡️", weapon: "Клинки", strBonus: 5, hpBonus: 4, defBonus: 0, dodgeBonus: 10, critBonus: 10 },
@@ -306,7 +306,7 @@
           ] },
         { name: "Алхимик Морган", icon: "🧪", avatar: "⚗️", type: "alchemist" },
         { name: "Трактирщик Грим", icon: "🍺", avatar: "🧔", type: "tavern" },
-[09.05.2026 6:04] Young_Sunshine❤️: { name: "Мастер крафта", icon: "🔨", avatar: "🛠️", type: "crafter" }
+        { name: "Мастер крафта", icon: "🔨", avatar: "🛠️", type: "crafter" }
     ];
     
     // Предметы для выдачи админом
@@ -382,7 +382,7 @@
         const startWeapon = { name: cls.weapon, type: "weapon", strBonus: cls.strBonus, rarity: "common" };
         const startArmor = { name: "Кожаная броня", type: "armor", defBonus: 2, rarity: "common" };
         game.weapon = startWeapon;
-[09.05.2026 6:04] Young_Sunshine❤️: game.armor = startArmor;
+        game.armor = startArmor;
         game.inventory = [startWeapon, startArmor];
         game.location = "village";
         game.dungeonFloor = 1;
@@ -482,7 +482,7 @@
     }
     
     async function gainExp(amount) {
-[09.05.2026 6:04] Young_Sunshine❤️: game.exp += amount;
+        game.exp += amount;
         game.message +=  +${amount}✨;
         while (game.exp >= game.expToNext) {
             game.exp -= game.expToNext;
@@ -574,7 +574,7 @@
                 renderGame();
                 return;
             }
-[09.05.2026 6:04] Young_Sunshine❤️: game.inCombat = false;
+             game.inCombat = false;
             game.combatEnemy = null;
             await saveGame();
             
@@ -668,7 +668,7 @@
         }
         if (game.monstersKilled >= game.needToKill) {
             game.message = ✨ Вы убили ${game.needToKill} монстров! Теперь можно сразиться с боссом! ✨;
-[09.05.2026 6:04] Young_Sunshine❤️: renderGame();
+            renderGame();
             return;
         }
         if (game.combatEnergy < 10) {
@@ -771,7 +771,7 @@
             if (game.dungeonFloor === 1000) {
                 enemy = { name: 👑 ФИНАЛЬНЫЙ БОСС 👑, hp: 2000, str: 150, def: 80, exp: 10000, gold: 50000, icon: "🐉✨", isBoss: true, dungeonWin: true };
             } else {
-[09.05.2026 6:04] Young_Sunshine❤️: enemy = { name: 👑 БОСС №${bossNumber} (${game.dungeonFloor} этаж) 👑, hp: 150 + game.dungeonFloor * 3, str: 30 + Math.floor(game.dungeonFloor / 2), def: 15 + Math.floor(game.dungeonFloor / 5), exp: 300 + game.dungeonFloor * 8, gold: 200 + game.dungeonFloor * 10, icon: "👑", isBoss: true };
+            enemy = { name: 👑 БОСС №${bossNumber} (${game.dungeonFloor} этаж) 👑, hp: 150 + game.dungeonFloor * 3, str: 30 + Math.floor(game.dungeonFloor / 2), def: 15 + Math.floor(game.dungeonFloor / 5), exp: 300 + game.dungeonFloor * 8, gold: 200 + game.dungeonFloor * 10, icon: "👑", isBoss: true };
             }
         } else {
             enemy = { name: Страж ${game.dungeonFloor} этажа, hp: 50 + Math.floor(game.dungeonFloor * 1.5), str: 15 + Math.floor(game.dungeonFloor / 3), def: 8 + Math.floor(game.dungeonFloor / 6), exp: 60 + game.dungeonFloor * 2, gold: 40 + game.dungeonFloor * 3, icon: "👹" };
@@ -848,7 +848,7 @@
             game.inventory.push({ ...item });
             game.message = ✅ Куплено ${item.name}!;
             await saveGame();
-[09.05.2026 6:04] Young_Sunshine❤️: renderGame();
+            renderGame();
             closeDialog();
         } else { game.message = ❌ Не хватает золота!; renderGame(); }
     }
@@ -923,7 +923,7 @@
             let target = JSON.parse(data);
             target.exp = (target.exp || 0) + amount;
             while (target.exp >= target.expToNext) {
-[09.05.2026 6:04] Young_Sunshine❤️: target.exp -= target.expToNext;
+                target.exp -= target.expToNext;
                 target.level++;
                 target.expToNext = Math.floor(target.expToNext * 1.2);
             }
@@ -1001,7 +1001,7 @@
                             </div>
                         `).join('')}
                     </div>
-[09.05.2026 6:04] Young_Sunshine❤️: <button id="createBtn" class="btn btn-primary" style="width:100%;">🚀 НАЧАТЬ</button>
+                       <button id="createBtn" class="btn btn-primary" style="width:100%;">🚀 НАЧАТЬ</button>
                 </div>
             ;
             document.querySelectorAll(".class-option").forEach(opt => {
@@ -1058,7 +1058,7 @@
                     let completed = game.completedLocations.includes(key);
                     let badge = "";
                     if (loc.boss && !completed && !loc.isDungeon) badge = <span class="boss-badge">👑</span>;
-[09.05.2026 6:04] Young_Sunshine❤️: if (completed && !loc.isDungeon) badge = <span class="completed-badge">✅</span>;
+                    if (completed && !loc.isDungeon) badge = <span class="completed-badge">✅</span>;
                     return <div class="location-btn ${!available ? 'locked' : ''} ${completed ? 'completed' : ''}" onclick="${available ? window.changeLocation('${key}') : ''}">${loc.icon} ${loc.name} ${badge}</div>;
                 }).join('')}
             </div>
@@ -1117,7 +1117,7 @@
         
         // Топ игроков
         let topHtml = <h3 style="color:gold; text-align:center;">🏆 ТОП ИГРОКОВ</h3><div class="card"><div class="top-row"><span class="top-place">🥇 1.</span><span>DarkKnight</span><span>⭐50</span><span>💰1.2M</span></div><div class="top-row"><span class="top-place">🥈 2.</span><span>ShadowLord</span><span>⭐48</span><span>💰980K</span></div><div class="top-row"><span class="top-place">🥉 3.</span><span>Hero</span><span>⭐45</span><span>💰850K</span></div></div>`;
-[09.05.2026 6:04] Young_Sunshine❤️: // Админ панель (только для админа)
+         // Админ панель (только для админа)
         let adminHtml = "";
         if (adminVisible) {
             adminHtml = 
@@ -1175,7 +1175,7 @@
         });
         
         document.getElementById("fightBtn")?.addEventListener("click", () => { if (game.autoFightActive) stopAutoFight(); startRandomFight(); });
-[09.05.2026 6:04] Young_Sunshine❤️: document.getElementById("autoBtn")?.addEventListener("click", () => startAutoFight());
+        document.getElementById("autoBtn")?.addEventListener("click", () => startAutoFight());
         document.getElementById("healBtn")?.addEventListener("click", () => usePotion("weak"));
         document.getElementById("bossBtn")?.addEventListener("click", () => { if (game.autoFightActive) stopAutoFight(); startBossFight(); });
         document.getElementById("dungeonFightBtn")?.addEventListener("click", () => startDungeonFight());
