@@ -60,7 +60,7 @@
         .admin-panel.show { display: block; }
         .admin-input { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 20px; padding: 5px 10px; width: 100px; margin: 5px; }
         .admin-input-wide { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 20px; padding: 5px 10px; width: 180px; margin: 5px; }
-        .referral-panel, .quest-panel, .npc-panel, .craft-panel { background: #1a3a2acc; border-radius: 20px; padding: 12px; margin-top: 10px; border: 1px solid gold; }
+        .npc-panel, .craft-panel { background: #1a3a2acc; border-radius: 20px; padding: 12px; margin-top: 10px; border: 1px solid gold; }
         .message-log { background: #000000aa; border-radius: 16px; padding: 8px; margin-top: 12px; font-size: 0.7rem; color: #bdaa88; max-height: 100px; overflow-y: auto; }
         .character-form { text-align: center; padding: 20px; }
         .character-form input { display: block; margin: 15px auto; padding: 12px; width: 80%; background: #1e1b2b; color: #f7d44a; border: 1px solid #f7d44a; border-radius: 30px; font-size: 1rem; text-align: center; }
@@ -111,7 +111,6 @@
     tg.expand();
     tg.enableClosingConfirmation();
     
-    // Адаптация под тему Telegram
     const themeBg = tg.themeParams.bg_color || '#0a0f1a';
     document.body.style.backgroundColor = themeBg;
     
@@ -119,7 +118,7 @@
     const ADMIN_TELEGRAM_ID = 1198178866;
     const ADMIN_USERNAME = "dirtyyyyn";
     
-    // ===================== ОБЛАЧНОЕ ХРАНИЛИЩЕ TELEGRAM =====================
+    // ===================== ОБЛАЧНОЕ ХРАНИЛИЩЕ =====================
     async function tgSaveData(key, data) {
         return new Promise((resolve) => {
             if (!tg || !tg.CloudStorage) {
@@ -191,68 +190,68 @@
 
     // ===================== ВРАГИ =====================
     const ENEMIES = {
-        goblin: { name: "Гоблин", baseHp: 20, baseStr: 7, baseDef: 3, exp: 30, gold: 15, icon: "👺", dropItems: ["common", "herb"] },
-        rat: { name: "Крыса", baseHp: 15, baseStr: 5, baseDef: 2, exp: 20, gold: 10, icon: "🐀", dropItems: ["common", "herb"] },
-        wolf: { name: "Волк", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐺", dropItems: ["common", "wood"] },
-        bear: { name: "Медведь", baseHp: 40, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "🐻", dropItems: ["common", "wood", "herb"] },
-        spider: { name: "Паук", baseHp: 22, baseStr: 8, baseDef: 4, exp: 40, gold: 18, icon: "🕷️", dropItems: ["common", "herb", "mushroom"] },
-        orc: { name: "Орк", baseHp: 35, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "👹", dropItems: ["rare", "ore"] },
-        troll: { name: "Тролль", baseHp: 50, baseStr: 15, baseDef: 8, exp: 100, gold: 50, icon: "🗿", dropItems: ["rare", "ore", "wood"] },
-        giant: { name: "Великан", baseHp: 70, baseStr: 18, baseDef: 10, exp: 140, gold: 70, icon: "🏔️", dropItems: ["rare", "ore", "crystal"] },
-        eagle: { name: "Орёл", baseHp: 28, baseStr: 11, baseDef: 5, exp: 55, gold: 25, icon: "🦅", dropItems: ["common", "wood", "feather"] },
-        skeleton: { name: "Скелет", baseHp: 30, baseStr: 10, baseDef: 5, exp: 55, gold: 25, icon: "💀", dropItems: ["rare", "bone", "essence_small"] },
-        ghost: { name: "Призрак", baseHp: 35, baseStr: 14, baseDef: 4, exp: 80, gold: 35, icon: "👻", dropItems: ["rare", "essence_small", "cloth"] },
-        necromancer: { name: "Некромант", baseHp: 40, baseStr: 13, baseDef: 6, exp: 90, gold: 45, icon: "🧙", dropItems: ["rare", "essence_small", "crystal"] },
-        snake: { name: "Змея", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐍", dropItems: ["common", "herb", "mushroom"] },
-        scorpion: { name: "Скорпион", baseHp: 28, baseStr: 11, baseDef: 7, exp: 60, gold: 30, icon: "🦂", dropItems: ["rare", "ore", "crystal"] },
-        mummy: { name: "Мумия", baseHp: 45, baseStr: 12, baseDef: 9, exp: 85, gold: 40, icon: "🧻", dropItems: ["rare", "cloth", "essence_small"] },
-        sandworm: { name: "Песчаный червь", baseHp: 55, baseStr: 16, baseDef: 8, exp: 110, gold: 55, icon: "🪱", dropItems: ["rare", "ore", "essence_small"] },
-        lizard: { name: "Ящер", baseHp: 30, baseStr: 10, baseDef: 6, exp: 50, gold: 25, icon: "🦎", dropItems: ["common", "herb", "mushroom"] },
-        knight: { name: "Черный рыцарь", baseHp: 60, baseStr: 18, baseDef: 12, exp: 150, gold: 80, icon: "⚔️", dropItems: ["epic", "essence_medium", "ore"] },
-        wizard: { name: "Маг", baseHp: 45, baseStr: 20, baseDef: 6, exp: 130, gold: 70, icon: "🧙‍♂️", dropItems: ["epic", "essence_medium", "crystal"] },
-        spirit: { name: "Дух", baseHp: 30, baseStr: 8, baseDef: 8, exp: 50, gold: 25, icon: "✨", dropItems: ["rare", "essence_small", "cloth"] },
-        monk: { name: "Монах", baseHp: 50, baseStr: 14, baseDef: 10, exp: 100, gold: 50, icon: "🥋", dropItems: ["rare", "herb", "essence_small"] },
-        priest: { name: "Жрец", baseHp: 55, baseStr: 12, baseDef: 12, exp: 120, gold: 60, icon: "⛪", dropItems: ["rare", "essence_small", "cloth"] },
-        demon: { name: "Демон", baseHp: 65, baseStr: 22, baseDef: 10, exp: 180, gold: 90, icon: "👹🔥", dropItems: ["epic", "essence_medium", "crystal"] },
-        fireElemental: { name: "Огненный элементаль", baseHp: 55, baseStr: 20, baseDef: 8, exp: 160, gold: 75, icon: "🔥", dropItems: ["epic", "essence_medium", "crystal"] },
-        magman: { name: "Магман", baseHp: 70, baseStr: 21, baseDef: 11, exp: 190, gold: 95, icon: "🌋", dropItems: ["epic", "essence_medium", "ore"] },
-        hellhound: { name: "Адская гончая", baseHp: 60, baseStr: 23, baseDef: 9, exp: 170, gold: 85, icon: "🐕‍🔥", dropItems: ["epic", "essence_medium", "crystal"] },
-        iceElemental: { name: "Ледяной элементаль", baseHp: 60, baseStr: 18, baseDef: 12, exp: 170, gold: 80, icon: "❄️", dropItems: ["epic", "essence_medium", "crystal"] },
-        whiteDragon: { name: "Белый дракон", baseHp: 100, baseStr: 28, baseDef: 15, exp: 350, gold: 200, icon: "🐉❄️", dropItems: ["legendary", "essence_large", "crystal"] },
-        frostGiant: { name: "Ледяной великан", baseHp: 90, baseStr: 25, baseDef: 14, exp: 280, gold: 150, icon: "⛄", dropItems: ["epic", "essence_medium", "ore"] },
-        snowWolf: { name: "Снежный волк", baseHp: 50, baseStr: 17, baseDef: 8, exp: 130, gold: 65, icon: "🐺❄️", dropItems: ["rare", "essence_small", "herb"] },
-        shadow: { name: "Тень", baseHp: 40, baseStr: 16, baseDef: 6, exp: 100, gold: 50, icon: "🌑", dropItems: ["rare", "essence_small", "cloth"] },
-        assassin: { name: "Ассасин", baseHp: 45, baseStr: 20, baseDef: 8, exp: 120, gold: 60, icon: "🗡️", dropItems: ["epic", "essence_medium", "cloth"] },
-        phantom: { name: "Фантом", baseHp: 50, baseStr: 18, baseDef: 7, exp: 140, gold: 70, icon: "👤", dropItems: ["epic", "essence_medium", "cloth"] },
-        darkMage: { name: "Тёмный маг", baseHp: 55, baseStr: 22, baseDef: 8, exp: 160, gold: 80, icon: "⚫🧙", dropItems: ["epic", "essence_medium", "crystal"] },
-        elf: { name: "Тёмный эльф", baseHp: 50, baseStr: 17, baseDef: 10, exp: 130, gold: 65, icon: "🏹", dropItems: ["rare", "essence_small", "wood"] },
-        forestSpirit: { name: "Лесной дух", baseHp: 35, baseStr: 12, baseDef: 12, exp: 90, gold: 40, icon: "🍃", dropItems: ["rare", "herb", "essence_small"] },
-        dryad: { name: "Дриада", baseHp: 45, baseStr: 14, baseDef: 11, exp: 110, gold: 55, icon: "🌿", dropItems: ["rare", "herb", "wood"] },
-        unicorn: { name: "Единорог", baseHp: 60, baseStr: 16, baseDef: 13, exp: 150, gold: 100, icon: "🦄", dropItems: ["epic", "essence_medium", "crystal"] },
-        golem: { name: "Каменный голем", baseHp: 80, baseStr: 22, baseDef: 18, exp: 220, gold: 120, icon: "🗿", dropItems: ["epic", "essence_medium", "ore"] },
-        dwarf: { name: "Дворф", baseHp: 55, baseStr: 18, baseDef: 14, exp: 140, gold: 75, icon: "⛏️", dropItems: ["rare", "ore", "essence_small"] },
-        caveCrawler: { name: "Пещерный ползун", baseHp: 50, baseStr: 15, baseDef: 10, exp: 120, gold: 60, icon: "🕷️", dropItems: ["rare", "herb", "mushroom"] },
-        angel: { name: "Падший ангел", baseHp: 75, baseStr: 24, baseDef: 14, exp: 250, gold: 150, icon: "😇", dropItems: ["legendary", "essence_large", "crystal"] },
-        celestial: { name: "Небесный страж", baseHp: 90, baseStr: 26, baseDef: 16, exp: 300, gold: 180, icon: "✨", dropItems: ["legendary", "essence_large", "crystal"] },
-        seraph: { name: "Серафим", baseHp: 85, baseStr: 28, baseDef: 15, exp: 320, gold: 190, icon: "👼", dropItems: ["legendary", "essence_large", "crystal"] },
-        holyKnight: { name: "Святой рыцарь", baseHp: 100, baseStr: 27, baseDef: 18, exp: 350, gold: 200, icon: "🛡️✨", dropItems: ["legendary", "essence_large", "ore"] },
-        demonLord: { name: "Повелитель демонов (БОСС)", baseHp: 150, baseStr: 35, baseDef: 20, exp: 500, gold: 300, icon: "👑🔥", dropItems: ["mythic", "essence_divine", "crystal"] },
-        void: { name: "Властелин пустоты (БОСС)", baseHp: 200, baseStr: 40, baseDef: 25, exp: 700, gold: 500, icon: "🌌", dropItems: ["mythic", "essence_divine", "crystal"] },
-        abyssDragon: { name: "Дракон Бездны (БОСС)", baseHp: 300, baseStr: 50, baseDef: 30, exp: 1000, gold: 800, icon: "🐉🔥", dropItems: ["mythic", "essence_divine", "crystal"] },
-        crystalGolem: { name: "Хрустальный голем", baseHp: 90, baseStr: 24, baseDef: 20, exp: 250, gold: 140, icon: "💎🗿", dropItems: ["epic", "essence_medium", "crystal"] },
-        gemSpider: { name: "Самоцветный паук", baseHp: 55, baseStr: 18, baseDef: 10, exp: 160, gold: 90, icon: "🕷️💎", dropItems: ["rare", "crystal", "essence_small"] },
-        goldGolem: { name: "Золотой голем", baseHp: 120, baseStr: 28, baseDef: 22, exp: 400, gold: 1000, icon: "🥇🗿", dropItems: ["legendary", "essence_large", "ore"] },
-        thunderBird: { name: "Громовая птица", baseHp: 70, baseStr: 26, baseDef: 12, exp: 220, gold: 120, icon: "⚡🐦", dropItems: ["epic", "essence_medium", "crystal"] },
-        dragonkin: { name: "Драконид", baseHp: 80, baseStr: 25, baseDef: 15, exp: 260, gold: 150, icon: "🐉🧑", dropItems: ["epic", "essence_medium", "crystal"] },
-        wyvern: { name: "Виверна", baseHp: 95, baseStr: 30, baseDef: 16, exp: 320, gold: 180, icon: "🦎🐉", dropItems: ["legendary", "essence_large", "crystal"] },
-        ancientDragon: { name: "Древний дракон", baseHp: 200, baseStr: 45, baseDef: 25, exp: 600, gold: 400, icon: "🐉👑", dropItems: ["legendary", "essence_large", "crystal"] },
-        astralBeast: { name: "Астральный зверь", baseHp: 120, baseStr: 32, baseDef: 18, exp: 400, gold: 250, icon: "✨🐻", dropItems: ["legendary", "essence_large", "crystal"] },
-        nightmare: { name: "Кошмар", baseHp: 100, baseStr: 30, baseDef: 15, exp: 350, gold: 200, icon: "🌙🐴", dropItems: ["legendary", "essence_large", "crystal"] },
-        shadowLord: { name: "Повелитель теней", baseHp: 150, baseStr: 38, baseDef: 22, exp: 500, gold: 350, icon: "🌑👑", dropItems: ["legendary", "essence_large", "crystal"] },
-        angelLord: { name: "Владыка ангелов", baseHp: 180, baseStr: 42, baseDef: 28, exp: 700, gold: 500, icon: "😇👑", dropItems: ["legendary", "essence_large", "crystal"] },
-        voidKing: { name: "Король пустоты", baseHp: 250, baseStr: 55, baseDef: 35, exp: 1000, gold: 800, icon: "🌌👑", dropItems: ["mythic", "essence_divine", "crystal"] },
-        enderDragon: { name: "Дракон края", baseHp: 350, baseStr: 60, baseDef: 40, exp: 1500, gold: 1200, icon: "🐉🌌", dropItems: ["mythic", "essence_divine", "crystal"] },
-        chaosLord: { name: "Повелитель хаоса", baseHp: 400, baseStr: 70, baseDef: 45, exp: 2000, gold: 1500, icon: "🌀👑", dropItems: ["mythic", "essence_divine", "crystal"] }
+        goblin: { name: "Гоблин", baseHp: 20, baseStr: 7, baseDef: 3, exp: 30, gold: 15, icon: "👺" },
+        rat: { name: "Крыса", baseHp: 15, baseStr: 5, baseDef: 2, exp: 20, gold: 10, icon: "🐀" },
+        wolf: { name: "Волк", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐺" },
+        bear: { name: "Медведь", baseHp: 40, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "🐻" },
+        spider: { name: "Паук", baseHp: 22, baseStr: 8, baseDef: 4, exp: 40, gold: 18, icon: "🕷️" },
+        orc: { name: "Орк", baseHp: 35, baseStr: 12, baseDef: 6, exp: 70, gold: 35, icon: "👹" },
+        troll: { name: "Тролль", baseHp: 50, baseStr: 15, baseDef: 8, exp: 100, gold: 50, icon: "🗿" },
+        giant: { name: "Великан", baseHp: 70, baseStr: 18, baseDef: 10, exp: 140, gold: 70, icon: "🏔️" },
+        eagle: { name: "Орёл", baseHp: 28, baseStr: 11, baseDef: 5, exp: 55, gold: 25, icon: "🦅" },
+        skeleton: { name: "Скелет", baseHp: 30, baseStr: 10, baseDef: 5, exp: 55, gold: 25, icon: "💀" },
+        ghost: { name: "Призрак", baseHp: 35, baseStr: 14, baseDef: 4, exp: 80, gold: 35, icon: "👻" },
+        necromancer: { name: "Некромант", baseHp: 40, baseStr: 13, baseDef: 6, exp: 90, gold: 45, icon: "🧙" },
+        snake: { name: "Змея", baseHp: 25, baseStr: 9, baseDef: 4, exp: 45, gold: 20, icon: "🐍" },
+        scorpion: { name: "Скорпион", baseHp: 28, baseStr: 11, baseDef: 7, exp: 60, gold: 30, icon: "🦂" },
+        mummy: { name: "Мумия", baseHp: 45, baseStr: 12, baseDef: 9, exp: 85, gold: 40, icon: "🧻" },
+        sandworm: { name: "Песчаный червь", baseHp: 55, baseStr: 16, baseDef: 8, exp: 110, gold: 55, icon: "🪱" },
+        lizard: { name: "Ящер", baseHp: 30, baseStr: 10, baseDef: 6, exp: 50, gold: 25, icon: "🦎" },
+        knight: { name: "Черный рыцарь", baseHp: 60, baseStr: 18, baseDef: 12, exp: 150, gold: 80, icon: "⚔️" },
+        wizard: { name: "Маг", baseHp: 45, baseStr: 20, baseDef: 6, exp: 130, gold: 70, icon: "🧙‍♂️" },
+        spirit: { name: "Дух", baseHp: 30, baseStr: 8, baseDef: 8, exp: 50, gold: 25, icon: "✨" },
+        monk: { name: "Монах", baseHp: 50, baseStr: 14, baseDef: 10, exp: 100, gold: 50, icon: "🥋" },
+        priest: { name: "Жрец", baseHp: 55, baseStr: 12, baseDef: 12, exp: 120, gold: 60, icon: "⛪" },
+        demon: { name: "Демон", baseHp: 65, baseStr: 22, baseDef: 10, exp: 180, gold: 90, icon: "👹🔥" },
+        fireElemental: { name: "Огненный элементаль", baseHp: 55, baseStr: 20, baseDef: 8, exp: 160, gold: 75, icon: "🔥" },
+        magman: { name: "Магман", baseHp: 70, baseStr: 21, baseDef: 11, exp: 190, gold: 95, icon: "🌋" },
+        hellhound: { name: "Адская гончая", baseHp: 60, baseStr: 23, baseDef: 9, exp: 170, gold: 85, icon: "🐕‍🔥" },
+        iceElemental: { name: "Ледяной элементаль", baseHp: 60, baseStr: 18, baseDef: 12, exp: 170, gold: 80, icon: "❄️" },
+        whiteDragon: { name: "Белый дракон", baseHp: 100, baseStr: 28, baseDef: 15, exp: 350, gold: 200, icon: "🐉❄️" },
+        frostGiant: { name: "Ледяной великан", baseHp: 90, baseStr: 25, baseDef: 14, exp: 280, gold: 150, icon: "⛄" },
+        snowWolf: { name: "Снежный волк", baseHp: 50, baseStr: 17, baseDef: 8, exp: 130, gold: 65, icon: "🐺❄️" },
+        shadow: { name: "Тень", baseHp: 40, baseStr: 16, baseDef: 6, exp: 100, gold: 50, icon: "🌑" },
+        assassin: { name: "Ассасин", baseHp: 45, baseStr: 20, baseDef: 8, exp: 120, gold: 60, icon: "🗡️" },
+        phantom: { name: "Фантом", baseHp: 50, baseStr: 18, baseDef: 7, exp: 140, gold: 70, icon: "👤" },
+        darkMage: { name: "Тёмный маг", baseHp: 55, baseStr: 22, baseDef: 8, exp: 160, gold: 80, icon: "⚫🧙" },
+        elf: { name: "Тёмный эльф", baseHp: 50, baseStr: 17, baseDef: 10, exp: 130, gold: 65, icon: "🏹" },
+        forestSpirit: { name: "Лесной дух", baseHp: 35, baseStr: 12, baseDef: 12, exp: 90, gold: 40, icon: "🍃" },
+        dryad: { name: "Дриада", baseHp: 45, baseStr: 14, baseDef: 11, exp: 110, gold: 55, icon: "🌿" },
+        unicorn: { name: "Единорог", baseHp: 60, baseStr: 16, baseDef: 13, exp: 150, gold: 100, icon: "🦄" },
+        golem: { name: "Каменный голем", baseHp: 80, baseStr: 22, baseDef: 18, exp: 220, gold: 120, icon: "🗿" },
+        dwarf: { name: "Дворф", baseHp: 55, baseStr: 18, baseDef: 14, exp: 140, gold: 75, icon: "⛏️" },
+        caveCrawler: { name: "Пещерный ползун", baseHp: 50, baseStr: 15, baseDef: 10, exp: 120, gold: 60, icon: "🕷️" },
+        angel: { name: "Падший ангел", baseHp: 75, baseStr: 24, baseDef: 14, exp: 250, gold: 150, icon: "😇" },
+        celestial: { name: "Небесный страж", baseHp: 90, baseStr: 26, baseDef: 16, exp: 300, gold: 180, icon: "✨" },
+        seraph: { name: "Серафим", baseHp: 85, baseStr: 28, baseDef: 15, exp: 320, gold: 190, icon: "👼" },
+        holyKnight: { name: "Святой рыцарь", baseHp: 100, baseStr: 27, baseDef: 18, exp: 350, gold: 200, icon: "🛡️✨" },
+        demonLord: { name: "Повелитель демонов (БОСС)", baseHp: 150, baseStr: 35, baseDef: 20, exp: 500, gold: 300, icon: "👑🔥" },
+        void: { name: "Властелин пустоты (БОСС)", baseHp: 200, baseStr: 40, baseDef: 25, exp: 700, gold: 500, icon: "🌌" },
+        abyssDragon: { name: "Дракон Бездны (БОСС)", baseHp: 300, baseStr: 50, baseDef: 30, exp: 1000, gold: 800, icon: "🐉🔥" },
+        crystalGolem: { name: "Хрустальный голем", baseHp: 90, baseStr: 24, baseDef: 20, exp: 250, gold: 140, icon: "💎🗿" },
+        gemSpider: { name: "Самоцветный паук", baseHp: 55, baseStr: 18, baseDef: 10, exp: 160, gold: 90, icon: "🕷️💎" },
+        goldGolem: { name: "Золотой голем", baseHp: 120, baseStr: 28, baseDef: 22, exp: 400, gold: 1000, icon: "🥇🗿" },
+        thunderBird: { name: "Громовая птица", baseHp: 70, baseStr: 26, baseDef: 12, exp: 220, gold: 120, icon: "⚡🐦" },
+        dragonkin: { name: "Драконид", baseHp: 80, baseStr: 25, baseDef: 15, exp: 260, gold: 150, icon: "🐉🧑" },
+        wyvern: { name: "Виверна", baseHp: 95, baseStr: 30, baseDef: 16, exp: 320, gold: 180, icon: "🦎🐉" },
+        ancientDragon: { name: "Древний дракон", baseHp: 200, baseStr: 45, baseDef: 25, exp: 600, gold: 400, icon: "🐉👑" },
+        astralBeast: { name: "Астральный зверь", baseHp: 120, baseStr: 32, baseDef: 18, exp: 400, gold: 250, icon: "✨🐻" },
+        nightmare: { name: "Кошмар", baseHp: 100, baseStr: 30, baseDef: 15, exp: 350, gold: 200, icon: "🌙🐴" },
+        shadowLord: { name: "Повелитель теней", baseHp: 150, baseStr: 38, baseDef: 22, exp: 500, gold: 350, icon: "🌑👑" },
+        angelLord: { name: "Владыка ангелов", baseHp: 180, baseStr: 42, baseDef: 28, exp: 700, gold: 500, icon: "😇👑" },
+        voidKing: { name: "Король пустоты", baseHp: 250, baseStr: 55, baseDef: 35, exp: 1000, gold: 800, icon: "🌌👑" },
+        enderDragon: { name: "Дракон края", baseHp: 350, baseStr: 60, baseDef: 40, exp: 1500, gold: 1200, icon: "🐉🌌" },
+        chaosLord: { name: "Повелитель хаоса", baseHp: 400, baseStr: 70, baseDef: 45, exp: 2000, gold: 1500, icon: "🌀👑" }
     };
 
     // ===================== NPC =====================
@@ -314,9 +313,7 @@
         activeTab: "game",
         isAdmin: false,
         animationState: "idle",
-        isRunning: false,
-        referralCode: "",
-        referredBy: ""
+        isRunning: false
     };
 
     // ===================== ПРОВЕРКА АДМИНА =====================
@@ -340,10 +337,9 @@
             try {
                 let data = JSON.parse(raw);
                 Object.assign(game, data);
-                // Проверка админа по Telegram ID
                 game.isAdmin = isUserAdmin();
                 game.initialized = true;
-                game.message = `☁️ С возвращением, ${game.profileName}! Прогресс загружен из облака Telegram.`;
+                game.message = `С возвращением, ${game.profileName}!`;
                 renderGame();
                 return true;
             } catch(e) { console.error(e); }
@@ -351,7 +347,7 @@
         return false;
     }
     
-    // ===================== СБРОС ПРОГРЕССА ИГРОКА (ТОЛЬКО ДЛЯ АДМИНА) =====================
+    // ===================== СБРОС ПРОГРЕССА ИГРОКА =====================
     async function adminResetPlayer() {
         if (!isUserAdmin()) {
             game.message = "❌ У вас нет прав для этой операции!";
@@ -374,11 +370,7 @@
         }
     }
 
-    // ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================
-    function generateReferralCode() {
-        return Math.random().toString(36).substring(2, 8).toUpperCase();
-    }
-
+    // ===================== ФУНКЦИИ ИГРЫ =====================
     function getTelegramId() {
         return tg.initDataUnsafe?.user?.id || null;
     }
@@ -418,9 +410,8 @@
         game.location = "village";
         game.dungeonFloor = 1;
         game.maxUnlockedFloor = 1;
-        game.referralCode = generateReferralCode();
         game.isAdmin = isUserAdmin();
-        game.message = `✨ Добро пожаловать, ${profileName}! ✨\n\n💡 Помни: крафт даёт огромное преимущество в подземелье! Без хорошего оружия будет очень тяжело.\n\n☁️ Прогресс будет сохраняться в облаке Telegram!`;
+        game.message = `✨ Добро пожаловать, ${profileName}! ✨`;
         game.initialized = true;
         await saveProfile();
         renderGame();
@@ -569,7 +560,6 @@
 
     async function dropResources(enemy, isDungeon, floor) {
         let drops = [];
-        
         drops.push(`${enemy.gold}💰`);
         
         if (isDungeon && floor >= 100 && enemy.isBoss) {
@@ -940,13 +930,6 @@
         }
     }
 
-    function shareReferral() {
-        let link = `https://t.me/share/url?url=${encodeURIComponent("https://t.me/ТВОЙ_БОТ/game")}&text=🎮 Играй в RPG "Тропы забытого королевства"! Мой реферальный код: ${game.referralCode}`;
-        window.open(link, '_blank');
-        game.message = "📤 Реферальная ссылка отправлена!";
-        renderGame();
-    }
-
     function setAnimation(anim) {
         game.animationState = anim;
         let spriteDiv = document.getElementById("characterSprite");
@@ -978,21 +961,11 @@
             let html = `<div class="character-form"><h2 style="color:#f7d44a">⚔️ ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА ⚔️</h2>
                 <div class="message-log" style="margin-bottom:15px;">💡 Придумывайте свой ник с умом, не используя спец символы. Ваше имя закрепится за вами, Герой!</div>
                 <input type="text" id="playerName" placeholder="Имя героя" maxlength="20">
-                <input type="text" id="refCode" placeholder="Реферальный код (если есть)">
-                <button id="createBtn">🚀 НАЧАТЬ ПРИКЛЮЧЕНИЕ</button>
-                <div class="message-log">✨ Без крафта подземелье пройти почти невозможно! Крафти оружие у Мастера крафта!</div>
-                <div class="message-log">☁️ Прогресс будет сохраняться в облаке Telegram!</div>`;
+                <button id="createBtn">🚀 НАЧАТЬ ПРИКЛЮЧЕНИЕ</button>`;
             container.innerHTML = html;
             document.getElementById("createBtn")?.addEventListener("click", async () => {
                 let name = document.getElementById("playerName").value;
-                let refCode = document.getElementById("refCode").value;
                 await createNewProfile(name);
-                if (refCode) {
-                    game.referredBy = refCode;
-                    game.gold += 100;
-                    game.message = `🎉 По реферальному коду! +100 золота!`;
-                    await saveProfile();
-                }
             });
             return;
         }
@@ -1142,12 +1115,6 @@
                     ${NPCS.map(npc => `<button onclick="startDialog(${JSON.stringify(npc).replace(/"/g, '&quot;')})">💬 ${npc.icon} ${npc.name}</button>`).join('')}
                 </div>
             </div>
-            <div class="referral-panel">
-                <b>📤 РЕФЕРАЛЬНАЯ ПРОГРАММА</b>
-                <p>Твой код: <b style="color:gold;">${game.referralCode}</b></p>
-                <button onclick="shareReferral()">📢 Пригласить друга</button>
-                <p style="font-size:10px;">👉 Друг введёт код и получит +100💰! Ты получишь +50💰.</p>
-            </div>
             <div style="margin-top:10px; text-align:center;">
                 <div class="stat">🧪 Зелья: Слабые: ${game.potions.weak} | Средние: ${game.potions.medium} | Мощные: ${game.potions.strong}</div>
             </div>
@@ -1200,7 +1167,6 @@
             renderGame();
         });
         
-        // Кнопка переключения режима админа (только для админа)
         document.getElementById("adminToggleBtn")?.addEventListener("click", () => {
             if (isUserAdmin()) {
                 game.isAdmin = !game.isAdmin;
@@ -1232,7 +1198,6 @@
     window.adminAddFloor = adminAddFloor;
     window.adminGiveItem = adminGiveItem;
     window.adminResetPlayer = adminResetPlayer;
-    window.shareReferral = shareReferral;
     window.equipItem = equipItem;
     
     tg.ready();
