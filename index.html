@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>RPG | Тропы забытого королевства | 1000 этажей | 50 боссов</title>
+    <title>RPG | Тропы забытого королевства | Telegram Web App</title>
     <style>
         * { box-sizing: border-box; user-select: none; }
         body {
@@ -59,6 +59,7 @@
         .admin-panel { background: #2c1e2ecc; border-radius: 20px; padding: 12px; margin-top: 15px; border: 2px solid #ff00ff; display: none; }
         .admin-panel.show { display: block; }
         .admin-input { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 20px; padding: 5px 10px; width: 100px; margin: 5px; }
+        .admin-input-wide { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 20px; padding: 5px 10px; width: 180px; margin: 5px; }
         .referral-panel, .quest-panel, .npc-panel, .craft-panel { background: #1a3a2acc; border-radius: 20px; padding: 12px; margin-top: 10px; border: 1px solid gold; }
         .message-log { background: #000000aa; border-radius: 16px; padding: 8px; margin-top: 12px; font-size: 0.7rem; color: #bdaa88; max-height: 100px; overflow-y: auto; }
         .character-form { text-align: center; padding: 20px; }
@@ -68,6 +69,7 @@
         button:active { transform: scale(0.96); }
         .reset-btn { background: #5a3e2e; }
         .run-btn { background: #2f6b4a; }
+        .admin-btn { background: #8b00ff; }
         .dungeon-floor-select { background: #1a1530; border-radius: 20px; padding: 10px; margin: 10px 0; }
         .equipment-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; max-height: 300px; overflow-y: auto; padding: 8px; background: #16122a; border-radius: 20px; }
         .equip-item { background: #2a2438; padding: 6px; border-radius: 12px; text-align: center; font-size: 0.6rem; cursor: pointer; border: 1px solid #f7d44a55; }
@@ -102,8 +104,63 @@
 <body>
 <div class="game-container" id="rpgGame"></div>
 
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    // ===================== ЛОКАЦИИ (30+ штук) =====================
+    // ===================== ИНИЦИАЛИЗАЦИЯ TELEGRAM WEB APP =====================
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.enableClosingConfirmation();
+    
+    // Адаптация под тему Telegram
+    const themeBg = tg.themeParams.bg_color || '#0a0f1a';
+    document.body.style.backgroundColor = themeBg;
+    
+    // Данные администратора
+    const ADMIN_TELEGRAM_ID = 1198178866;
+    const ADMIN_USERNAME = "dirtyyyyn";
+    
+    // ===================== ОБЛАЧНОЕ ХРАНИЛИЩЕ TELEGRAM =====================
+    async function tgSaveData(key, data) {
+        return new Promise((resolve) => {
+            if (!tg || !tg.CloudStorage) {
+                localStorage.setItem(key, data);
+                resolve(true);
+                return;
+            }
+            tg.CloudStorage.setItem(key, data, (err) => {
+                if (err) console.error('Ошибка сохранения:', err);
+                resolve(!err);
+            });
+        });
+    }
+    
+    async function tgLoadData(key) {
+        return new Promise((resolve) => {
+            if (!tg || !tg.CloudStorage) {
+                resolve(localStorage.getItem(key));
+                return;
+            }
+            tg.CloudStorage.getItem(key, (err, value) => {
+                if (err || !value) resolve(null);
+                else resolve(value);
+            });
+        });
+    }
+    
+    async function tgDeleteData(key) {
+        return new Promise((resolve) => {
+            if (!tg || !tg.CloudStorage) {
+                localStorage.removeItem(key);
+                resolve(true);
+                return;
+            }
+            tg.CloudStorage.setItem(key, "", (err) => {
+                resolve(!err);
+            });
+        });
+    }
+
+    // ===================== ЛОКАЦИИ =====================
     const LOCATIONS = {
         village: { name: "🏘️ Деревня", icon: "🏘️", enemies: ["goblin", "rat", "wolf"], energyCost: 5, requiredLevel: 1 },
         forest: { name: "🌳 Лес", icon: "🌳", enemies: ["wolf", "bear", "spider", "goblin"], energyCost: 8, requiredLevel: 1 },
@@ -132,7 +189,7 @@
         final_void: { name: "🌀 Финальная пустота", icon: "🌀", enemies: ["voidKing", "enderDragon", "chaosLord", "godEater"], energyCost: 30, requiredLevel: 100 }
     };
 
-    // ===================== ВРАГИ (50+ типов) =====================
+    // ===================== ВРАГИ =====================
     const ENEMIES = {
         goblin: { name: "Гоблин", baseHp: 20, baseStr: 7, baseDef: 3, exp: 30, gold: 15, icon: "👺", dropItems: ["common", "herb"] },
         rat: { name: "Крыса", baseHp: 15, baseStr: 5, baseDef: 2, exp: 20, gold: 10, icon: "🐀", dropItems: ["common", "herb"] },
@@ -262,38 +319,71 @@
         referredBy: ""
     };
 
+    // ===================== ПРОВЕРКА АДМИНА =====================
+    function isUserAdmin() {
+        const currentUserId = tg.initDataUnsafe?.user?.id;
+        const currentUsername = tg.initDataUnsafe?.user?.username;
+        return (currentUserId === ADMIN_TELEGRAM_ID) || (currentUsername === ADMIN_USERNAME);
+    }
+
+    // ===================== СОХРАНЕНИЕ И ЗАГРУЗКА =====================
+    async function saveProfile() {
+        if (!game.profileName && !game.telegramId) return;
+        const saveId = game.telegramId || game.profileName;
+        const saveData = JSON.stringify(game);
+        await tgSaveData(`rpg_${saveId}`, saveData);
+    }
+
+    async function loadProfile(id) {
+        const raw = await tgLoadData(`rpg_${id}`);
+        if (raw) {
+            try {
+                let data = JSON.parse(raw);
+                Object.assign(game, data);
+                // Проверка админа по Telegram ID
+                game.isAdmin = isUserAdmin();
+                game.initialized = true;
+                game.message = `☁️ С возвращением, ${game.profileName}! Прогресс загружен из облака Telegram.`;
+                renderGame();
+                return true;
+            } catch(e) { console.error(e); }
+        }
+        return false;
+    }
+    
+    // ===================== СБРОС ПРОГРЕССА ИГРОКА (ТОЛЬКО ДЛЯ АДМИНА) =====================
+    async function adminResetPlayer() {
+        if (!isUserAdmin()) {
+            game.message = "❌ У вас нет прав для этой операции!";
+            renderGame();
+            return;
+        }
+        
+        const playerName = document.getElementById("adminResetName")?.value;
+        if (!playerName || playerName.trim() === "") {
+            game.message = "❌ Введите имя игрока для сброса!";
+            renderGame();
+            return;
+        }
+        
+        if (confirm(`Вы уверены, что хотите полностью сбросить прогресс игрока "${playerName}"? Это действие необратимо!`)) {
+            const saveId = playerName.trim();
+            await tgDeleteData(`rpg_${saveId}`);
+            game.message = `👑 Админ: прогресс игрока "${playerName}" полностью сброшен!`;
+            renderGame();
+        }
+    }
+
     // ===================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ =====================
     function generateReferralCode() {
         return Math.random().toString(36).substring(2, 8).toUpperCase();
     }
 
     function getTelegramId() {
-        if (window.Telegram && Telegram.WebApp) {
-            return Telegram.WebApp.initDataUnsafe?.user?.id || null;
-        }
-        return localStorage.getItem("telegram_id") || null;
+        return tg.initDataUnsafe?.user?.id || null;
     }
 
-    function saveProfile() {
-        if (!game.profileName) return;
-        localStorage.setItem(`rpg_${game.telegramId || game.profileName}`, JSON.stringify(game));
-    }
-
-    function loadProfile(id) {
-        let raw = localStorage.getItem(`rpg_${id}`);
-        if (raw) {
-            let data = JSON.parse(raw);
-            Object.assign(game, data);
-            game.isAdmin = (game.profileName === "vlados-vladosik");
-            game.initialized = true;
-            game.message = `С возвращением, ${game.profileName}!`;
-            renderGame();
-            return true;
-        }
-        return false;
-    }
-
-    function createNewProfile(profileName) {
+    async function createNewProfile(profileName) {
         if (!profileName.trim()) { alert("Введите имя героя!"); return false; }
         if (!/^[a-zA-Zа-яА-Я0-9_]+$/.test(profileName)) {
             alert("Имя может содержать только буквы, цифры и _");
@@ -329,10 +419,10 @@
         game.dungeonFloor = 1;
         game.maxUnlockedFloor = 1;
         game.referralCode = generateReferralCode();
-        game.isAdmin = (profileName === "vlados-vladosik");
-        game.message = `✨ Добро пожаловать, ${profileName}! ✨\n\n💡 Помни: крафт даёт огромное преимущество в подземелье! Без хорошего оружия будет очень тяжело.`;
+        game.isAdmin = isUserAdmin();
+        game.message = `✨ Добро пожаловать, ${profileName}! ✨\n\n💡 Помни: крафт даёт огромное преимущество в подземелье! Без хорошего оружия будет очень тяжело.\n\n☁️ Прогресс будет сохраняться в облаке Telegram!`;
         game.initialized = true;
-        saveProfile();
+        await saveProfile();
         renderGame();
         return true;
     }
@@ -460,7 +550,7 @@
 
     setInterval(autoRestoreEnergy, 120000);
 
-    function gainExp(amount) {
+    async function gainExp(amount) {
         game.exp += amount;
         game.message += ` +${amount}✨`;
         while (game.exp >= game.expToNext) {
@@ -472,19 +562,16 @@
             game.travelEnergy = game.maxTravelEnergy;
             game.expToNext = Math.floor(game.expToNext * 1.2);
             game.message += ` ✨ УРОВЕНЬ ${game.level}! ✨`;
-            saveProfile();
+            await saveProfile();
         }
         renderGame();
     }
 
-    function dropResources(enemy, isDungeon, floor) {
+    async function dropResources(enemy, isDungeon, floor) {
         let drops = [];
-        let dropChance = Math.random();
         
-        // Золото всегда
         drops.push(`${enemy.gold}💰`);
         
-        // Ресурсы для крафта оружия только с 100+ этажа в подземелье
         if (isDungeon && floor >= 100 && enemy.isBoss) {
             if (Math.random() < 0.7) {
                 let resources = ["Малая эссенция", "Средняя эссенция", "Великая эссенция", "Железная руда", "Мифриловая руда", "Твёрдая древесина", "Средний кристалл"];
@@ -494,7 +581,6 @@
             }
         }
         
-        // Ингредиенты для зелий (всегда могут выпасть)
         if (Math.random() < 0.25) {
             game.resources["Целебная трава"] = (game.resources["Целебная трава"] || 0) + 1;
             drops.push(`🌿 Целебная трава`);
@@ -508,7 +594,6 @@
             drops.push(`🌸 Мифический цветок`);
         }
         
-        // Зелья
         if (Math.random() < 0.2) {
             game.potions.weak = (game.potions.weak || 0) + 1;
             drops.push(`🧪 Слабое зелье`);
@@ -523,20 +608,19 @@
         }
         
         if (drops.length > 0) game.message += ` + ${drops.join(", ")}`;
-        saveProfile();
+        await saveProfile();
     }
 
-    function combatAction(action) {
+    async function combatAction(action) {
         if (!game.inCombat) return;
         let enemy = game.combatEnemy;
         let stats = getCurrentStats();
         
-        // Проверка на победу
         if (game.enemyCurrentHp <= 0) {
             let rewardGold = enemy.gold;
             game.gold += rewardGold;
-            gainExp(enemy.exp);
-            dropResources(enemy, game.location === "dungeon", game.dungeonFloor);
+            await gainExp(enemy.exp);
+            await dropResources(enemy, game.location === "dungeon", game.dungeonFloor);
             
             let energyBack = 5;
             game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
@@ -550,12 +634,11 @@
             game.inCombat = false;
             game.combatEnemy = null;
             if (game.combatEnergy < 0) game.combatEnergy = 0;
-            saveProfile();
+            await saveProfile();
             renderGame();
             return;
         }
         
-        // Проверка на поражение
         if (stats.hp <= 0) {
             let energyBack = 2;
             game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
@@ -603,7 +686,7 @@
                     if (game.combatEnergy < 0) game.combatEnergy = 0;
                 }
             }
-            saveProfile();
+            await saveProfile();
             renderGame();
             return;
         }
@@ -613,7 +696,7 @@
             if (dodgeChance < enemy.dodgeChance) {
                 game.message = `✨ ${enemy.name} увернулся от атаки! ✨`;
                 setAnimation("dodge");
-                saveProfile();
+                await saveProfile();
                 renderGame();
                 return;
             }
@@ -633,12 +716,12 @@
                 game.message += ` | Враг атакует → -${Math.floor(enemyDmg)} HP`;
                 if (game.combatEnergy < 0) game.combatEnergy = 0;
             }
-            saveProfile();
+            await saveProfile();
             renderGame();
             return;
         }
         
-        saveProfile();
+        await saveProfile();
         renderGame();
     }
 
@@ -706,14 +789,14 @@
         }
     }
 
-    function buyItem(item) {
+    async function buyItem(item) {
         if (game.gold >= item.price) {
             game.gold -= item.price;
             game.inventory.push({ ...item });
             game.message = `✅ Вы купили ${item.name} за ${item.price}💰!`;
             if (item.type === "weapon") game.weapon = { name: item.name, strBonus: item.strBonus, rarity: item.rarity };
             if (item.type === "armor") game.armor = { name: item.name, defBonus: item.defBonus, rarity: item.rarity };
-            saveProfile();
+            await saveProfile();
             renderGame();
         } else {
             game.message = `❌ Не хватает ${item.price - game.gold}💰 для покупки ${item.name}!`;
@@ -721,7 +804,7 @@
         }
     }
 
-    function craftPotion(type) {
+    async function craftPotion(type) {
         if (type === "weak" && game.resources["Целебная трава"] >= 1 && game.resources["Магический гриб"] >= 1 && game.gold >= 50) {
             game.resources["Целебная трава"]--;
             game.resources["Магический гриб"]--;
@@ -745,11 +828,11 @@
         } else {
             game.message = "❌ Не хватает ресурсов для крафта зелий! Нужны: трава, грибы, цветы.";
         }
-        saveProfile();
+        await saveProfile();
         renderGame();
     }
 
-    function equipItem(item, slot) {
+    async function equipItem(item, slot) {
         if (item.type === "weapon") game.weapon = item;
         if (item.type === "armor") game.armor = item;
         if (slot === "helmet") game.helmet = item;
@@ -757,7 +840,7 @@
         if (slot === "boots") game.boots = item;
         if (slot === "cloak") game.cloak = item;
         game.message = `🔧 Экипировано: ${item.name}`;
-        saveProfile();
+        await saveProfile();
         renderGame();
     }
 
@@ -794,12 +877,12 @@
         document.body.insertAdjacentHTML('beforeend', dialogHtml);
     }
 
-    function buyEnergy() {
+    async function buyEnergy() {
         if (game.gold >= 250) {
             game.gold -= 250;
             game.travelEnergy = Math.min(game.maxTravelEnergy, game.travelEnergy + 5);
             game.message = "🍺 Вы выпили эль! +5 энергии путешествий!";
-            saveProfile();
+            await saveProfile();
             renderGame();
             closeDialog();
         } else {
@@ -812,20 +895,20 @@
         document.getElementById("dialogOverlay")?.remove();
     }
 
-    function adminAddGold(amount) {
+    async function adminAddGold(amount) {
         if (game.isAdmin) {
             game.gold += amount;
             game.message = `👑 Админ: +${amount} золота`;
-            saveProfile();
+            await saveProfile();
             renderGame();
         }
     }
 
-    function adminAddExp(amount) {
-        if (game.isAdmin) gainExp(amount);
+    async function adminAddExp(amount) {
+        if (game.isAdmin) await gainExp(amount);
     }
 
-    function adminHeal() {
+    async function adminHeal() {
         if (game.isAdmin) {
             game.combatEnergy = game.maxCombatEnergy;
             game.travelEnergy = game.maxTravelEnergy;
@@ -834,7 +917,7 @@
         }
     }
 
-    function adminAddFloor() {
+    async function adminAddFloor() {
         if (game.isAdmin) {
             game.dungeonFloor = Math.min(1000, game.dungeonFloor + 10);
             game.maxUnlockedFloor = Math.max(game.maxUnlockedFloor, game.dungeonFloor);
@@ -843,7 +926,7 @@
         }
     }
 
-    function adminGiveItem() {
+    async function adminGiveItem() {
         if (!game.isAdmin) return;
         let itemName = document.getElementById("adminItemName")?.value;
         let itemType = document.getElementById("adminItemType")?.value;
@@ -852,7 +935,7 @@
             let item = { name: itemName, type: itemType, strBonus: itemBonus, defBonus: itemBonus, rarity: "mythic" };
             game.inventory.push(item);
             game.message = `👑 Админ: выдал ${itemName}`;
-            saveProfile();
+            await saveProfile();
             renderGame();
         }
     }
@@ -882,27 +965,33 @@
     function renderGame() {
         const container = document.getElementById("rpgGame");
         let stats = getCurrentStats();
+        const isAdminUser = isUserAdmin();
         
         if (!game.initialized) {
             let telegramId = getTelegramId();
-            if (telegramId && loadProfile(telegramId)) return;
+            if (telegramId) {
+                loadProfile(telegramId).then(loaded => {
+                    if (loaded) return;
+                });
+            }
             
             let html = `<div class="character-form"><h2 style="color:#f7d44a">⚔️ ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА ⚔️</h2>
                 <div class="message-log" style="margin-bottom:15px;">💡 Придумывайте свой ник с умом, не используя спец символы. Ваше имя закрепится за вами, Герой!</div>
                 <input type="text" id="playerName" placeholder="Имя героя" maxlength="20">
                 <input type="text" id="refCode" placeholder="Реферальный код (если есть)">
                 <button id="createBtn">🚀 НАЧАТЬ ПРИКЛЮЧЕНИЕ</button>
-                <div class="message-log">✨ Без крафта подземелье пройти почти невозможно! Крафти оружие у Мастера крафта!</div>`;
+                <div class="message-log">✨ Без крафта подземелье пройти почти невозможно! Крафти оружие у Мастера крафта!</div>
+                <div class="message-log">☁️ Прогресс будет сохраняться в облаке Telegram!</div>`;
             container.innerHTML = html;
-            document.getElementById("createBtn")?.addEventListener("click", () => {
+            document.getElementById("createBtn")?.addEventListener("click", async () => {
                 let name = document.getElementById("playerName").value;
                 let refCode = document.getElementById("refCode").value;
-                createNewProfile(name);
+                await createNewProfile(name);
                 if (refCode) {
                     game.referredBy = refCode;
                     game.gold += 100;
                     game.message = `🎉 По реферальному коду! +100 золота!`;
-                    saveProfile();
+                    await saveProfile();
                 }
             });
             return;
@@ -928,16 +1017,25 @@
         if (game.isAdmin) {
             adminHtml = `<div class="admin-panel show">
                 <b>👑 АДМИН-ПАНЕЛЬ</b><br>
+                <hr>
+                <b>💰 ЭКОНОМИКА</b><br>
                 <input type="number" id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500">
                 <button onclick="adminAddGold(parseInt(document.getElementById('adminGoldAmount').value))">+💰</button>
                 <input type="number" id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300">
                 <button onclick="adminAddExp(parseInt(document.getElementById('adminExpAmount').value))">+✨</button>
                 <button onclick="adminHeal()">💚 Исцелить</button>
                 <button onclick="adminAddFloor()">📈 +10 этажей</button><br>
+                <hr>
+                <b>🎁 ВЫДАЧА ПРЕДМЕТОВ</b><br>
                 <input type="text" id="adminItemName" class="admin-input" placeholder="Название" style="width:120px;">
                 <select id="adminItemType" class="admin-input"><option value="weapon">Оружие</option><option value="armor">Броня</option></select>
                 <input type="number" id="adminItemBonus" class="admin-input" placeholder="Бонус" value="50">
                 <button onclick="adminGiveItem()">🎁 Выдать предмет</button>
+                <hr>
+                <b>🗑️ СБРОС ПРОГРЕССА ИГРОКА</b><br>
+                <input type="text" id="adminResetName" class="admin-input-wide" placeholder="Имя игрока для сброса">
+                <button onclick="adminResetPlayer()" style="background:#8b0000">⚠️ СБРОСИТЬ ПРОГРЕСС</button>
+                <div style="font-size:10px; color:#ff8888; margin-top:5px;">ВНИМАНИЕ: Это действие необратимо!</div>
             </div>`;
         }
         
@@ -985,6 +1083,7 @@
             <div class="message-log">💬 ${game.message}</div>
             <div class="actions">
                 <button id="runToggleBtn" class="run-btn">${game.isRunning ? "🚶 ВЫКЛ" : "🏃‍♂️ ВКЛ"}</button>
+                ${game.isAdmin ? '<button id="adminToggleBtn" class="admin-btn">👑 ВЫКЛ АДМИНА</button>' : ''}
                 <button id="resetBtn" class="reset-btn">🔄 Сброс</button>
             </div>
             ${adminHtml}
@@ -1100,8 +1199,20 @@
             setAnimation(game.isRunning ? "running" : "idle");
             renderGame();
         });
-        document.getElementById("resetBtn")?.addEventListener("click", () => {
-            localStorage.removeItem(`rpg_${game.telegramId || game.profileName}`);
+        
+        // Кнопка переключения режима админа (только для админа)
+        document.getElementById("adminToggleBtn")?.addEventListener("click", () => {
+            if (isUserAdmin()) {
+                game.isAdmin = !game.isAdmin;
+                game.message = game.isAdmin ? "👑 Режим администратора ВКЛЮЧЁН" : "👑 Режим администратора ВЫКЛЮЧЁН";
+                saveProfile();
+                renderGame();
+            }
+        });
+        
+        document.getElementById("resetBtn")?.addEventListener("click", async () => {
+            const saveId = game.telegramId || game.profileName;
+            await tgDeleteData(`rpg_${saveId}`);
             game.initialized = false;
             renderGame();
         });
@@ -1120,9 +1231,11 @@
     window.adminHeal = adminHeal;
     window.adminAddFloor = adminAddFloor;
     window.adminGiveItem = adminGiveItem;
+    window.adminResetPlayer = adminResetPlayer;
     window.shareReferral = shareReferral;
     window.equipItem = equipItem;
     
+    tg.ready();
     renderGame();
 </script>
 </body>
