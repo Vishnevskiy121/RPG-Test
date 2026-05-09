@@ -8,16 +8,10 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
         body { background: #0a0f1a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 12px; min-height: 100vh; color: #fff; }
         .game-container { max-width: 550px; margin: 0 auto; background: #0f0e17; border-radius: 28px; padding: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); border: 1px solid #f7d44a55; }
-        .class-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
-        .class-option { background: #2a2438; padding: 8px; border-radius: 16px; text-align: center; cursor: pointer; border: 1px solid #f7d44a55; }
-        .class-option.selected { background: #f7d44a; color: #1e1b2b; border: 2px solid gold; }
-        .character-form input { display: block; margin: 15px auto; padding: 12px; width: 85%; background: #1e1b2b; color: #f7d44a; border: 1px solid #f7d44a; border-radius: 40px; font-size: 1rem; text-align: center; }
-        .character-form button { background: #3a2c45; border: none; padding: 12px 20px; border-radius: 40px; font-size: 1rem; font-weight: bold; color: white; cursor: pointer; margin-top: 15px; width: 85%; }
-        button:active { transform: scale(0.96); }
         .stats-panel { background: #1e1b2b; border-radius: 20px; padding: 10px; margin-bottom: 12px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; }
         .stat { background: #00000099; padding: 6px 12px; border-radius: 30px; font-size: 0.7rem; font-weight: bold; color: #f7d44a; }
         .energy-bar { background: #2a1a2a; border-radius: 20px; height: 8px; margin-top: 5px; overflow: hidden; }
-        .energy-fill { background: #4cff4c; height: 100%; width: 0%; transition: width 0.2s; }
+        .energy-fill { background: #4cff4c; height: 100%; transition: width 0.2s; }
         .energy-fill.travel { background: #ffaa44; }
         .tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; justify-content: center; }
         .tab-btn { background: #2a2438; padding: 8px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: 600; cursor: pointer; color: #fff; }
@@ -27,25 +21,34 @@
         .location-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 6px; margin: 12px 0; max-height: 260px; overflow-y: auto; }
         .location-btn { background: #3a2c45; padding: 6px 4px; border-radius: 30px; font-size: 0.6rem; text-align: center; cursor: pointer; color: white; }
         .location-btn.locked { opacity: 0.5; cursor: not-allowed; background: #5a3e2e; }
-        .fight-counter { background: #1a1530; border-radius: 20px; padding: 8px; text-align: center; margin: 10px 0; font-size: 0.8rem; }
+        .location-btn.completed { background: #2a6b4a; border: 1px solid gold; }
+        .admin-panel { background: #2c1e2e; border-radius: 20px; padding: 12px; margin-top: 15px; border: 2px solid #ff00ff; display: none; }
+        .admin-panel.show { display: block; }
+        .admin-input, .admin-select { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 30px; padding: 6px 10px; margin: 5px; width: 45%; }
+        .npc-panel, .craft-panel { background: #1a3a2a; border-radius: 20px; padding: 12px; margin-top: 10px; }
+        .message-log { background: #000000aa; border-radius: 16px; padding: 8px; margin-top: 12px; font-size: 0.7rem; color: #bdaa88; max-height: 90px; overflow-y: auto; }
+        .character-form { text-align: center; padding: 20px; }
+        .character-form input { display: block; margin: 15px auto; padding: 12px; width: 85%; background: #1e1b2b; color: #f7d44a; border: 1px solid #f7d44a; border-radius: 40px; font-size: 1rem; text-align: center; }
+        .sprite-area { text-align: center; font-size: 3rem; background: #00000055; border-radius: 50px; padding: 12px; margin-bottom: 12px; }
+        button { background: #3a2c45; border: none; padding: 8px 14px; border-radius: 40px; font-size: 0.7rem; font-weight: bold; color: white; cursor: pointer; margin: 4px; }
+        button:active { transform: scale(0.96); }
+        .reset-btn { background: #5a3e2e; }
+        .run-btn { background: #2f6b4a; }
         .boss-btn { background: #8b3c2c; font-weight: bold; }
         .autofight-btn { background: #2f6b4a; }
         .autofight-btn.active { background: #00aa44; }
-        .sprite-area { text-align: center; font-size: 3rem; background: #00000055; border-radius: 50px; padding: 12px; margin-bottom: 12px; }
-        .message-log { background: #000000aa; border-radius: 16px; padding: 8px; margin-top: 12px; font-size: 0.7rem; color: #bdaa88; max-height: 90px; overflow-y: auto; }
-        .rarity-badge { font-size: 0.5rem; padding: 2px 6px; border-radius: 12px; display: inline-block; margin-left: 5px; }
-        .rarity-common { background: #666; }
-        .rarity-rare { background: #3388ff; }
-        .rarity-epic { background: #aa44ff; }
-        .rarity-legendary { background: #ffaa00; color: #1e1b2b; }
-        .rarity-mythic { background: #ff44ff; color: #1e1b2b; }
+        .fight-counter { background: #1a1530; border-radius: 20px; padding: 8px; text-align: center; margin: 10px 0; font-size: 0.8rem; }
+        .class-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0; }
+        .class-option { background: #2a2438; padding: 8px; border-radius: 16px; text-align: center; cursor: pointer; border: 1px solid #f7d44a55; }
+        .class-option.selected { background: #f7d44a; color: #1e1b2b; border: 2px solid gold; }
         .resource-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
         .resource-badge { background: #1e1b2b; padding: 4px 8px; border-radius: 20px; font-size: 0.55rem; }
-        .equipment-grid, .items-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; max-height: 300px; overflow-y: auto; padding: 8px; background: #16122a; border-radius: 20px; }
-        .equip-item, .item-card { background: #2a2438; padding: 8px; border-radius: 12px; text-align: center; font-size: 0.6rem; cursor: pointer; }
-        .admin-panel { background: #2c1e2e; border-radius: 20px; padding: 12px; margin-top: 15px; border: 2px solid #ff00ff; display: none; max-height: 400px; overflow-y: auto; }
-        .admin-panel.show { display: block; }
-        .admin-input, .admin-select { background: #1e1b2b; color: #f7d44a; border: 1px solid gold; border-radius: 30px; padding: 6px 10px; margin: 5px; width: 40%; }
+        .rarity-badge { font-size: 0.5rem; padding: 2px 6px; border-radius: 12px; display: inline-block; margin-left: 5px; }
+        .rarity-common { background: #666; color: white; }
+        .rarity-rare { background: #3388ff; color: white; }
+        .rarity-epic { background: #aa44ff; color: white; }
+        .rarity-legendary { background: #ffaa00; color: #1e1b2b; }
+        .rarity-mythic { background: #ff44ff; color: #1e1b2b; }
     </style>
 </head>
 <body>
@@ -53,7 +56,7 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-    // Telegram Web App
+    // ==================== TELEGRAM WEB APP ====================
     let tg;
     try {
         tg = window.Telegram?.WebApp;
@@ -62,24 +65,78 @@
         tg.enableClosingConfirmation();
     } catch(e) {
         tg = {
-            expand: () => {}, enableClosingConfirmation: () => {}, ready: () => {},
-            CloudStorage: { setItem: (key, data, cb) => { localStorage.setItem(key, data); cb && cb(null, true); },
-                           getItem: (key, cb) => { cb(null, localStorage.getItem(key)); } },
+            expand: function() {}, 
+            enableClosingConfirmation: function() {}, 
+            ready: function() {},
+            CloudStorage: {
+                setItem: function(key, data, cb) { 
+                    localStorage.setItem(key, data); 
+                    if (cb) cb(null, true); 
+                },
+                getItem: function(key, cb) { 
+                    cb(null, localStorage.getItem(key)); 
+                }
+            },
             initDataUnsafe: { user: { id: Date.now(), username: "browser_user" } },
             themeParams: { bg_color: "#0a0f1a" }
         };
         window.Telegram = { WebApp: tg };
     }
     
+    // ==================== АДМИН ДАННЫЕ ====================
     const ADMIN_ID = 1198178866;
     const ADMIN_USERNAME = "dirtyyyyn";
-    function isAdmin() { const uid = tg.initDataUnsafe?.user?.id; const uname = tg.initDataUnsafe?.user?.username; return uid === ADMIN_ID || uname === ADMIN_USERNAME; }
     
-    async function saveData(key, data) { return new Promise((resolve) => { if (tg?.CloudStorage) tg.CloudStorage.setItem(key, data, (err) => resolve(!err)); else { localStorage.setItem(key, data); resolve(true); } }); }
-    async function loadData(key) { return new Promise((resolve) => { if (tg?.CloudStorage) tg.CloudStorage.getItem(key, (err, val) => resolve(err || !val ? null : val)); else resolve(localStorage.getItem(key)); }); }
-    async function deleteData(key) { return new Promise((resolve) => { if (tg?.CloudStorage) tg.CloudStorage.setItem(key, "", (err) => resolve(!err)); else { localStorage.removeItem(key); resolve(true); } }); }
+    function isAdmin() {
+        const uid = tg.initDataUnsafe?.user?.id;
+        const uname = tg.initDataUnsafe?.user?.username;
+        return uid === ADMIN_ID || uname === ADMIN_USERNAME;
+    }
     
-    // 16 КЛАССОВ
+    // ==================== ОБЛАЧНОЕ ХРАНИЛИЩЕ ====================
+    async function saveData(key, data) {
+        return new Promise(function(resolve) {
+            if (tg && tg.CloudStorage) {
+                tg.CloudStorage.setItem(key, data, function(err) {
+                    resolve(!err);
+                });
+            } else {
+                localStorage.setItem(key, data);
+                resolve(true);
+            }
+        });
+    }
+    
+    async function loadData(key) {
+        return new Promise(function(resolve) {
+            if (tg && tg.CloudStorage) {
+                tg.CloudStorage.getItem(key, function(err, val) {
+                    if (err || !val) {
+                        resolve(null);
+                    } else {
+                        resolve(val);
+                    }
+                });
+            } else {
+                resolve(localStorage.getItem(key));
+            }
+        });
+    }
+    
+    async function deleteData(key) {
+        return new Promise(function(resolve) {
+            if (tg && tg.CloudStorage) {
+                tg.CloudStorage.setItem(key, "", function(err) {
+                    resolve(!err);
+                });
+            } else {
+                localStorage.removeItem(key);
+                resolve(true);
+            }
+        });
+    }
+    
+    // ==================== 16 КЛАССОВ ====================
     const CLASSES = {
         warrior: { name: "Воин", icon: "🗡️", weapon: "Двуручный меч", strBonus: 6, hpBonus: 10, defBonus: 2, dodgeBonus: 0 },
         archer: { name: "Лучник", icon: "🏹", weapon: "Длинный лук", strBonus: 5, hpBonus: 5, defBonus: 0, dodgeBonus: 8 },
@@ -99,376 +156,193 @@
         celestial: { name: "Небесный воин", icon: "✨⚔️", weapon: "Клинок света", strBonus: 8, hpBonus: 8, defBonus: 5, dodgeBonus: 5 }
     };
     
-    // ЛОКАЦИИ
+    // ==================== ЛОКАЦИИ ====================
     const LOCATIONS = {
-        village: { name: "Деревня", icon: "🏘️", energyCost: 5, requiredLevel: 1, order: 0, boss: { name: "Разбойник", hp: 50, str: 12, def: 5, exp: 80, gold: 100, icon: "🏹" }, monstersRequired: 15 },
-        forest: { name: "Лес", icon: "🌳", energyCost: 8, requiredLevel: 2, order: 1, boss: { name: "Лесной тролль", hp: 80, str: 18, def: 8, exp: 150, gold: 200, icon: "🌲" }, monstersRequired: 15 },
-        mountains: { name: "Горы", icon: "⛰️", energyCost: 10, requiredLevel: 3, order: 2, boss: { name: "Каменный великан", hp: 120, str: 25, def: 12, exp: 250, gold: 350, icon: "🗻" }, monstersRequired: 15 },
-        swamp: { name: "Болото", icon: "🪷", energyCost: 10, requiredLevel: 5, order: 3, boss: { name: "Болотный демон", hp: 150, str: 30, def: 15, exp: 350, gold: 500, icon: "🐊" }, monstersRequired: 15 },
-        desert: { name: "Пустыня", icon: "🏜️", energyCost: 10, requiredLevel: 7, order: 4, boss: { name: "Король скорпионов", hp: 200, str: 35, def: 18, exp: 500, gold: 700, icon: "🦂" }, monstersRequired: 15 },
-        castle: { name: "Замок", icon: "🏰", energyCost: 12, requiredLevel: 10, order: 5, boss: { name: "Тёмный рыцарь", hp: 250, str: 40, def: 20, exp: 700, gold: 1000, icon: "⚔️" }, monstersRequired: 15 },
+        village: { name: "Деревня", icon: "🏘️", energyCost: 5, requiredLevel: 1, order: 0, boss: { name: "Разбойник", hp: 50, str: 12, def: 5, exp: 80, gold: 100, icon: "🏹" } },
+        forest: { name: "Лес", icon: "🌳", energyCost: 8, requiredLevel: 2, order: 1, boss: { name: "Лесной тролль", hp: 80, str: 18, def: 8, exp: 150, gold: 200, icon: "🌲" } },
+        mountains: { name: "Горы", icon: "⛰️", energyCost: 10, requiredLevel: 3, order: 2, boss: { name: "Каменный великан", hp: 120, str: 25, def: 12, exp: 250, gold: 350, icon: "🗻" } },
+        swamp: { name: "Болото", icon: "🪷", energyCost: 10, requiredLevel: 5, order: 3, boss: { name: "Болотный демон", hp: 150, str: 30, def: 15, exp: 350, gold: 500, icon: "🐊" } },
+        desert: { name: "Пустыня", icon: "🏜️", energyCost: 10, requiredLevel: 7, order: 4, boss: { name: "Король скорпионов", hp: 200, str: 35, def: 18, exp: 500, gold: 700, icon: "🦂" } },
+        castle: { name: "Замок", icon: "🏰", energyCost: 12, requiredLevel: 10, order: 5, boss: { name: "Тёмный рыцарь", hp: 250, str: 40, def: 20, exp: 700, gold: 1000, icon: "⚔️" } },
         dungeonLoc: { name: "Подземелье", icon: "🏚️", isDungeon: true, energyCost: 5, requiredLevel: 1, order: 999 },
-        temple: { name: "Храм", icon: "⛩️", energyCost: 12, requiredLevel: 15, order: 6, boss: { name: "Верховный жрец", hp: 300, str: 45, def: 22, exp: 900, gold: 1500, icon: "🕯️" }, monstersRequired: 15 },
-        volcano: { name: "Вулкан", icon: "🌋", energyCost: 15, requiredLevel: 20, order: 7, boss: { name: "Огненный дракон", hp: 400, str: 55, def: 25, exp: 1200, gold: 2000, icon: "🐉" }, monstersRequired: 15 },
-        icy_cave: { name: "Ледяная пещера", icon: "❄️", energyCost: 15, requiredLevel: 25, order: 8, boss: { name: "Ледяной великан", hp: 500, str: 65, def: 30, exp: 1500, gold: 2500, icon: "🧊" }, monstersRequired: 20 },
-        dark_city: { name: "Теневой город", icon: "🌑", energyCost: 12, requiredLevel: 30, order: 9, boss: { name: "Повелитель теней", hp: 600, str: 75, def: 35, exp: 1800, gold: 3000, icon: "🌙" }, monstersRequired: 25 },
-        crystal_caves: { name: "Хрустальные пещеры", icon: "💎", energyCost: 12, requiredLevel: 35, order: 10, boss: { name: "Кристальный голем", hp: 700, str: 85, def: 40, exp: 2200, gold: 4000, icon: "🔮" }, monstersRequired: 30 }
+        temple: { name: "Храм", icon: "⛩️", energyCost: 12, requiredLevel: 15, order: 6, boss: { name: "Верховный жрец", hp: 300, str: 45, def: 22, exp: 900, gold: 1500, icon: "🕯️" } },
+        volcano: { name: "Вулкан", icon: "🌋", energyCost: 15, requiredLevel: 20, order: 7, boss: { name: "Огненный дракон", hp: 400, str: 55, def: 25, exp: 1200, gold: 2000, icon: "🐉" } },
+        icy_cave: { name: "Ледяная пещера", icon: "❄️", energyCost: 15, requiredLevel: 25, order: 8, boss: { name: "Ледяной великан", hp: 500, str: 65, def: 30, exp: 1500, gold: 2500, icon: "🧊" } },
+        dark_city: { name: "Теневой город", icon: "🌑", energyCost: 12, requiredLevel: 30, order: 9, boss: { name: "Повелитель теней", hp: 600, str: 75, def: 35, exp: 1800, gold: 3000, icon: "🌙" } },
+        crystal_caves: { name: "Хрустальные пещеры", icon: "💎", energyCost: 12, requiredLevel: 35, order: 10, boss: { name: "Кристальный голем", hp: 700, str: 85, def: 40, exp: 2200, gold: 4000, icon: "🔮" } },
+        ancient_ruins: { name: "Древние руины", icon: "🏛️", energyCost: 14, requiredLevel: 40, order: 11, boss: { name: "Хранитель времени", hp: 800, str: 95, def: 45, exp: 2600, gold: 5000, icon: "⏳" } },
+        golden_fields: { name: "Золотые поля", icon: "🌾", energyCost: 12, requiredLevel: 45, order: 12, boss: { name: "Золотой голем", hp: 900, str: 105, def: 50, exp: 3000, gold: 8000, icon: "🥇" } },
+        storm_peaks: { name: "Грозовые пики", icon: "⛈️", energyCost: 15, requiredLevel: 50, order: 13, boss: { name: "Повелитель бурь", hp: 1000, str: 115, def: 55, exp: 3500, gold: 10000, icon: "⚡" } },
+        dragon_isle: { name: "Остров драконов", icon: "🐉", energyCost: 18, requiredLevel: 55, order: 14, boss: { name: "Древний дракон", hp: 1200, str: 130, def: 60, exp: 4000, gold: 15000, icon: "🐲" } },
+        astral_plane: { name: "Астральный план", icon: "🌌", energyCost: 20, requiredLevel: 60, order: 15, boss: { name: "Астральный титан", hp: 1500, str: 150, def: 70, exp: 5000, gold: 20000, icon: "✨" } },
+        dream_realm: { name: "Королевство снов", icon: "💤", energyCost: 18, requiredLevel: 65, order: 16, boss: { name: "Пожиратель снов", hp: 1700, str: 165, def: 75, exp: 5500, gold: 25000, icon: "🛌" } },
+        shadow_realm: { name: "Царство теней", icon: "🌑", energyCost: 20, requiredLevel: 70, order: 17, boss: { name: "Властелин теней", hp: 2000, str: 180, def: 85, exp: 6000, gold: 30000, icon: "🌙" } },
+        divine_kingdom: { name: "Божественное королевство", icon: "✨", energyCost: 22, requiredLevel: 75, order: 18, boss: { name: "Архангел", hp: 2500, str: 200, def: 90, exp: 7000, gold: 40000, icon: "😇" } },
+        void: { name: "Бездна", icon: "🕳️", energyCost: 25, requiredLevel: 80, order: 19, boss: { name: "Властелин пустоты", hp: 3000, str: 220, def: 100, exp: 8000, gold: 50000, icon: "🌀" } }
     };
     
-    // Враги
-    const MONSTERS = [
-        { name: "Гоблин", icon: "👺", baseHp: 20, baseStr: 7, baseDef: 3, baseExp: 30, baseGold: 15 },
-        { name: "Волк", icon: "🐺", baseHp: 25, baseStr: 9, baseDef: 4, baseExp: 45, baseGold: 20 },
-        { name: "Орк", icon: "👹", baseHp: 35, baseStr: 12, baseDef: 6, baseExp: 70, baseGold: 35 },
-        { name: "Скелет", icon: "💀", baseHp: 30, baseStr: 10, baseDef: 5, baseExp: 55, baseGold: 25 },
-        { name: "Тролль", icon: "🗿", baseHp: 50, baseStr: 15, baseDef: 8, baseExp: 100, baseGold: 50 },
-        { name: "Паук", icon: "🕷️", baseHp: 22, baseStr: 8, baseDef: 4, baseExp: 40, baseGold: 18 }
+    // ==================== ВРАГИ ====================
+    const ENEMIES = {
+        goblin: { name: "Гоблин", hp: 20, str: 7, def: 3, exp: 30, gold: 15, icon: "👺" },
+        wolf: { name: "Волк", hp: 25, str: 9, def: 4, exp: 45, gold: 20, icon: "🐺" },
+        orc: { name: "Орк", hp: 35, str: 12, def: 6, exp: 70, gold: 35, icon: "👹" },
+        skeleton: { name: "Скелет", hp: 30, str: 10, def: 5, exp: 55, gold: 25, icon: "💀" },
+        troll: { name: "Тролль", hp: 50, str: 15, def: 8, exp: 100, gold: 50, icon: "🗿" },
+        spider: { name: "Паук", hp: 22, str: 8, def: 4, exp: 40, gold: 18, icon: "🕷️" }
+    };
+    
+    // ==================== NPC ====================
+    const NPCS = [
+        { name: "Кузнец Гром", icon: "⚒️", avatar: "🔨", type: "blacksmith",
+          items: [
+            { name: "Стальной меч", type: "weapon", strBonus: 15, rarity: "rare", price: 5000 },
+            { name: "Мифриловая кираса", type: "armor", defBonus: 12, rarity: "rare", price: 8000 },
+            { name: "Лук эльфов", type: "weapon", strBonus: 18, rarity: "epic", price: 25000 },
+            { name: "Пламенный меч", type: "weapon", strBonus: 35, rarity: "legendary", price: 500000 }
+          ] 
+        },
+        { name: "Алхимик Морган", icon: "🧪", avatar: "⚗️", type: "alchemist" },
+        { name: "Трактирщик Грим", icon: "🍺", avatar: "🧔", type: "tavern" },
+        { name: "Мастер крафта", icon: "🔨", avatar: "🛠️", type: "crafter" }
     ];
     
-    // ИГРОВОЕ СОСТОЯНИЕ
+    // ==================== ПРЕДМЕТЫ ДЛЯ ВЫДАЧИ ====================
+    const ALL_ITEMS = [
+        { name: "Стальной меч", type: "weapon", strBonus: 15, rarity: "rare" },
+        { name: "Мифриловая кираса", type: "armor", defBonus: 12, rarity: "rare" },
+        { name: "Лук эльфов", type: "weapon", strBonus: 18, rarity: "epic" },
+        { name: "Пламенный меч", type: "weapon", strBonus: 35, rarity: "legendary" },
+        { name: "Меч Богов", type: "weapon", strBonus: 200, rarity: "mythic" },
+        { name: "Копьё Судьбы", type: "weapon", strBonus: 180, rarity: "mythic" },
+        { name: "Доспех Бога", type: "armor", defBonus: 150, rarity: "mythic" },
+        { name: "Топор Хаоса", type: "weapon", strBonus: 170, rarity: "mythic" },
+        { name: "Плащ Теней", type: "armor", defBonus: 120, rarity: "mythic" },
+        { name: "Кристальный щит", type: "armor", defBonus: 80, rarity: "legendary" }
+    ];
+    
+    // ==================== ИГРА ====================
     let game = {
-        initialized: false, telegramId: null, profileName: "", class: "warrior",
-        gold: 500, level: 1, exp: 0, expToNext: 100,
-        combatEnergy: 100, maxCombatEnergy: 100, travelEnergy: 50, maxTravelEnergy: 50,
-        weapon: null, armor: null, inventory: [],
-        resources: { "Целебная трава": 5, "Магический гриб": 3 },
-        potions: { weak: 3, medium: 1, strong: 0 },
-        message: "", inCombat: false, combatEnemy: null, enemyCurrentHp: 0,
-        location: "village", dungeonFloor: 1, maxUnlockedFloor: 1, activeTab: "game",
-        isAdmin: false, animationState: "idle", isRunning: false, completedLocations: [],
-        monstersKilled: 0, needToKill: 15, autoFightActive: false, autoFightInterval: null,
-        chestsOpened: {}
+        initialized: false,
+        telegramId: null,
+        profileName: "",
+        class: "warrior",
+        gold: 500,
+        level: 1,
+        exp: 0,
+        expToNext: 100,
+        combatEnergy: 100,
+        maxCombatEnergy: 100,
+        travelEnergy: 50,
+        maxTravelEnergy: 50,
+        weapon: null,
+        armor: null,
+        inventory: [],
+        resources: {
+            "Целебная трава": 5,
+            "Магический гриб": 3,
+            "Мифический цветок": 0,
+            "Медная руда": 0,
+            "Железная руда": 0,
+            "Мифриловая руда": 0,
+            "Малая эссенция": 0,
+            "Средняя эссенция": 0,
+            "Великая эссенция": 0
+        },
+        potions: {
+            weak: 3,
+            medium: 1,
+            strong: 0
+        },
+        message: "",
+        inCombat: false,
+        combatEnemy: null,
+        enemyCurrentHp: 0,
+        location: "village",
+        dungeonFloor: 1,
+        maxUnlockedFloor: 1,
+        activeTab: "game",
+        isAdmin: false,
+        animationState: "idle",
+        isRunning: false,
+        completedLocations: [],
+        monstersKilled: 0,
+        needToKill: 15,
+        autoFightActive: false,
+        autoFightInterval: null
     };
     
-    async function saveGame() { if (!game.profileName) return; await saveData(`rpg_${game.telegramId || game.profileName}`, JSON.stringify(game)); }
+    // ==================== СОХРАНЕНИЕ ====================
+    async function saveGame() {
+        if (!game.profileName) return;
+        let saveId = game.telegramId || game.profileName;
+        await saveData("rpg_" + saveId, JSON.stringify(game));
+    }
     
     async function loadGame(id) {
-        const raw = await loadData(`rpg_${id}`);
+        let raw = await loadData("rpg_" + id);
         if (raw) {
             let data = JSON.parse(raw);
-            Object.assign(game, data);
+            game.initialized = data.initialized || false;
+            game.telegramId = data.telegramId || null;
+            game.profileName = data.profileName || "";
+            game.class = data.class || "warrior";
+            game.gold = data.gold || 500;
+            game.level = data.level || 1;
+            game.exp = data.exp || 0;
+            game.expToNext = data.expToNext || 100;
+            game.combatEnergy = data.combatEnergy || 100;
+            game.maxCombatEnergy = data.maxCombatEnergy || 100;
+            game.travelEnergy = data.travelEnergy || 50;
+            game.maxTravelEnergy = data.maxTravelEnergy || 50;
+            game.weapon = data.weapon || null;
+            game.armor = data.armor || null;
+            game.inventory = data.inventory || [];
+            game.resources = data.resources || { "Целебная трава": 5, "Магический гриб": 3, "Мифический цветок": 0, "Медная руда": 0, "Железная руда": 0, "Мифриловая руда": 0, "Малая эссенция": 0, "Средняя эссенция": 0, "Великая эссенция": 0 };
+            game.potions = data.potions || { weak: 3, medium: 1, strong: 0 };
+            game.message = data.message || "";
+            game.inCombat = data.inCombat || false;
+            game.combatEnemy = data.combatEnemy || null;
+            game.enemyCurrentHp = data.enemyCurrentHp || 0;
+            game.location = data.location || "village";
+            game.dungeonFloor = data.dungeonFloor || 1;
+            game.maxUnlockedFloor = data.maxUnlockedFloor || 1;
+            game.activeTab = data.activeTab || "game";
             game.isAdmin = isAdmin();
-            if (!game.completedLocations) game.completedLocations = [];
-            if (!game.inventory) game.inventory = [];
-            if (!game.resources) game.resources = { "Целебная трава": 5, "Магический гриб": 3 };
-            if (!game.potions) game.potions = { weak: 3, medium: 1, strong: 0 };
-            if (game.chestsOpened === undefined) game.chestsOpened = {};
-            if (game.monstersKilled === undefined) game.monstersKilled = 0;
+            game.animationState = data.animationState || "idle";
+            game.isRunning = data.isRunning || false;
+            game.completedLocations = data.completedLocations || [];
+            game.monstersKilled = data.monstersKilled || 0;
+            game.needToKill = data.needToKill || 15;
             game.autoFightActive = false;
             if (game.autoFightInterval) clearInterval(game.autoFightInterval);
-            game.message = `С возвращением, ${game.profileName}!`;
+            game.message = "С возвращением, " + game.profileName + "!";
             renderGame();
             return true;
         }
         return false;
     }
     
-    function getTelegramId() { return tg.initDataUnsafe?.user?.id || null; }
-    
-    function getRandomEnemy() {
-        let enemy = { ...MONSTERS[Math.floor(Math.random() * MONSTERS.length)] };
-        let bonus = Math.floor(game.level / 2);
-        enemy.hp = enemy.baseHp + bonus * 5;
-        enemy.str = enemy.baseStr + bonus * 2;
-        enemy.def = enemy.baseDef + bonus;
-        enemy.exp = enemy.baseExp + bonus * 8;
-        enemy.gold = enemy.baseGold + bonus * 5;
-        return enemy;
-    }
-    
-    function getBoss(locKey) {
-        const loc = LOCATIONS[locKey];
-        if (!loc || !loc.boss) return null;
-        let b = { ...loc.boss };
-        let bonus = Math.floor(game.level / 2);
-        b.hp += bonus * 10;
-        b.str += bonus * 3;
-        b.def += bonus * 2;
-        b.exp += bonus * 20;
-        b.gold += bonus * 30;
-        b.isBoss = true;
-        return b;
-    }
-    
-    function getTotalStrength() { return game.weapon?.strBonus || 2; }
-    function getTotalDefense() { return game.armor?.defBonus || 0; }
-    function getCurrentStats() {
-        const cls = CLASSES[game.class] || CLASSES.warrior;
-        return {
-            hp: game.combatEnergy, maxHp: game.maxCombatEnergy,
-            str: 10 + game.level * 2 + getTotalStrength() + (cls.strBonus||0),
-            def: 5 + game.level + getTotalDefense() + (cls.defBonus||0),
-            dodgeBonus: cls.dodgeBonus||0
-        };
-    }
-    
-    function canAccessLocation(locKey) {
-        if (game.isAdmin) return true;
-        const loc = LOCATIONS[locKey];
-        if (!loc) return false;
-        if (game.level < loc.requiredLevel) return false;
-        if (loc.isDungeon) return true;
-        if (loc.order === 0) return true;
-        const prev = Object.values(LOCATIONS).find(l => l.order === loc.order - 1);
-        const prevKey = Object.keys(LOCATIONS).find(k => LOCATIONS[k] === prev);
-        if (prevKey && !game.completedLocations.includes(prevKey)) return false;
-        return true;
-    }
-    
-    async function gainExp(amount) {
-        game.exp += amount;
-        game.message += ` +${amount}✨`;
-        while (game.exp >= game.expToNext) {
-            game.exp -= game.expToNext;
-            game.level++;
-            game.maxCombatEnergy += 5;
-            game.maxTravelEnergy += 2;
-            game.combatEnergy = game.maxCombatEnergy;
-            game.travelEnergy = game.maxTravelEnergy;
-            game.expToNext = Math.floor(game.expToNext * 1.2);
-            game.message += ` ✨ УРОВЕНЬ ${game.level}! ✨`;
-            await saveGame();
+    function getTelegramId() {
+        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            return tg.initDataUnsafe.user.id;
         }
-        renderGame();
+        return null;
     }
     
-    async function combatAction(action) {
-        if (!game.inCombat) return;
-        let enemy = game.combatEnemy;
-        let stats = getCurrentStats();
-        
-        if (game.enemyCurrentHp <= 0) {
-            game.gold += enemy.gold;
-            await gainExp(enemy.exp);
-            if (!enemy.isBoss) game.monstersKilled++;
-            
-            const energyBack = enemy.isBoss ? 15 : 8;
-            if (!game.isAdmin) game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
-            game.message = `🏆 Победа! +${enemy.gold}💰 +${enemy.exp}✨ +${energyBack}⚡`;
-            
-            if (enemy.isBoss && game.location === "dungeonLoc") {
-                game.dungeonFloor++;
-                if (game.dungeonFloor % 20 === 0 && !game.chestsOpened[game.dungeonFloor]) {
-                    game.chestsOpened[game.dungeonFloor] = true;
-                    const res = RESOURCES_LIST[Math.floor(Math.random() * RESOURCES_LIST.length)];
-                    const amount = Math.floor(Math.random() * 5) + 2;
-                    game.resources[res] = (game.resources[res] || 0) + amount;
-                    game.message += `\n🎁 СУНДУК: ${res} x${amount}!`;
-                }
-                if (game.dungeonFloor > game.maxUnlockedFloor) game.maxUnlockedFloor = game.dungeonFloor;
-                game.message += `\n📍 Переход на ${game.dungeonFloor} этаж`;
-                game.inCombat = false;
-                game.combatEnemy = null;
-                await saveGame();
-                renderGame();
-                return;
-            }
-            
-            if (enemy.isBoss) {
-                if (!game.completedLocations.includes(game.location)) {
-                    game.completedLocations.push(game.location);
-                    game.message += `\n🏆 БОСС ПОБЕЖДЁН! Локация ${game.location} завершена! 🏆`;
-                    game.monstersKilled = 0;
-                }
-                game.inCombat = false;
-                game.combatEnemy = null;
-                if (game.autoFightActive) stopAutoFight();
-                await saveGame();
-                renderGame();
-                return;
-            }
-            
-            game.inCombat = false;
-            game.combatEnemy = null;
-            await saveGame();
-            if (game.autoFightActive && !enemy.isBoss && game.monstersKilled < (LOCATIONS[game.location]?.monstersRequired || 15)) {
-                if (game.combatEnergy > (game.isAdmin ? 0 : 10)) {
-                    renderGame();
-                    setTimeout(() => startRandomFight(), 200);
-                } else { stopAutoFight(); }
-            } else { renderGame(); }
-            return;
-        }
-        
-        if (stats.hp <= 0) {
-            if (!game.isAdmin) game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 3);
-            game.message = `💀 Поражение... Возвращено 3⚡`;
-            game.inCombat = false;
-            game.combatEnemy = null;
-            if (game.autoFightActive) stopAutoFight();
-            await saveGame();
-            renderGame();
-            return;
-        }
-        
-        if (action === "use_potion") {
-            let used = false;
-            if (game.potions.strong > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 50); game.potions.strong--; game.message = `💊 Мощное зелье +50 HP!`; used = true; }
-            else if (game.potions.medium > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 25); game.potions.medium--; game.message = `🧪 Среднее зелье +25 HP!`; used = true; }
-            else if (game.potions.weak > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 10); game.potions.weak--; game.message = `🍃 Слабое зелье +10 HP!`; used = true; }
-            else { game.message = "❌ Нет зелий!"; renderGame(); return; }
-            if (used) {
-                let dmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
-                game.combatEnergy -= dmg;
-                if (game.combatEnergy < 0) game.combatEnergy = 0;
-                game.message += ` | Враг атакует → -${dmg} HP`;
-                await saveGame();
-                renderGame();
-            }
-            return;
-        }
-        
-        if (action === "attack") {
-            let dmg = Math.max(1, stats.str + Math.floor(Math.random() * 8) - enemy.def);
-            game.enemyCurrentHp -= dmg;
-            game.message = `⚡ Урон ${dmg} по ${enemy.name}`;
-            let dodgeChance = stats.dodgeBonus + (Math.random() * 100);
-            if (dodgeChance < 15) { game.message += ` ✨ Уворот!`; }
-            else {
-                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
-                game.combatEnergy -= enemyDmg;
-                game.message += ` | Враг атакует → -${enemyDmg} HP`;
-            }
-            if (game.combatEnergy < 0) game.combatEnergy = 0;
-            await saveGame();
-            renderGame();
-            return;
-        }
-    }
-    
-    function startRandomFight() {
-        const need = LOCATIONS[game.location]?.monstersRequired || 15;
-        if (game.completedLocations.includes(game.location)) { game.message = "Босс уже побеждён! Переходите на следующую локацию."; renderGame(); return; }
-        if (game.monstersKilled >= need) { game.message = `✨ Вы убили ${need} монстров! БОСС ДОСТУПЕН! ✨`; renderGame(); return; }
-        if (game.combatEnergy < 10 && !game.isAdmin) { game.message = "❌ Недостаточно энергии!"; renderGame(); return; }
-        if (!game.isAdmin) game.combatEnergy -= 10;
-        let enemy = getRandomEnemy();
-        game.inCombat = true;
-        game.combatEnemy = enemy;
-        game.enemyCurrentHp = enemy.hp;
-        game.message = `⚔️ БОЙ ${game.monstersKilled+1}/${need}: ${enemy.icon} ${enemy.name}`;
-        renderGame();
-    }
-    
-    function startAutoFight() {
-        const need = LOCATIONS[game.location]?.monstersRequired || 15;
-        if (game.completedLocations.includes(game.location)) { game.message = "Босс уже побеждён!"; renderGame(); return; }
-        if (game.monstersKilled >= need) { game.message = `✨ Вы убили ${need} монстров! БОСС ДОСТУПЕН! ✨`; renderGame(); return; }
-        if (game.autoFightActive) { stopAutoFight(); return; }
-        game.autoFightActive = true;
-        game.message = "🟢 АВТОБОЙ ВКЛЮЧЁН!";
-        renderGame();
-        function nextFight() {
-            if (!game.autoFightActive) return;
-            if (game.inCombat) return;
-            if (game.completedLocations.includes(game.location)) { stopAutoFight(); game.message = "Босс побеждён!"; renderGame(); return; }
-            if (game.monstersKilled >= need) { stopAutoFight(); game.message = "БОСС ДОСТУПЕН!"; renderGame(); return; }
-            if (game.combatEnergy < 10 && !game.isAdmin) { stopAutoFight(); game.message = "Недостаточно энергии!"; renderGame(); return; }
-            startRandomFight();
-        }
-        game.autoFightInterval = setInterval(() => { if (game.autoFightActive && !game.inCombat) nextFight(); }, 800);
-    }
-    
-    function stopAutoFight() { game.autoFightActive = false; if (game.autoFightInterval) { clearInterval(game.autoFightInterval); game.autoFightInterval = null; } }
-    
-    function startBossFight() {
-        if (game.completedLocations.includes(game.location)) { game.message = "Босс уже побеждён! Переходите на следующую локацию."; renderGame(); return; }
-        const need = LOCATIONS[game.location]?.monstersRequired || 15;
-        if (game.monstersKilled < need && !game.isAdmin) { game.message = `❌ Нужно убить ещё ${need - game.monstersKilled} монстров, чтобы открыть босса!`; renderGame(); return; }
-        let boss = getBoss(game.location);
-        if (!boss) { game.message = "Здесь нет босса!"; renderGame(); return; }
-        if (game.combatEnergy < 15 && !game.isAdmin) { game.message = "❌ Недостаточно энергии для боя с боссом!"; renderGame(); return; }
-        if (!game.isAdmin) game.combatEnergy -= 15;
-        game.inCombat = true;
-        game.combatEnemy = boss;
-        game.enemyCurrentHp = boss.hp;
-        game.message = `⚔️ БОЙ С БОССОМ: ${boss.icon} ${boss.name}`;
-        renderGame();
-    }
-    
-    function startDungeonFight() {
-        if (game.dungeonFloor > 1000) { game.message = "🎉 ПОЗДРАВЛЯЮ! Ты прошёл все 1000 этажей! 🎉"; renderGame(); return; }
-        const isBoss = (game.dungeonFloor % 20 === 0);
-        let enemy;
-        if (isBoss) {
-            enemy = { name: `👑 БОСС ${game.dungeonFloor} этажа 👑`, hp: 150 + game.dungeonFloor * 2, str: 30 + Math.floor(game.dungeonFloor / 2), def: 15 + Math.floor(game.dungeonFloor / 5), exp: 300 + game.dungeonFloor * 8, gold: 200 + game.dungeonFloor * 10, icon: "👑", isBoss: true };
-        } else {
-            enemy = { name: `Страж ${game.dungeonFloor} этажа`, hp: 50 + Math.floor(game.dungeonFloor * 1.5), str: 15 + Math.floor(game.dungeonFloor / 3), def: 8 + Math.floor(game.dungeonFloor / 6), exp: 60 + game.dungeonFloor * 2, gold: 40 + game.dungeonFloor * 3, icon: "👹" };
-        }
-        if (game.combatEnergy < 10 && !game.isAdmin) { game.message = "❌ Недостаточно энергии!"; renderGame(); return; }
-        if (!game.isAdmin) game.combatEnergy -= 10;
-        game.inCombat = true;
-        game.combatEnemy = enemy;
-        game.enemyCurrentHp = enemy.hp;
-        game.message = `⚔️ ПОДЗЕМЕЛЬЕ ${game.dungeonFloor} этаж: ${enemy.icon} ${enemy.name}`;
-        renderGame();
-    }
-    
-    function goToFloor(floor) {
-        floor = Math.min(1000, Math.max(1, floor));
-        if (game.isAdmin || floor <= game.maxUnlockedFloor + 10) {
-            game.dungeonFloor = floor;
-            if (floor > game.maxUnlockedFloor) game.maxUnlockedFloor = floor;
-            game.message = `📍 Переход на ${floor} этаж`;
-            renderGame();
-        } else { game.message = `❌ Нельзя перейти на ${floor} этаж!`; renderGame(); }
-    }
-    
-    function changeLocation(locKey) {
-        if (game.location !== "village" && game.location !== locKey) {
-            const currentLocCompleted = game.completedLocations.includes(game.location);
-            if (!currentLocCompleted && !game.isAdmin) {
-                game.message = "❌ Сначала победите босса в текущей локации!";
-                renderGame();
-                return;
-            }
-        }
-        if (!canAccessLocation(locKey)) { game.message = "❌ Сначала победите босса в предыдущей локации!"; renderGame(); return; }
-        let loc = LOCATIONS[locKey];
-        if (game.travelEnergy >= loc.energyCost || game.isAdmin) {
-            if (!game.isAdmin) game.travelEnergy -= loc.energyCost;
-            game.location = locKey;
-            game.monstersKilled = 0;
-            game.needToKill = loc.monstersRequired || 15;
-            if (game.completedLocations.includes(locKey)) game.monstersKilled = game.needToKill;
-            game.message = `🚶 Переход в ${loc.name} | Нужно убить ${game.needToKill} монстров`;
-            renderGame();
-        } else { game.message = "❌ Недостаточно энергии!"; renderGame(); }
-    }
-    
-    async function usePotion(type) {
-        if (type === "weak" && game.potions.weak > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 10); game.potions.weak--; game.message = `🍃 Слабое зелье +10 HP!`; }
-        else if (type === "medium" && game.potions.medium > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 25); game.potions.medium--; game.message = `🧪 Среднее зелье +25 HP!`; }
-        else if (type === "strong" && game.potions.strong > 0) { game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 50); game.potions.strong--; game.message = `💊 Мощное зелье +50 HP!`; }
-        else { game.message = "❌ Нет таких зелий!"; }
-        await saveGame();
-        renderGame();
-    }
-    
-    async function craftPotion(type) {
-        const hasWeak = game.resources["Целебная трава"] >= 1 && game.resources["Магический гриб"] >= 1 && game.gold >= 50;
-        const hasMedium = game.resources["Целебная трава"] >= 2 && game.resources["Магический гриб"] >= 2 && game.resources["Мифический цветок"] >= 1 && game.gold >= 150;
-        const hasStrong = game.resources["Целебная трава"] >= 3 && game.resources["Магический гриб"] >= 3 && game.resources["Мифический цветок"] >= 2 && game.gold >= 300;
-        if (type === "weak" && hasWeak) { game.resources["Целебная трава"]--; game.resources["Магический гриб"]--; game.gold -= 50; game.potions.weak += 3; game.message = "🍃 Скрафчено 3 слабых зелья!"; }
-        else if (type === "medium" && hasMedium) { game.resources["Целебная трава"] -= 2; game.resources["Магический гриб"] -= 2; game.resources["Мифический цветок"]--; game.gold -= 150; game.potions.medium += 3; game.message = "🌿 Скрафчено 3 средних зелья!"; }
-        else if (type === "strong" && hasStrong) { game.resources["Целебная трава"] -= 3; game.resources["Магический гриб"] -= 3; game.resources["Мифический цветок"] -= 2; game.gold -= 300; game.potions.strong += 3; game.message = "🌸 Скрафчено 3 мощных зелья!"; }
-        else { game.message = "❌ Не хватает ресурсов!"; }
-        await saveGame();
-        renderGame();
-    }
-    
-    async function equipItem(item) {
-        if (item.type === "weapon") game.weapon = item;
-        else if (item.type === "armor") game.armor = item;
-        game.message = `🔧 Экипировано: ${item.name}`;
-        await saveGame();
-        renderGame();
-    }
-    
+    // ==================== СОЗДАНИЕ ПЕРСОНАЖА ====================
     async function createCharacter(name, className) {
-        if (!name.trim()) { alert("Введите имя!"); return false; }
-        const cls = CLASSES[className];
+        if (!name.trim()) {
+            alert("Введите имя героя!");
+            return false;
+        }
+        if (!/^[a-zA-Zа-яА-Я0-9_]+$/.test(name)) {
+            alert("Имя может содержать только буквы, цифры и _");
+            return false;
+        }
+        
+        let cls = CLASSES[className];
         if (!cls) return false;
+        
         game.profileName = name;
         game.class = className;
         game.telegramId = getTelegramId();
@@ -482,11 +356,39 @@
         game.maxTravelEnergy = 50;
         game.monstersKilled = 0;
         game.needToKill = 15;
-        game.chestsOpened = {};
-        game.resources = { "Целебная трава": 5, "Магический гриб": 3 };
-        game.potions = { weak: 3, medium: 1, strong: 0 };
-        const startWeapon = { name: cls.weapon, type: "weapon", strBonus: cls.strBonus, rarity: "common" };
-        const startArmor = { name: "Кожаная броня", type: "armor", defBonus: 2, rarity: "common" };
+        
+        game.resources = {
+            "Целебная трава": 5,
+            "Магический гриб": 3,
+            "Мифический цветок": 0,
+            "Медная руда": 0,
+            "Железная руда": 0,
+            "Мифриловая руда": 0,
+            "Малая эссенция": 0,
+            "Средняя эссенция": 0,
+            "Великая эссенция": 0
+        };
+        
+        game.potions = {
+            weak: 3,
+            medium: 1,
+            strong: 0
+        };
+        
+        let startWeapon = {
+            name: cls.weapon,
+            type: "weapon",
+            strBonus: cls.strBonus,
+            rarity: "common"
+        };
+        
+        let startArmor = {
+            name: "Кожаная броня",
+            type: "armor",
+            defBonus: 2,
+            rarity: "common"
+        };
+        
         game.weapon = startWeapon;
         game.armor = startArmor;
         game.inventory = [startWeapon, startArmor];
@@ -495,260 +397,1139 @@
         game.maxUnlockedFloor = 1;
         game.completedLocations = [];
         game.isAdmin = isAdmin();
-        game.message = `✨ Добро пожаловать, ${name}-${cls.name}! ✨\n🏆 Победите ${game.needToKill} монстров, чтобы открыть босса!`;
+        game.message = "✨ Добро пожаловать, " + name + "-" + cls.name + "! ✨\n🏆 Победите 15 монстров, чтобы открыть босса!";
         game.initialized = true;
+        
         await saveGame();
         renderGame();
         return true;
     }
     
-    // ============== РЕСУРСЫ ДЛЯ КРАФТА ==============
-    const RESOURCES_LIST = [
-        "Целебная трава", "Магический гриб", "Мифический цветок", "Малая эссенция", "Средняя эссенция",
-        "Великая эссенция", "Медная руда", "Железная руда", "Мифриловая руда", "Обычная древесина",
-        "Твёрдая древесина", "Хлопковая ткань", "Малый кристалл", "Глаз демона", "Кость дракона"
-    ];
+    // ==================== РАСЧЁТ ХАРАКТЕРИСТИК ====================
+    function getTotalDefense() {
+        let def = 0;
+        if (game.armor && game.armor.defBonus) {
+            def += game.armor.defBonus;
+        }
+        return def;
+    }
     
-    // ============== ОТРИСОВКА ==============
+    function getTotalStrength() {
+        if (game.weapon && game.weapon.strBonus) {
+            return game.weapon.strBonus;
+        }
+        return 2;
+    }
+    
+    function getCurrentStats() {
+        let cls = CLASSES[game.class] || CLASSES.warrior;
+        let str = 10 + game.level * 2 + getTotalStrength() + (cls.strBonus || 0);
+        let def = 5 + game.level + getTotalDefense() + (cls.defBonus || 0);
+        let dodgeBonus = cls.dodgeBonus || 0;
+        
+        return {
+            hp: game.combatEnergy,
+            maxHp: game.maxCombatEnergy,
+            str: str,
+            def: def,
+            dodgeBonus: dodgeBonus
+        };
+    }
+    
+    // ==================== ДОСТУП К ЛОКАЦИЯМ ====================
+    function canAccessLocation(locKey) {
+        if (game.isAdmin) return true;
+        
+        let loc = LOCATIONS[locKey];
+        if (!loc) return false;
+        
+        if (game.level < loc.requiredLevel) return false;
+        if (loc.isDungeon) return true;
+        if (loc.order === 0) return true;
+        
+        let prevLocations = Object.values(LOCATIONS).filter(function(l) {
+            return l.order === loc.order - 1;
+        });
+        
+        for (let i = 0; i < prevLocations.length; i++) {
+            let prevLoc = prevLocations[i];
+            let prevKey = null;
+            for (let k in LOCATIONS) {
+                if (LOCATIONS[k] === prevLoc) {
+                    prevKey = k;
+                    break;
+                }
+            }
+            if (prevKey && !game.completedLocations.includes(prevKey)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // ==================== ПОЛУЧЕНИЕ ВРАГА ====================
+    function getRandomEnemy() {
+        let enemiesList = Object.values(ENEMIES);
+        let randomIndex = Math.floor(Math.random() * enemiesList.length);
+        let e = JSON.parse(JSON.stringify(enemiesList[randomIndex]));
+        
+        let bonus = Math.floor(game.level / 2);
+        e.hp += bonus * 5;
+        e.str += bonus * 2;
+        e.def += bonus;
+        e.exp += bonus * 8;
+        e.gold += bonus * 5;
+        
+        return e;
+    }
+    
+    function getBoss(locKey) {
+        let loc = LOCATIONS[locKey];
+        if (!loc || !loc.boss) return null;
+        
+        let b = JSON.parse(JSON.stringify(loc.boss));
+        let bonus = Math.floor(game.level / 2);
+        
+        b.hp += bonus * 10;
+        b.str += bonus * 3;
+        b.def += bonus * 2;
+        b.exp += bonus * 20;
+        b.gold += bonus * 30;
+        b.isBoss = true;
+        b.dodgeChance = 10;
+        
+        return b;
+    }
+    
+    // ==================== ОПЫТ И УРОВНИ ====================
+    async function gainExp(amount) {
+        game.exp += amount;
+        game.message += " +" + amount + "✨";
+        
+        while (game.exp >= game.expToNext) {
+            game.exp -= game.expToNext;
+            game.level++;
+            game.maxCombatEnergy += 5;
+            game.maxTravelEnergy += 2;
+            game.combatEnergy = game.maxCombatEnergy;
+            game.travelEnergy = game.maxTravelEnergy;
+            game.expToNext = Math.floor(game.expToNext * 1.2);
+            game.message += " ✨ УРОВЕНЬ " + game.level + "! ✨";
+            await saveGame();
+        }
+        
+        renderGame();
+    }
+    
+    // ==================== БОЕВЫЕ ДЕЙСТВИЯ ====================
+    async function combatAction(action) {
+        if (!game.inCombat) return;
+        
+        let enemy = game.combatEnemy;
+        let stats = getCurrentStats();
+        
+        if (game.enemyCurrentHp <= 0) {
+            game.gold += enemy.gold;
+            await gainExp(enemy.exp);
+            
+            if (!enemy.isBoss) {
+                game.monstersKilled++;
+            }
+            
+            let energyBack = enemy.isBoss ? 15 : 8;
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + energyBack);
+            game.message = "🏆 Победа! +" + enemy.gold + "💰 +" + enemy.exp + "✨ +" + energyBack + "⚡";
+            
+            if (enemy.isBoss) {
+                if (!game.completedLocations.includes(game.location)) {
+                    game.completedLocations.push(game.location);
+                    game.message += "\n🏆 БОСС ПОБЕЖДЁН! Локация завершена!";
+                    game.monstersKilled = 0;
+                }
+                game.inCombat = false;
+                game.combatEnemy = null;
+                if (game.autoFightActive) stopAutoFight();
+                await saveGame();
+                renderGame();
+                return;
+            }
+            
+            game.inCombat = false;
+            game.combatEnemy = null;
+            await saveGame();
+            
+            if (game.autoFightActive && !enemy.isBoss && game.monstersKilled < game.needToKill) {
+                if (game.combatEnergy > 10) {
+                    renderGame();
+                    setTimeout(function() {
+                        startRandomFight();
+                    }, 200);
+                } else {
+                    stopAutoFight();
+                }
+            } else {
+                renderGame();
+            }
+            return;
+        }
+        
+        if (stats.hp <= 0) {
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 3);
+            game.message = "💀 Поражение... Возвращено 3⚡";
+            game.inCombat = false;
+            game.combatEnemy = null;
+            if (game.autoFightActive) stopAutoFight();
+            await saveGame();
+            renderGame();
+            return;
+        }
+        
+        if (action === "use_potion") {
+            let used = false;
+            
+            if (game.potions.strong > 0) {
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 50);
+                game.potions.strong--;
+                game.message = "💊 Мощное зелье +50 HP!";
+                used = true;
+            } else if (game.potions.medium > 0) {
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 25);
+                game.potions.medium--;
+                game.message = "🧪 Среднее зелье +25 HP!";
+                used = true;
+            } else if (game.potions.weak > 0) {
+                game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 10);
+                game.potions.weak--;
+                game.message = "🍃 Слабое зелье +10 HP!";
+                used = true;
+            } else {
+                game.message = "❌ Нет зелий!";
+                renderGame();
+                return;
+            }
+            
+            if (used) {
+                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
+                game.combatEnergy -= enemyDmg;
+                if (game.combatEnergy < 0) game.combatEnergy = 0;
+                game.message += " | Враг атакует → -" + enemyDmg + " HP";
+                await saveGame();
+                renderGame();
+            }
+            return;
+        }
+        
+        if (action === "attack") {
+            let dmg = Math.max(1, stats.str + Math.floor(Math.random() * 8) - enemy.def);
+            game.enemyCurrentHp -= dmg;
+            game.message = "⚡ Урон " + dmg + " по " + enemy.name;
+            
+            let dodgeChance = stats.dodgeBonus + (Math.random() * 100);
+            if (dodgeChance < 15) {
+                game.message += " ✨ Уворот!";
+            } else {
+                let enemyDmg = Math.max(1, enemy.str + Math.floor(Math.random() * 7) - stats.def);
+                game.combatEnergy -= enemyDmg;
+                game.message += " | Враг атакует → -" + enemyDmg + " HP";
+            }
+            
+            if (game.combatEnergy < 0) game.combatEnergy = 0;
+            await saveGame();
+            renderGame();
+            return;
+        }
+    }
+    
+    // ==================== НАЧАЛО БОЯ ====================
+    function startRandomFight() {
+        if (game.completedLocations.includes(game.location)) {
+            game.message = "Босс уже побеждён! Переходите на следующую локацию.";
+            renderGame();
+            return;
+        }
+        
+        if (game.monstersKilled >= game.needToKill) {
+            game.message = "✨ Вы убили " + game.needToKill + " монстров! БОСС ДОСТУПЕН! ✨";
+            renderGame();
+            return;
+        }
+        
+        if (game.combatEnergy < 10 && !game.isAdmin) {
+            game.message = "❌ Недостаточно энергии!";
+            renderGame();
+            return;
+        }
+        
+        if (!game.isAdmin) {
+            game.combatEnergy -= 10;
+        }
+        
+        let enemy = getRandomEnemy();
+        game.inCombat = true;
+        game.combatEnemy = enemy;
+        game.enemyCurrentHp = enemy.hp;
+        game.message = "⚔️ БОЙ " + (game.monstersKilled + 1) + "/" + game.needToKill + ": " + enemy.icon + " " + enemy.name;
+        renderGame();
+    }
+    
+    function startBossFight() {
+        if (game.completedLocations.includes(game.location)) {
+            game.message = "Босс уже побеждён! Переходите на следующую локацию.";
+            renderGame();
+            return;
+        }
+        
+        if (game.monstersKilled < game.needToKill && !game.isAdmin) {
+            game.message = "❌ Нужно убить ещё " + (game.needToKill - game.monstersKilled) + " монстров, чтобы открыть босса!";
+            renderGame();
+            return;
+        }
+        
+        let boss = getBoss(game.location);
+        if (!boss) {
+            game.message = "Здесь нет босса!";
+            renderGame();
+            return;
+        }
+        
+        if (game.combatEnergy < 15 && !game.isAdmin) {
+            game.message = "❌ Недостаточно энергии для боя с боссом!";
+            renderGame();
+            return;
+        }
+        
+        if (!game.isAdmin) {
+            game.combatEnergy -= 15;
+        }
+        
+        game.inCombat = true;
+        game.combatEnemy = boss;
+        game.enemyCurrentHp = boss.hp;
+        game.message = "⚔️ БОЙ С БОССОМ: " + boss.icon + " " + boss.name;
+        renderGame();
+    }
+    
+    function startDungeonFight() {
+        if (game.dungeonFloor > 1000) {
+            game.message = "🎉 ПОЗДРАВЛЯЮ! Ты прошёл все 1000 этажей! 🎉";
+            renderGame();
+            return;
+        }
+        
+        let isBoss = (game.dungeonFloor % 20 === 0);
+        let enemy;
+        
+        if (isBoss) {
+            enemy = {
+                name: "👑 БОСС " + game.dungeonFloor + " этажа 👑",
+                hp: 150 + game.dungeonFloor * 2,
+                str: 30 + Math.floor(game.dungeonFloor / 2),
+                def: 15 + Math.floor(game.dungeonFloor / 5),
+                exp: 300 + game.dungeonFloor * 8,
+                gold: 200 + game.dungeonFloor * 10,
+                icon: "👑",
+                isBoss: true
+            };
+        } else {
+            enemy = {
+                name: "Страж " + game.dungeonFloor + " этажа",
+                hp: 50 + Math.floor(game.dungeonFloor * 1.5),
+                str: 15 + Math.floor(game.dungeonFloor / 3),
+                def: 8 + Math.floor(game.dungeonFloor / 6),
+                exp: 60 + game.dungeonFloor * 2,
+                gold: 40 + game.dungeonFloor * 3,
+                icon: "👹"
+            };
+        }
+        
+        if (game.combatEnergy < 10 && !game.isAdmin) {
+            game.message = "❌ Недостаточно энергии!";
+            renderGame();
+            return;
+        }
+        
+        if (!game.isAdmin) {
+            game.combatEnergy -= 10;
+        }
+        
+        game.inCombat = true;
+        game.combatEnemy = enemy;
+        game.enemyCurrentHp = enemy.hp;
+        game.message = "⚔️ ПОДЗЕМЕЛЬЕ " + game.dungeonFloor + " этаж: " + enemy.icon + " " + enemy.name;
+        renderGame();
+    }
+    
+    function goToFloor(floor) {
+        floor = Math.min(1000, Math.max(1, floor));
+        
+        if (game.isAdmin || floor <= game.maxUnlockedFloor + 10) {
+            game.dungeonFloor = floor;
+            if (floor > game.maxUnlockedFloor) {
+                game.maxUnlockedFloor = floor;
+            }
+            game.message = "📍 Переход на " + floor + " этаж";
+            renderGame();
+        } else {
+            game.message = "❌ Нельзя перейти на " + floor + " этаж!";
+            renderGame();
+        }
+    }
+    
+    // ==================== АВТОБОЙ ====================
+    function startAutoFight() {
+        if (game.completedLocations.includes(game.location)) {
+            game.message = "Босс уже побеждён!";
+            renderGame();
+            return;
+        }
+        
+        if (game.monstersKilled >= game.needToKill) {
+            game.message = "✨ Вы убили " + game.needToKill + " монстров! БОСС ДОСТУПЕН! ✨";
+            renderGame();
+            return;
+        }
+        
+        if (game.autoFightActive) {
+            stopAutoFight();
+            return;
+        }
+        
+        game.autoFightActive = true;
+        game.message = "🟢 АВТОБОЙ ВКЛЮЧЁН!";
+        renderGame();
+        
+        function nextFight() {
+            if (!game.autoFightActive) return;
+            if (game.inCombat) return;
+            if (game.completedLocations.includes(game.location)) {
+                stopAutoFight();
+                game.message = "Босс побеждён!";
+                renderGame();
+                return;
+            }
+            if (game.monstersKilled >= game.needToKill) {
+                stopAutoFight();
+                game.message = "БОСС ДОСТУПЕН!";
+                renderGame();
+                return;
+            }
+            if (game.combatEnergy < 10 && !game.isAdmin) {
+                stopAutoFight();
+                game.message = "Недостаточно энергии!";
+                renderGame();
+                return;
+            }
+            startRandomFight();
+        }
+        
+        game.autoFightInterval = setInterval(function() {
+            if (game.autoFightActive && !game.inCombat) {
+                nextFight();
+            }
+        }, 800);
+    }
+    
+    function stopAutoFight() {
+        game.autoFightActive = false;
+        if (game.autoFightInterval) {
+            clearInterval(game.autoFightInterval);
+            game.autoFightInterval = null;
+        }
+    }
+    
+    // ==================== ПЕРЕМЕЩЕНИЕ ====================
+    function changeLocation(locKey) {
+        if (game.location !== "village" && game.location !== locKey) {
+            let currentLocCompleted = game.completedLocations.includes(game.location);
+            if (!currentLocCompleted && !game.isAdmin) {
+                game.message = "❌ Сначала победите босса в текущей локации!";
+                renderGame();
+                return;
+            }
+        }
+        
+        if (!canAccessLocation(locKey)) {
+            game.message = "❌ Сначала победите босса в предыдущей локации!";
+            renderGame();
+            return;
+        }
+        
+        let loc = LOCATIONS[locKey];
+        if (!loc) return;
+        
+        if (game.travelEnergy >= loc.energyCost || game.isAdmin) {
+            if (!game.isAdmin) {
+                game.travelEnergy -= loc.energyCost;
+            }
+            game.location = locKey;
+            game.monstersKilled = 0;
+            if (game.completedLocations.includes(locKey)) {
+                game.monstersKilled = game.needToKill;
+            }
+            game.message = "🚶 Переход в " + loc.name;
+            renderGame();
+        } else {
+            game.message = "❌ Недостаточно энергии!";
+            renderGame();
+        }
+    }
+    
+    // ==================== ЗЕЛЬЯ И ЭНЕРГИЯ ====================
+    async function usePotion(type) {
+        if (type === "weak" && game.potions.weak > 0) {
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 10);
+            game.potions.weak--;
+            game.message = "🍃 Слабое зелье +10 HP! Осталось: " + game.potions.weak;
+        } else if (type === "medium" && game.potions.medium > 0) {
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 25);
+            game.potions.medium--;
+            game.message = "🧪 Среднее зелье +25 HP! Осталось: " + game.potions.medium;
+        } else if (type === "strong" && game.potions.strong > 0) {
+            game.combatEnergy = Math.min(game.maxCombatEnergy, game.combatEnergy + 50);
+            game.potions.strong--;
+            game.message = "💊 Мощное зелье +50 HP! Осталось: " + game.potions.strong;
+        } else {
+            game.message = "❌ Нет таких зелий!";
+        }
+        await saveGame();
+        renderGame();
+    }
+    
+    async function buyEnergy() {
+        if (game.gold >= 250) {
+            game.gold -= 250;
+            game.travelEnergy = Math.min(game.maxTravelEnergy, game.travelEnergy + 5);
+            game.message = "🍺 +5 энергии путешествий!";
+            await saveGame();
+            renderGame();
+            closeDialog();
+        } else {
+            game.message = "❌ Не хватает 250 золота!";
+            renderGame();
+        }
+    }
+    
+    // ==================== ПОКУПКА И КРАФТ ====================
+    async function buyItem(item) {
+        if (game.gold >= item.price) {
+            game.gold -= item.price;
+            game.inventory.push(JSON.parse(JSON.stringify(item)));
+            game.message = "✅ Куплено " + item.name + "!";
+            await saveGame();
+            renderGame();
+        } else {
+            game.message = "❌ Не хватает золота!";
+            renderGame();
+        }
+    }
+    
+    async function craftPotion(type) {
+        let hasWeak = game.resources["Целебная трава"] >= 1 && game.resources["Магический гриб"] >= 1 && game.gold >= 50;
+        let hasMedium = game.resources["Целебная трава"] >= 2 && game.resources["Магический гриб"] >= 2 && game.resources["Мифический цветок"] >= 1 && game.gold >= 150;
+        let hasStrong = game.resources["Целебная трава"] >= 3 && game.resources["Магический гриб"] >= 3 && game.resources["Мифический цветок"] >= 2 && game.gold >= 300;
+        
+        if (type === "weak" && hasWeak) {
+            game.resources["Целебная трава"]--;
+            game.resources["Магический гриб"]--;
+            game.gold -= 50;
+            game.potions.weak += 3;
+            game.message = "🍃 Скрафчено 3 слабых зелья!";
+        } else if (type === "medium" && hasMedium) {
+            game.resources["Целебная трава"] -= 2;
+            game.resources["Магический гриб"] -= 2;
+            game.resources["Мифический цветок"]--;
+            game.gold -= 150;
+            game.potions.medium += 3;
+            game.message = "🌿 Скрафчено 3 средних зелья!";
+        } else if (type === "strong" && hasStrong) {
+            game.resources["Целебная трава"] -= 3;
+            game.resources["Магический гриб"] -= 3;
+            game.resources["Мифический цветок"] -= 2;
+            game.gold -= 300;
+            game.potions.strong += 3;
+            game.message = "🌸 Скрафчено 3 мощных зелья!";
+        } else {
+            game.message = "❌ Не хватает ресурсов!";
+        }
+        await saveGame();
+        renderGame();
+    }
+    
+    async function equipItem(item) {
+        if (item.type === "weapon") {
+            game.weapon = item;
+        } else if (item.type === "armor") {
+            game.armor = item;
+        }
+        game.message = "🔧 Экипировано: " + item.name;
+        await saveGame();
+        renderGame();
+    }
+    
+    // ==================== NPC ДИАЛОГИ ====================
+    function startDialog(npc) {
+        let dialogHtml = '<div class="dialog-overlay" id="dialogOverlay">';
+        dialogHtml += '<div class="dialog-window">';
+        dialogHtml += '<div class="dialog-header"><div style="font-size:3rem;">' + npc.avatar + '</div><div style="color:#f7d44a;">' + npc.name + ' ' + npc.icon + '</div></div>';
+        dialogHtml += '<div class="dialog-body"><div class="dialog-text">';
+        
+        if (npc.type === "blacksmith") {
+            dialogHtml += "Кузнец Гром: Лучшее оружие и броня!";
+        } else if (npc.type === "alchemist") {
+            dialogHtml += "Алхимик Морган: Крафт зелий!";
+        } else if (npc.type === "tavern") {
+            dialogHtml += "Трактирщик: Эль за 250💰!";
+        } else {
+            dialogHtml += "Мастер крафта: Крафт мифических предметов!";
+        }
+        
+        dialogHtml += '</div></div><div class="dialog-footer"><div class="dialog-buttons">';
+        
+        if (npc.type === "blacksmith") {
+            for (let i = 0; i < npc.items.length; i++) {
+                let item = npc.items[i];
+                dialogHtml += '<button class="dialog-btn" onclick="buyItem(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">' + item.name + ' - ' + item.price + '💰</button>';
+            }
+        }
+        
+        if (npc.type === "alchemist") {
+            dialogHtml += '<button class="dialog-btn" onclick="craftPotion(\'weak\')">🍃 Слабое зелье</button>';
+            dialogHtml += '<button class="dialog-btn" onclick="craftPotion(\'medium\')">🌿 Среднее зелье</button>';
+            dialogHtml += '<button class="dialog-btn" onclick="craftPotion(\'strong\')">🌸 Мощное зелье</button>';
+        }
+        
+        if (npc.type === "tavern") {
+            dialogHtml += '<button class="dialog-btn" onclick="buyEnergy()">🍺 Купить эль за 250💰</button>';
+        }
+        
+        dialogHtml += '<button class="dialog-btn" onclick="closeDialog()">🚪 Закрыть</button>';
+        dialogHtml += '</div></div></div></div>';
+        
+        document.body.insertAdjacentHTML('beforeend', dialogHtml);
+    }
+    
+    function closeDialog() {
+        let el = document.getElementById("dialogOverlay");
+        if (el) el.remove();
+    }
+    
+    // ==================== АДМИН ФУНКЦИИ ====================
+    async function adminGiveGold() {
+        if (!game.isAdmin) return;
+        let nick = document.getElementById("adminGoldNick")?.value;
+        let amount = parseInt(document.getElementById("adminGoldAmount")?.value);
+        
+        if (!nick) {
+            game.message = "❌ Введите ник!";
+            renderGame();
+            return;
+        }
+        if (isNaN(amount)) amount = 500;
+        
+        let data = await loadData("rpg_" + nick);
+        if (data) {
+            let target = JSON.parse(data);
+            target.gold = (target.gold || 0) + amount;
+            await saveData("rpg_" + nick, JSON.stringify(target));
+            game.message = "👑 Выдано " + amount + "💰 игроку " + nick;
+        } else {
+            game.message = "❌ Игрок " + nick + " не найден!";
+        }
+        renderGame();
+    }
+    
+    async function adminGiveExp() {
+        if (!game.isAdmin) return;
+        let nick = document.getElementById("adminExpNick")?.value;
+        let amount = parseInt(document.getElementById("adminExpAmount")?.value);
+        
+        if (!nick) {
+            game.message = "❌ Введите ник!";
+            renderGame();
+            return;
+        }
+        if (isNaN(amount)) amount = 300;
+        
+        let data = await loadData("rpg_" + nick);
+        if (data) {
+            let target = JSON.parse(data);
+            target.exp = (target.exp || 0) + amount;
+            
+            while (target.exp >= target.expToNext) {
+                target.exp -= target.expToNext;
+                target.level++;
+                target.maxCombatEnergy += 5;
+                target.maxTravelEnergy += 2;
+                target.expToNext = Math.floor(target.expToNext * 1.2);
+            }
+            
+            await saveData("rpg_" + nick, JSON.stringify(target));
+            game.message = "👑 Выдано " + amount + "✨ опыта игроку " + nick;
+        } else {
+            game.message = "❌ Игрок " + nick + " не найден!";
+        }
+        renderGame();
+    }
+    
+    async function adminGiveEnergy() {
+        if (!game.isAdmin) return;
+        let nick = document.getElementById("adminEnergyNick")?.value;
+        let amount = parseInt(document.getElementById("adminEnergyAmount")?.value);
+        
+        if (!nick) {
+            game.message = "❌ Введите ник!";
+            renderGame();
+            return;
+        }
+        if (isNaN(amount)) amount = 100;
+        
+        let data = await loadData("rpg_" + nick);
+        if (data) {
+            let target = JSON.parse(data);
+            target.combatEnergy = Math.min(target.maxCombatEnergy || 100, (target.combatEnergy || 0) + amount);
+            target.travelEnergy = Math.min(target.maxTravelEnergy || 50, (target.travelEnergy || 0) + Math.floor(amount / 2));
+            await saveData("rpg_" + nick, JSON.stringify(target));
+            game.message = "👑 Выдано " + amount + "⚡ энергии игроку " + nick;
+        } else {
+            game.message = "❌ Игрок " + nick + " не найден!";
+        }
+        renderGame();
+    }
+    
+    async function adminGiveItem() {
+        if (!game.isAdmin) return;
+        let nick = document.getElementById("adminItemNick")?.value;
+        let itemName = document.getElementById("adminItemSelect")?.value;
+        
+        if (!nick) {
+            game.message = "❌ Введите ник!";
+            renderGame();
+            return;
+        }
+        
+        let item = null;
+        for (let i = 0; i < ALL_ITEMS.length; i++) {
+            if (ALL_ITEMS[i].name === itemName) {
+                item = ALL_ITEMS[i];
+                break;
+            }
+        }
+        
+        if (!item) {
+            game.message = "❌ Предмет не найден!";
+            renderGame();
+            return;
+        }
+        
+        let data = await loadData("rpg_" + nick);
+        if (data) {
+            let target = JSON.parse(data);
+            if (!target.inventory) target.inventory = [];
+            target.inventory.push(JSON.parse(JSON.stringify(item)));
+            await saveData("rpg_" + nick, JSON.stringify(target));
+            game.message = "👑 Выдан предмет " + itemName + " игроку " + nick;
+        } else {
+            game.message = "❌ Игрок " + nick + " не найден!";
+        }
+        renderGame();
+    }
+    
+    async function adminResetPlayer() {
+        if (!game.isAdmin) return;
+        let nick = document.getElementById("adminResetNick")?.value;
+        
+        if (!nick) {
+            game.message = "❌ Введите ник!";
+            renderGame();
+            return;
+        }
+        
+        if (confirm("Сбросить прогресс игрока \"" + nick + "\"?")) {
+            await deleteData("rpg_" + nick);
+            game.message = "👑 Прогресс игрока " + nick + " сброшен!";
+            renderGame();
+        }
+    }
+    
+    function toggleAdminPanel() {
+        let panel = document.getElementById("adminPanel");
+        if (panel) {
+            panel.classList.toggle("show");
+        }
+    }
+    
+    // ==================== ОТОБРАЖЕНИЕ ====================
     function getRarityBadge(rarity) {
-        const names = { common: "Обычное", rare: "Редкое", epic: "Эпическое", legendary: "Легендарное", mythic: "Мифическое" };
-        return `<span class="rarity-badge rarity-${rarity}">${names[rarity] || rarity}</span>`;
+        let names = {
+            common: "Обычное",
+            rare: "Редкое",
+            epic: "Эпическое",
+            legendary: "Легендарное",
+            mythic: "Мифическое"
+        };
+        let name = names[rarity] || rarity;
+        return '<span class="rarity-badge rarity-' + rarity + '">' + name + '</span>';
     }
     
     function renderGame() {
         const container = document.getElementById("rpgGame");
+        let stats = getCurrentStats();
+        let cls = CLASSES[game.class] || CLASSES.warrior;
+        
         if (!game.initialized) {
             let tid = getTelegramId();
-            if (tid) { loadGame(tid); return; }
+            if (tid) {
+                loadGame(tid);
+                return;
+            }
+            
             let selectedClass = "warrior";
-            container.innerHTML = `
-                <div class="character-form">
-                    <h2 style="color:#f7d44a; text-align:center;">⚔️ ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА ⚔️</h2>
-                    <div class="class-selector" id="classSelector">
-                        ${Object.entries(CLASSES).map(([k,c]) => `<div class="class-option ${k===selectedClass?'selected':''}" data-class="${k}">${c.icon} ${c.name}<br><span style="font-size:0.6rem;">+${c.strBonus}⚔️</span></div>`).join('')}
-                    </div>
-                    <input type="text" id="playerName" placeholder="Имя героя" maxlength="20">
-                    <button id="createBtn">🚀 НАЧАТЬ ПРИКЛЮЧЕНИЕ</button>
-                    <div class="message-log" style="margin-top:15px;">💡 Выберите класс и введите имя. Удачи, Герой!</div>
-                </div>
-            `;
-            document.querySelectorAll(".class-option").forEach(opt => {
-                opt.onclick = () => {
-                    document.querySelectorAll(".class-option").forEach(c => c.classList.remove("selected"));
+            let classHtml = '<div class="character-form"><h2 style="color:#f7d44a">⚔️ ТРОПЫ ЗАБЫТОГО КОРОЛЕВСТВА ⚔️</h2>';
+            classHtml += '<div class="class-selector" id="classSelector">';
+            
+            for (let key in CLASSES) {
+                let c = CLASSES[key];
+                let selectedClassAttr = (key === selectedClass) ? 'selected' : '';
+                classHtml += '<div class="class-option ' + selectedClassAttr + '" data-class="' + key + '">';
+                classHtml += c.icon + ' ' + c.name;
+                classHtml += '<br><span style="font-size:0.6rem;">+' + c.strBonus + '⚔️</span>';
+                classHtml += '</div>';
+            }
+            
+            classHtml += '</div><input id="playerName" placeholder="Имя героя"><button id="createBtn">🚀 НАЧАТЬ</button></div>';
+            container.innerHTML = classHtml;
+            
+            let classOptions = document.querySelectorAll(".class-option");
+            for (let i = 0; i < classOptions.length; i++) {
+                let opt = classOptions[i];
+                opt.onclick = function() {
+                    for (let j = 0; j < classOptions.length; j++) {
+                        classOptions[j].classList.remove("selected");
+                    }
                     opt.classList.add("selected");
                     selectedClass = opt.getAttribute("data-class");
                 };
-            });
-            document.getElementById("createBtn").onclick = async () => {
-                let name = document.getElementById("playerName").value;
-                await createCharacter(name, selectedClass);
-            };
+            }
+            
+            let createBtn = document.getElementById("createBtn");
+            if (createBtn) {
+                createBtn.onclick = async function() {
+                    let name = document.getElementById("playerName").value;
+                    await createCharacter(name, selectedClass);
+                };
+            }
             return;
         }
         
-        const cls = CLASSES[game.class];
-        const stats = getCurrentStats();
-        const currentLoc = LOCATIONS[game.location];
-        const isBossDefeated = game.completedLocations.includes(game.location);
-        const need = currentLoc?.monstersRequired || 15;
-        const canFightBoss = game.monstersKilled >= need || game.isAdmin;
+        let currentLoc = LOCATIONS[game.location];
+        let isBossDefeated = game.completedLocations.includes(game.location);
+        let canFightBoss = game.monstersKilled >= game.needToKill || game.isAdmin;
         
+        // Блок кнопок боя
         let fightButtons = "";
         if (!currentLoc.isDungeon) {
             if (!isBossDefeated) {
-                fightButtons = `
-                    <div style="display:flex; gap:8px; margin:10px 0;">
-                        <button id="randomFightBtn" style="flex:1;">⚔️ Сражаться</button>
-                        <button id="autoFightBtn" class="autofight-btn ${game.autoFightActive?'active':''}" style="flex:1;">${game.autoFightActive?'🟢 АВТОБОЙ ВКЛ':'🔴 АВТОБОЙ'}</button>
-                    </div>
-                    <div class="fight-counter">🏆 Побед: ${game.monstersKilled}/${need}${!canFightBoss?` | ❗Нужно убить ещё ${need-game.monstersKilled} монстров`:' ✅ БОСС ДОСТУПЕН!'}</div>
-                    ${canFightBoss?`<button id="bossFightBtn" class="boss-btn" style="width:100%;">👑 БРОСИТЬ ВЫЗОВ БОССУ ${currentLoc.boss?.icon||'👑'} 👑</button>`:`<div class="fight-counter" style="background:#5a3e2e;">🔒 БОСС ЗАБЛОКИРОВАН 🔒<br>Убейте ${need-game.monstersKilled} монстров</div>`}
-                `;
+                fightButtons = '<div style="display:flex; gap:8px; margin:10px 0;">';
+                fightButtons += '<button id="randomFightBtn" style="flex:1;">⚔️ Сражаться</button>';
+                fightButtons += '<button id="autoFightBtn" class="autofight-btn ' + (game.autoFightActive ? 'active' : '') + '" style="flex:1;">' + (game.autoFightActive ? '🟢 АВТОБОЙ ВКЛ' : '🔴 АВТОБОЙ') + '</button>';
+                fightButtons += '</div>';
+                fightButtons += '<div class="fight-counter">🏆 Побед: ' + game.monstersKilled + '/' + game.needToKill;
+                if (!canFightBoss) {
+                    fightButtons += ' | ❗Нужно убить ещё ' + (game.needToKill - game.monstersKilled) + ' монстров';
+                } else {
+                    fightButtons += ' | ✅ БОСС ДОСТУПЕН!';
+                }
+                fightButtons += '</div>';
+                if (canFightBoss) {
+                    fightButtons += '<button id="bossFightBtn" class="boss-btn" style="width:100%;">👑 БРОСИТЬ ВЫЗОВ БОССУ ' + (currentLoc.boss ? currentLoc.boss.icon : '👑') + ' 👑</button>';
+                } else {
+                    fightButtons += '<div class="fight-counter" style="background:#5a3e2e;">🔒 БОСС ЗАБЛОКИРОВАН 🔒<br>Убейте ' + (game.needToKill - game.monstersKilled) + ' монстров</div>';
+                }
             } else {
-                fightButtons = `<div class="fight-counter" style="background:#2a6b4a;">🏆 ЛОКАЦИЯ ПРОЙДЕНА! БОСС ПОБЕЖДЁН! 🏆</div>`;
+                fightButtons = '<div class="fight-counter" style="background:#2a6b4a;">🏆 ЛОКАЦИЯ ПРОЙДЕНА! БОСС ПОБЕЖДЁН! 🏆</div>';
             }
         }
         
+        // Блок боя
         let combatBlock = "";
         if (game.inCombat && game.combatEnemy) {
-            combatBlock = `
-                <div style="background:#2a1e2e; border-radius:20px; padding:12px; margin:12px 0;">
-                    <div style="font-size:1.2rem;">${game.combatEnemy.icon} ${game.combatEnemy.name}</div>
-                    <div>❤️ ${Math.max(0,Math.floor(game.enemyCurrentHp))}/${game.combatEnemy.hp}</div>
-                    <div>⚔️ ${game.combatEnemy.str} | 🛡️ ${game.combatEnemy.def}</div>
-                    <div style="display:flex; gap:10px; margin-top:10px;">
-                        <button id="attackBtn" style="flex:1; background:#8b3c2c;">⚔️ АТАКОВАТЬ</button>
-                        <button id="potionBtn" style="flex:1; background:#2f6b4a;">💊 ЗЕЛЬЕ</button>
-                    </div>
-                </div>
-            `;
+            combatBlock = '<div style="background:#2a1e2e; border-radius:20px; padding:12px; margin:12px 0;">';
+            combatBlock += '<div style="font-size:1.2rem;">' + game.combatEnemy.icon + ' ' + game.combatEnemy.name + '</div>';
+            combatBlock += '<div>❤️ ' + Math.max(0, Math.floor(game.enemyCurrentHp)) + '/' + game.combatEnemy.hp + '</div>';
+            combatBlock += '<div>⚔️ ' + game.combatEnemy.str + ' | 🛡️ ' + game.combatEnemy.def + '</div>';
+            combatBlock += '<div style="display:flex; gap:10px; margin-top:10px;">';
+            combatBlock += '<button id="attackBtn" style="flex:1; background:#8b3c2c;">⚔️ АТАКОВАТЬ</button>';
+            combatBlock += '<button id="potionBtn" style="flex:1; background:#2f6b4a;">💊 ЗЕЛЬЕ</button>';
+            combatBlock += '</div></div>';
         }
         
+        // Админ панель
         let adminHtml = "";
         if (game.isAdmin) {
-            adminHtml = `
-                <div id="adminPanel" class="admin-panel show" style="margin-top:15px;">
-                    <b>👑 АДМИН-ПАНЕЛЬ</b><hr>
-                    <b>💰 ЗОЛОТО</b><br>
-                    <input id="adminGoldNick" class="admin-input" placeholder="Ник" style="width:40%;">
-                    <input id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500" style="width:30%;">
-                    <button onclick="adminGiveGold()">Выдать</button><hr>
-                    <b>✨ ОПЫТ</b><br>
-                    <input id="adminExpNick" class="admin-input" placeholder="Ник" style="width:40%;">
-                    <input id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300" style="width:30%;">
-                    <button onclick="adminGiveExp()">Выдать</button><hr>
-                    <b>⚡ ЭНЕРГИЯ</b><br>
-                    <input id="adminEnergyNick" class="admin-input" placeholder="Ник" style="width:40%;">
-                    <input id="adminEnergyAmount" class="admin-input" placeholder="Кол-во" value="100" style="width:30%;">
-                    <button onclick="adminGiveEnergy()">Выдать</button><hr>
-                    <b>⚠️ СБРОС</b><br>
-                    <input id="adminResetNick" class="admin-input" placeholder="Ник" style="width:40%;">
-                    <button onclick="adminResetPlayer()" style="background:#8b0000;">Сбросить</button>
-                </div>
-            `;
+            adminHtml = '<div id="adminPanel" class="admin-panel show"><b>👑 АДМИН-ПАНЕЛЬ</b><hr>';
+            adminHtml += '<b>💰 ЗОЛОТО</b><br><input id="adminGoldNick" class="admin-input" placeholder="Ник"><input id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500"><button onclick="adminGiveGold()">Выдать</button><hr>';
+            adminHtml += '<b>✨ ОПЫТ</b><br><input id="adminExpNick" class="admin-input" placeholder="Ник"><input id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300"><button onclick="adminGiveExp()">Выдать</button><hr>';
+            adminHtml += '<b>⚡ ЭНЕРГИЯ</b><br><input id="adminEnergyNick" class="admin-input" placeholder="Ник"><input id="adminEnergyAmount" class="admin-input" placeholder="Кол-во" value="100"><button onclick="adminGiveEnergy()">Выдать</button><hr>';
+            adminHtml += '<b>🎁 ПРЕДМЕТ</b><br><input id="adminItemNick" class="admin-input" placeholder="Ник"><select id="adminItemSelect" class="admin-select">';
+            for (let i = 0; i < ALL_ITEMS.length; i++) {
+                adminHtml += '<option value="' + ALL_ITEMS[i].name + '">' + ALL_ITEMS[i].name + ' (' + ALL_ITEMS[i].rarity + ')</option>';
+            }
+            adminHtml += '</select><button onclick="adminGiveItem()">Выдать</button><hr>';
+            adminHtml += '<b>⚠️ СБРОС</b><br><input id="adminResetNick" class="admin-input" placeholder="Ник"><button onclick="adminResetPlayer()" style="background:#8b0000;">Сбросить</button>';
+            adminHtml += '<hr><button onclick="toggleAdminPanel()">🔒 СКРЫТЬ ПАНЕЛЬ</button></div>';
         }
         
-        let locationButtons = Object.entries(LOCATIONS).map(([k,loc]) => {
-            let available = canAccessLocation(k);
-            let completed = game.completedLocations.includes(k);
+        // Кнопки локаций
+        let locationButtons = "";
+        for (let key in LOCATIONS) {
+            let loc = LOCATIONS[key];
+            let available = canAccessLocation(key);
+            let completed = game.completedLocations.includes(key);
             let badge = "";
-            if (loc.boss && !completed && !loc.isDungeon) badge = `<span class="boss-badge">👑</span>`;
-            if (completed && !loc.isDungeon) badge = `<span class="completed-badge">✅</span>`;
-            let isLocked = false;
-            if (k !== "village" && k !== game.location && k !== "dungeonLoc") {
-                if (game.location !== "village" && !game.completedLocations.includes(game.location) && !game.isAdmin) isLocked = true;
+            if (loc.boss && !completed && !loc.isDungeon) {
+                badge = '<span class="boss-badge" style="background:#8b0000; color:gold; padding:2px 6px; border-radius:20px; font-size:0.55rem; margin-left:4px;">👑</span>';
             }
-            return `<button class="location-btn ${!available || isLocked ? 'locked' : ''} ${completed?'completed':''}" onclick="${(!isLocked && available) ? `changeLocation('${k}')` : ''}" ${(!available || isLocked) ? 'disabled' : ''}>${loc.icon} ${loc.name} ${badge}</button>`;
-        }).join('');
+            if (completed && !loc.isDungeon) {
+                badge = '<span class="completed-badge" style="background:#2a6b4a; color:gold; padding:2px 6px; border-radius:20px; font-size:0.55rem; margin-left:4px;">✅</span>';
+            }
+            let isLocked = false;
+            if (key !== "village" && key !== game.location && key !== "dungeonLoc") {
+                if (game.location !== "village" && !game.completedLocations.includes(game.location) && !game.isAdmin) {
+                    isLocked = true;
+                }
+            }
+            let btnClass = "location-btn";
+            if (!available || isLocked) btnClass += " locked";
+            if (completed) btnClass += " completed";
+            let onclickAttr = (!isLocked && available) ? "onclick=\"changeLocation('" + key + "')\"" : "";
+            locationButtons += '<button class="' + btnClass + '" ' + onclickAttr + ' ' + ((!available || isLocked) ? 'disabled' : '') + '>' + loc.icon + ' ' + loc.name + ' ' + badge + '</button>';
+        }
         
-        const tabsHtml = `
-            <div class="tabs">
-                <div class="tab-btn ${game.activeTab==='game'?'active':''}" data-tab="game">⚔️ Игра</div>
-                <div class="tab-btn ${game.activeTab==='inventory'?'active':''}" data-tab="inventory">📦 Инвентарь</div>
-                <div class="tab-btn ${game.activeTab==='craft'?'active':''}" data-tab="craft">🔨 Крафт</div>
-                ${game.isAdmin?'<div class="tab-btn" data-tab="admin">👑 Админ</div>':''}
-            </div>
-        `;
+        // Вкладки
+        let tabsHtml = '<div class="tabs">';
+        tabsHtml += '<div class="tab-btn ' + (game.activeTab === 'game' ? 'active' : '') + '" data-tab="game">⚔️ Игра</div>';
+        tabsHtml += '<div class="tab-btn ' + (game.activeTab === 'inventory' ? 'active' : '') + '" data-tab="inventory">📦 Инвентарь</div>';
+        tabsHtml += '<div class="tab-btn ' + (game.activeTab === 'tavern' ? 'active' : '') + '" data-tab="tavern">🍺 Таверна</div>';
+        tabsHtml += '<div class="tab-btn ' + (game.activeTab === 'craft' ? 'active' : '') + '" data-tab="craft">🔨 Крафт</div>';
+        if (game.isAdmin) {
+            tabsHtml += '<div class="tab-btn ' + (game.activeTab === 'admin' ? 'active' : '') + '" data-tab="admin">👑 Админ</div>';
+        }
+        tabsHtml += '</div>';
         
-        const gameTab = `
-            <div id="tab-game" class="tab-content ${game.activeTab==='game'?'active':''}">
-                <div class="sprite-area" id="characterSprite"><div class="char-idle">${cls.icon}</div></div>
-                <div class="stats-panel">
-                    <span class="stat">❤️ ${Math.floor(stats.hp)}/${stats.maxHp}</span>
-                    <span class="stat">⚔️ ${stats.str}</span>
-                    <span class="stat">🛡️ ${stats.def}</span>
-                    <span class="stat">⭐${game.level}</span>
-                    <span class="stat">📖${game.exp}/${game.expToNext}</span>
-                    <span class="stat">💰${game.gold}</span>
-                    <span class="stat">${cls.icon} ${cls.name}</span>
-                </div>
-                <div><span>⚡ Боевая энергия: ${game.combatEnergy}/${game.maxCombatEnergy}</span><div class="energy-bar"><div class="energy-fill" style="width:${(game.combatEnergy/game.maxCombatEnergy)*100}%"></div></div></div>
-                <div><span>🚶 Энергия путешествий: ${game.travelEnergy}/${game.maxTravelEnergy}</span><div class="energy-bar"><div class="energy-fill travel" style="width:${(game.travelEnergy/game.maxTravelEnergy)*100}%"></div></div></div>
-                <div style="background:#1a1530; border-radius:20px; padding:12px; margin:12px 0;">
-                    <div style="font-size:1.2rem;">${currentLoc.icon} ${currentLoc.name}</div>
-                    ${!currentLoc.isDungeon ? fightButtons : `
-                        <div style="margin-top:10px;">
-                            <input id="floorInput" type="number" min="1" max="1000" value="${game.dungeonFloor}" style="width:80px;">
-                            <button id="goToFloorBtn">Перейти</button>
-                            <button id="fightDungeonBtn">⚔️ ${game.dungeonFloor} этаж</button>
-                            <div style="margin-top:8px;">📊 Пройдено: ${game.maxUnlockedFloor} этажей | 👑 Босс каждые 20 этажей</div>
-                        </div>
-                    `}
-                </div>
-                <div class="location-grid">${locationButtons}</div>
-                ${combatBlock}
-                <div class="message-log">💬 ${game.message}</div>
-                <div style="display:flex; gap:6px; margin-top:10px;">
-                    <button id="runToggleBtn" class="run-btn" style="flex:1;">${game.isRunning?"🚶 ВЫКЛ":"🏃‍♂️ ВКЛ"}</button>
-                    <button id="resetBtn" class="reset-btn" style="flex:1;">🔄 Сброс</button>
-                </div>
-                ${adminHtml}
-            </div>
-        `;
+        // Вкладка Игра
+        let gameTab = '<div id="tab-game" class="tab-content ' + (game.activeTab === 'game' ? 'active' : '') + '">';
+        gameTab += '<div class="sprite-area" id="characterSprite"><div class="char-' + (game.isRunning ? "running" : "idle") + '">' + cls.icon + '</div></div>';
+        gameTab += '<div class="stats-panel">';
+        gameTab += '<span class="stat">❤️ ' + Math.floor(stats.hp) + '/' + stats.maxHp + '</span>';
+        gameTab += '<span class="stat">⚔️ ' + stats.str + '</span>';
+        gameTab += '<span class="stat">🛡️ ' + stats.def + '</span>';
+        gameTab += '<span class="stat">⭐' + game.level + '</span>';
+        gameTab += '<span class="stat">📖' + game.exp + '/' + game.expToNext + '</span>';
+        gameTab += '<span class="stat">💰' + game.gold + '</span>';
+        gameTab += '<span class="stat">' + cls.icon + ' ' + cls.name + '</span>';
+        gameTab += '</div>';
         
-        const inventoryTab = `
-            <div id="tab-inventory" class="tab-content ${game.activeTab==='inventory'?'active':''}">
-                <h3 style="color:gold; text-align:center;">📦 ИНВЕНТАРЬ</h3>
-                <div class="section-title">⚔️ ЭКИПИРОВКА</div>
-                <div class="equipment-grid">
-                    <div class="equip-item"><b>⚔️ Оружие</b><br>${game.weapon?.name||"Нет"}<br>+${game.weapon?.strBonus||0} силы${game.weapon?.rarity?getRarityBadge(game.weapon.rarity):''}</div>
-                    <div class="equip-item"><b>🛡️ Броня</b><br>${game.armor?.name||"Нет"}<br>+${game.armor?.defBonus||0} защиты${game.armor?.rarity?getRarityBadge(game.armor.rarity):''}</div>
-                </div>
-                <div class="section-title">📦 ПРЕДМЕТЫ (${game.inventory.length})</div>
-                <div class="items-list">${game.inventory.map(item => `<div class="item-card" onclick="equipItem(${JSON.stringify(item).replace(/"/g,'&quot;')})"><b>${item.type==="weapon"?"⚔️":"🛡️"} ${item.name}</b><br>+${item.strBonus||item.defBonus}${getRarityBadge(item.rarity)}</div>`).join('')}</div>
-                <div class="section-title">💊 ЗЕЛЬЯ</div>
-                <div class="inventory-item"><span>🍃 Слабое (10 HP): ${game.potions.weak}</span><button class="use-potion-btn" onclick="usePotion('weak')">Исп</button></div>
-                <div class="inventory-item"><span>🧪 Среднее (25 HP): ${game.potions.medium}</span><button class="use-potion-btn" onclick="usePotion('medium')">Исп</button></div>
-                <div class="inventory-item"><span>💊 Мощное (50 HP): ${game.potions.strong}</span><button class="use-potion-btn" onclick="usePotion('strong')">Исп</button></div>
-                <div class="section-title">📦 РЕСУРСЫ</div>
-                <div class="resource-row">${Object.entries(game.resources).filter(([_,v])=>v>0).map(([r,v])=>`<span class="resource-badge">${r}: ${v}</span>`).join('')}</div>
-            </div>
-        `;
+        gameTab += '<div><span>⚡ Боевая энергия: ' + game.combatEnergy + '/' + game.maxCombatEnergy + '</span><div class="energy-bar"><div class="energy-fill" style="width:' + ((game.combatEnergy / game.maxCombatEnergy) * 100) + '%"></div></div></div>';
+        gameTab += '<div><span>🚶 Энергия путешествий: ' + game.travelEnergy + '/' + game.maxTravelEnergy + '</span><div class="energy-bar"><div class="energy-fill travel" style="width:' + ((game.travelEnergy / game.maxTravelEnergy) * 100) + '%"></div></div></div>';
         
-        const craftTab = `
-            <div id="tab-craft" class="tab-content ${game.activeTab==='craft'?'active':''}">
-                <h3 style="color:gold; text-align:center;">🔨 КРАФТ</h3>
-                <div class="craft-panel">
-                    <div class="section-title">🍃 КРАФТ ЗЕЛИЙ</div>
-                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        <button onclick="craftPotion('weak')">🍃 Слабое зелье (трава+гриб+50💰)</button>
-                        <button onclick="craftPotion('medium')">🌿 Среднее зелье</button>
-                        <button onclick="craftPotion('strong')">🌸 Мощное зелье</button>
-                    </div>
-                </div>
-            </div>
-        `;
+        gameTab += '<div style="background:#1a1530; border-radius:20px; padding:12px; margin:12px 0;">';
+        gameTab += '<div style="font-size:1.2rem;">' + currentLoc.icon + ' ' + currentLoc.name + '</div>';
         
-        const adminTab = `
-            <div id="tab-admin" class="tab-content ${game.activeTab==='admin'?'active':''}">
-                <div class="admin-panel show" style="display:block;">
-                    <b>👑 АДМИН-ПАНЕЛЬ</b><hr>
-                    <b>💰 ЗОЛОТО</b><br>
-                    <input id="adminGoldNick" class="admin-input" placeholder="Ник">
-                    <input id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500">
-                    <button onclick="adminGiveGold()">Выдать</button><hr>
-                    <b>✨ ОПЫТ</b><br>
-                    <input id="adminExpNick" class="admin-input" placeholder="Ник">
-                    <input id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300">
-                    <button onclick="adminGiveExp()">Выдать</button><hr>
-                    <b>⚡ ЭНЕРГИЯ</b><br>
-                    <input id="adminEnergyNick" class="admin-input" placeholder="Ник">
-                    <input id="adminEnergyAmount" class="admin-input" placeholder="Кол-во" value="100">
-                    <button onclick="adminGiveEnergy()">Выдать</button><hr>
-                    <b>⚠️ СБРОС</b><br>
-                    <input id="adminResetNick" class="admin-input" placeholder="Ник">
-                    <button onclick="adminResetPlayer()" style="background:#8b0000;">Сбросить</button>
-                </div>
-            </div>
-        `;
+        if (!currentLoc.isDungeon) {
+            gameTab += fightButtons;
+        } else {
+            gameTab += '<div><input id="floorInput" type="number" min="1" max="1000" value="' + game.dungeonFloor + '" style="width:80px; background:#1e1b2b; color:gold; border-radius:20px; padding:6px;">';
+            gameTab += '<button id="goToFloorBtn">Перейти</button>';
+            gameTab += '<button id="fightDungeonBtn">⚔️ ' + game.dungeonFloor + ' этаж</button>';
+            gameTab += '<div>📊 Пройдено: ' + game.maxUnlockedFloor + ' этажей | 👑 Босс каждые 20 этажей</div></div>';
+        }
         
-        container.innerHTML = tabsHtml + gameTab + inventoryTab + craftTab + (game.isAdmin ? adminTab : "");
+        gameTab += '</div>';
+        gameTab += '<div class="location-grid">' + locationButtons + '</div>';
+        gameTab += combatBlock;
+        gameTab += '<div class="message-log">💬 ' + game.message + '</div>';
+        gameTab += '<div style="display:flex; gap:6px;"><button id="runToggleBtn" class="run-btn" style="flex:1;">' + (game.isRunning ? "🚶 ВЫКЛ" : "🏃‍♂️ ВКЛ") + '</button><button id="resetBtn" class="reset-btn" style="flex:1;">🔄 Сброс</button></div>';
+        gameTab += adminHtml;
+        gameTab += '</div>';
         
-        document.querySelectorAll(".tab-btn").forEach(btn => { btn.onclick = () => { game.activeTab = btn.dataset.tab; renderGame(); }; });
-        document.getElementById("randomFightBtn")?.addEventListener("click", () => { if(game.autoFightActive) stopAutoFight(); startRandomFight(); });
-        document.getElementById("autoFightBtn")?.addEventListener("click", () => startAutoFight());
-        document.getElementById("bossFightBtn")?.addEventListener("click", () => { if(game.autoFightActive) stopAutoFight(); startBossFight(); });
-        document.getElementById("fightDungeonBtn")?.addEventListener("click", () => startDungeonFight());
-        document.getElementById("goToFloorBtn")?.addEventListener("click", () => goToFloor(parseInt(document.getElementById("floorInput")?.value||1)));
-        document.getElementById("attackBtn")?.addEventListener("click", () => combatAction("attack"));
-        document.getElementById("potionBtn")?.addEventListener("click", () => combatAction("use_potion"));
-        document.getElementById("runToggleBtn")?.addEventListener("click", () => { game.isRunning = !game.isRunning; renderGame(); });
-        document.getElementById("resetBtn")?.addEventListener("click", async () => { if(confirm("Сбросить прогресс?")) { await deleteData(`rpg_${game.telegramId||game.profileName}`); game.initialized=false; renderGame(); } });
+        // Вкладка Инвентарь
+        let inventoryTab = '<div id="tab-inventory" class="tab-content ' + (game.activeTab === 'inventory' ? 'active' : '') + '">';
+        inventoryTab += '<h3 style="color:gold; text-align:center;">📦 ИНВЕНТАРЬ</h3>';
+        inventoryTab += '<div class="stats-panel" style="justify-content:center;"><span class="stat">❤️ ' + Math.floor(stats.hp) + '/' + stats.maxHp + '</span><span class="stat">⚔️ ' + stats.str + '</span><span class="stat">🛡️ ' + stats.def + '</span><span class="stat">⭐' + game.level + '</span><span class="stat">💰' + game.gold + '</span></div>';
+        inventoryTab += '<div class="section-title" style="color:#f7d44a; font-size:0.75rem; margin:10px 0 5px 0;">⚔️ ЭКИПИРОВКА</div>';
+        inventoryTab += '<div class="equipment-grid" style="display:grid; grid-template-columns:repeat(2,1fr); gap:8px;">';
+        inventoryTab += '<div class="equip-item"><b>⚔️ Оружие</b><br>' + (game.weapon ? game.weapon.name : "Нет") + '<br>+' + (game.weapon ? (game.weapon.strBonus || 0) : 0) + ' силы' + (game.weapon && game.weapon.rarity ? getRarityBadge(game.weapon.rarity) : '') + '</div>';
+        inventoryTab += '<div class="equip-item"><b>🛡️ Броня</b><br>' + (game.armor ? game.armor.name : "Нет") + '<br>+' + (game.armor ? (game.armor.defBonus || 0) : 0) + ' защиты' + (game.armor && game.armor.rarity ? getRarityBadge(game.armor.rarity) : '') + '</div>';
+        inventoryTab += '</div>';
+        inventoryTab += '<div class="section-title" style="color:#f7d44a; font-size:0.75rem; margin:10px 0 5px 0;">📦 ПРЕДМЕТЫ</div>';
+        inventoryTab += '<div class="items-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(100px,1fr)); gap:8px; max-height:200px; overflow-y:auto;">';
+        for (let i = 0; i < game.inventory.length; i++) {
+            let item = game.inventory[i];
+            inventoryTab += '<div class="item-card" onclick="equipItem(' + JSON.stringify(item).replace(/"/g, '&quot;') + ')">';
+            inventoryTab += '<b>' + (item.type === "weapon" ? "⚔️" : "🛡️") + ' ' + item.name + '</b><br>+' + (item.strBonus || item.defBonus) + (item.rarity ? getRarityBadge(item.rarity) : '');
+            inventoryTab += '</div>';
+        }
+        inventoryTab += '</div>';
+        inventoryTab += '<div class="section-title" style="color:#f7d44a; font-size:0.75rem; margin:10px 0 5px 0;">💊 ЗЕЛЬЯ</div>';
+        inventoryTab += '<div class="inventory-item" style="background:#2a2438; padding:8px; border-radius:12px; margin-bottom:6px; display:flex; justify-content:space-between;"><span>🍃 Слабое (10 HP): ' + game.potions.weak + '</span><button class="use-potion-btn" onclick="usePotion(\'weak\')">Исп</button></div>';
+        inventoryTab += '<div class="inventory-item" style="background:#2a2438; padding:8px; border-radius:12px; margin-bottom:6px; display:flex; justify-content:space-between;"><span>🧪 Среднее (25 HP): ' + game.potions.medium + '</span><button class="use-potion-btn" onclick="usePotion(\'medium\')">Исп</button></div>';
+        inventoryTab += '<div class="inventory-item" style="background:#2a2438; padding:8px; border-radius:12px; margin-bottom:6px; display:flex; justify-content:space-between;"><span>💊 Мощное (50 HP): ' + game.potions.strong + '</span><button class="use-potion-btn" onclick="usePotion(\'strong\')">Исп</button></div>';
+        inventoryTab += '<div class="section-title" style="color:#f7d44a; font-size:0.75rem; margin:10px 0 5px 0;">📦 РЕСУРСЫ</div>';
+        inventoryTab += '<div class="resource-row" style="display:flex; flex-wrap:wrap; gap:6px; margin:8px 0;">';
+        for (let r in game.resources) {
+            if (game.resources[r] > 0) {
+                inventoryTab += '<span class="resource-badge">' + r + ': ' + game.resources[r] + '</span>';
+            }
+        }
+        inventoryTab += '</div></div>';
         
-        let sp = document.getElementById("characterSprite");
-        if(sp) sp.innerHTML = `<div class="char-${game.isRunning?"running":"idle"}">${cls.icon}</div>`;
+        // Вкладка Таверна
+        let tavernTab = '<div id="tab-tavern" class="tab-content ' + (game.activeTab === 'tavern' ? 'active' : '') + '">';
+        tavernTab += '<h3 style="color:gold; text-align:center;">🍺 ТАВЕРНА</h3>';
+        tavernTab += '<div class="npc-panel"><div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">';
+        for (let i = 0; i < NPCS.length; i++) {
+            let npc = NPCS[i];
+            tavernTab += '<button onclick="startDialog(' + JSON.stringify(npc).replace(/"/g, '&quot;') + ')">💬 ' + npc.icon + ' ' + npc.name + '</button>';
+        }
+        tavernTab += '</div></div></div>';
+        
+        // Вкладка Крафт
+        let craftTab = '<div id="tab-craft" class="tab-content ' + (game.activeTab === 'craft' ? 'active' : '') + '">';
+        craftTab += '<h3 style="color:gold; text-align:center;">🔨 МАСТЕРСКАЯ КРАФТА</h3>';
+        craftTab += '<div class="craft-panel">';
+        craftTab += '<div class="section-title" style="color:#f7d44a;">🍃 КРАФТ ЗЕЛИЙ</div>';
+        craftTab += '<div style="display:flex; gap:8px; flex-wrap:wrap;">';
+        craftTab += '<button onclick="craftPotion(\'weak\')">🍃 Слабое зелье (трава+гриб+50💰)</button>';
+        craftTab += '<button onclick="craftPotion(\'medium\')">🌿 Среднее зелье</button>';
+        craftTab += '<button onclick="craftPotion(\'strong\')">🌸 Мощное зелье</button>';
+        craftTab += '</div>';
+        craftTab += '<div class="section-title" style="color:#f7d44a; margin-top:15px;">💎 МИФИЧЕСКИЕ ПРЕДМЕТЫ</div>';
+        craftTab += '<div class="message-log">Собирайте ресурсы с боссов подземелья 100+ этажа!</div>';
+        craftTab += '</div></div>';
+        
+        // Вкладка Админ
+        let adminTab = '';
+        if (game.isAdmin) {
+            adminTab = '<div id="tab-admin" class="tab-content ' + (game.activeTab === 'admin' ? 'active' : '') + '">';
+            adminTab += '<div class="admin-panel show" style="display:block;">';
+            adminTab += '<b>👑 АДМИН-ПАНЕЛЬ</b><hr>';
+            adminTab += '<b>💰 ЗОЛОТО</b><br><input id="adminGoldNick" class="admin-input" placeholder="Ник"><input id="adminGoldAmount" class="admin-input" placeholder="Сумма" value="500"><button onclick="adminGiveGold()">Выдать</button><hr>';
+            adminTab += '<b>✨ ОПЫТ</b><br><input id="adminExpNick" class="admin-input" placeholder="Ник"><input id="adminExpAmount" class="admin-input" placeholder="Опыт" value="300"><button onclick="adminGiveExp()">Выдать</button><hr>';
+            adminTab += '<b>⚡ ЭНЕРГИЯ</b><br><input id="adminEnergyNick" class="admin-input" placeholder="Ник"><input id="adminEnergyAmount" class="admin-input" placeholder="Кол-во" value="100"><button onclick="adminGiveEnergy()">Выдать</button><hr>';
+            adminTab += '<b>🎁 ПРЕДМЕТ</b><br><input id="adminItemNick" class="admin-input" placeholder="Ник"><select id="adminItemSelect" class="admin-select">';
+            for (let i = 0; i < ALL_ITEMS.length; i++) {
+                adminTab += '<option value="' + ALL_ITEMS[i].name + '">' + ALL_ITEMS[i].name + ' (' + ALL_ITEMS[i].rarity + ')</option>';
+            }
+            adminTab += '</select><button onclick="adminGiveItem()">Выдать</button><hr>';
+            adminTab += '<b>⚠️ СБРОС</b><br><input id="adminResetNick" class="admin-input" placeholder="Ник"><button onclick="adminResetPlayer()" style="background:#8b0000;">Сбросить</button>';
+            adminTab += '</div></div>';
+        }
+        
+        container.innerHTML = tabsHtml + gameTab + inventoryTab + tavernTab + craftTab + adminTab;
+        
+        // Обработчики событий
+        let randomFightBtn = document.getElementById("randomFightBtn");
+        if (randomFightBtn) {
+            randomFightBtn.onclick = function() {
+                if (game.autoFightActive) stopAutoFight();
+                startRandomFight();
+            };
+        }
+        
+        let autoFightBtn = document.getElementById("autoFightBtn");
+        if (autoFightBtn) {
+            autoFightBtn.onclick = function() {
+                startAutoFight();
+            };
+        }
+        
+        let bossFightBtn = document.getElementById("bossFightBtn");
+        if (bossFightBtn) {
+            bossFightBtn.onclick = function() {
+                if (game.autoFightActive) stopAutoFight();
+                startBossFight();
+            };
+        }
+        
+        let fightDungeonBtn = document.getElementById("fightDungeonBtn");
+        if (fightDungeonBtn) {
+            fightDungeonBtn.onclick = function() {
+                startDungeonFight();
+            };
+        }
+        
+        let goToFloorBtn = document.getElementById("goToFloorBtn");
+        if (goToFloorBtn) {
+            goToFloorBtn.onclick = function() {
+                let floorInput = document.getElementById("floorInput");
+                let floor = floorInput ? parseInt(floorInput.value) : game.dungeonFloor;
+                goToFloor(floor);
+            };
+        }
+        
+        let attackBtn = document.getElementById("attackBtn");
+        if (attackBtn) {
+            attackBtn.onclick = function() {
+                combatAction("attack");
+            };
+        }
+        
+        let potionBtn = document.getElementById("potionBtn");
+        if (potionBtn) {
+            potionBtn.onclick = function() {
+                combatAction("use_potion");
+            };
+        }
+        
+        let runToggleBtn = document.getElementById("runToggleBtn");
+        if (runToggleBtn) {
+            runToggleBtn.onclick = function() {
+                game.isRunning = !game.isRunning;
+                renderGame();
+            };
+        }
+        
+        let resetBtn = document.getElementById("resetBtn");
+        if (resetBtn) {
+            resetBtn.onclick = async function() {
+                if (confirm("Сбросить прогресс?")) {
+                    await deleteData("rpg_" + (game.telegramId || game.profileName));
+                    game.initialized = false;
+                    renderGame();
+                }
+            };
+        }
+        
+        let tabBtns = document.querySelectorAll(".tab-btn");
+        for (let i = 0; i < tabBtns.length; i++) {
+            let btn = tabBtns[i];
+            btn.onclick = function() {
+                let tab = this.getAttribute("data-tab");
+                game.activeTab = tab;
+                renderGame();
+            };
+        }
+        
+        let spriteDiv = document.getElementById("characterSprite");
+        if (spriteDiv) {
+            spriteDiv.innerHTML = '<div class="char-' + (game.isRunning ? "running" : "idle") + '">' + cls.icon + '</div>';
+        }
     }
     
-    // АДМИН ФУНКЦИИ (глобальные)
-    window.adminGiveGold = async () => { if (!game.isAdmin) return; let nick = document.getElementById("adminGoldNick")?.value; let amount = parseInt(document.getElementById("adminGoldAmount")?.value); if (!nick) { game.message = "❌ Введите ник!"; renderGame(); return; } const data = await loadData(`rpg_${nick}`); if (data) { let target = JSON.parse(data); target.gold = (target.gold || 0) + (isNaN(amount) ? 500 : amount); await saveData(`rpg_${nick}`, JSON.stringify(target)); game.message = `👑 Выдано ${amount}💰 игроку ${nick}`; } else { game.message = `❌ Игрок ${nick} не найден!`; } renderGame(); };
-    window.adminGiveExp = async () => { if (!game.isAdmin) return; let nick = document.getElementById("adminExpNick")?.value; let amount = parseInt(document.getElementById("adminExpAmount")?.value); if (!nick) { game.message = "❌ Введите ник!"; renderGame(); return; } const data = await loadData(`rpg_${nick}`); if (data) { let target = JSON.parse(data); target.exp = (target.exp || 0) + (isNaN(amount) ? 300 : amount); while (target.exp >= target.expToNext) { target.exp -= target.expToNext; target.level++; target.maxCombatEnergy += 5; target.maxTravelEnergy += 2; target.expToNext = Math.floor(target.expToNext * 1.2); } await saveData(`rpg_${nick}`, JSON.stringify(target)); game.message = `👑 Выдано ${amount}✨ опыта игроку ${nick}`; } else { game.message = `❌ Игрок ${nick} не найден!`; } renderGame(); };
-    window.adminGiveEnergy = async () => { if (!game.isAdmin) return; let nick = document.getElementById("adminEnergyNick")?.value; let amount = parseInt(document.getElementById("adminEnergyAmount")?.value); if (!nick) { game.message = "❌ Введите ник!"; renderGame(); return; } const data = await loadData(`rpg_${nick}`); if (data) { let target = JSON.parse(data); target.combatEnergy = Math.min(target.maxCombatEnergy, (target.combatEnergy || 0) + (isNaN(amount) ? 100 : amount)); target.travelEnergy = Math.min(target.maxTravelEnergy, (target.travelEnergy || 0) + (isNaN(amount) ? 50 : amount)); await saveData(`rpg_${nick}`, JSON.stringify(target)); game.message = `👑 Выдано ${amount}⚡ энергии игроку ${nick}`; } else { game.message = `❌ Игрок ${nick} не найден!`; } renderGame(); };
-    window.adminResetPlayer = async () => { if (!game.isAdmin) return; let nick = document.getElementById("adminResetNick")?.value; if (!nick) { game.message = "❌ Введите ник!"; renderGame(); return; } if (confirm(`Сбросить прогресс игрока "${nick}"?`)) { await deleteData(`rpg_${nick}`); game.message = `👑 Прогресс игрока ${nick} сброшен!`; renderGame(); } };
-    
     window.changeLocation = changeLocation;
-    window.usePotion = usePotion;
+    window.startDialog = startDialog;
+    window.buyItem = buyItem;
     window.craftPotion = craftPotion;
+    window.buyEnergy = buyEnergy;
+    window.closeDialog = closeDialog;
+    window.usePotion = usePotion;
     window.equipItem = equipItem;
+    window.adminGiveGold = adminGiveGold;
+    window.adminGiveExp = adminGiveExp;
+    window.adminGiveEnergy = adminGiveEnergy;
+    window.adminGiveItem = adminGiveItem;
+    window.adminResetPlayer = adminResetPlayer;
+    window.toggleAdminPanel = toggleAdminPanel;
     
     renderGame();
 </script>
