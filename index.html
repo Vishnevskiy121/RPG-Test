@@ -29,7 +29,7 @@
         .class-option { background: #2a2438; padding: 8px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #f7d44a; font-size: 0.7rem; }
         .class-option.selected { background: #f7d44a; color: #1e1b2b; }
         .shop-item { background: #1e3a2a; padding: 8px 12px; border-radius: 20px; margin: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.75rem; }
-        .admin-panel { background: #1a1a2a; border-radius: 24px; padding: 12px; margin-top: 12px; border: 1px solid #ff4444; }
+        .admin-panel { background: #1a1a2a; border-radius: 24px; padding: 12px; margin-top: 12px; border: 2px solid #ff4444; box-shadow: 0 0 10px rgba(255,0,0,0.3); }
         .admin-panel button { background: #3a2c45; margin: 4px; font-size: 0.7rem; padding: 6px 10px; }
         .craft-item { background: #1e2a3a; border-radius: 16px; padding: 10px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center; }
         .quest-item { background: #2a1e2a; border-radius: 16px; padding: 10px; margin: 6px 0; }
@@ -58,16 +58,17 @@
 
 <script>
     // ========== АДМИН ДОСТУП ==========
-    let isAdmin = false;
-    // Проверка через Telegram WebApp
+    // ДЛЯ ТЕСТА АДМИН-ПАНЕЛЬ ВКЛЮЧЕНА ВСЕГДА
+    // Уберите комментарий со следующей строки, если хотите проверить панель в браузере
+    let isAdmin = true;  // <-- ВРЕМЕННО ВКЛЮЧЕНО ДЛЯ ТЕСТА! Потом можно убрать или оставить только для Telegram
+    
+    // Реальная проверка через Telegram (если нужно)
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
         const user = window.Telegram.WebApp.initDataUnsafe.user;
         if (user.username === "dirtyyyyn" || String(user.id) === "1198178866") {
             isAdmin = true;
         }
     }
-    // Для теста в браузере (закомментировано, раскомментировать только для отладки)
-    // isAdmin = true;
     
     // ========== 16 КЛАССОВ ==========
     const CLASSES = {
@@ -936,21 +937,24 @@
         let invHtml = game.inventory.map((it, idx) => `<div class="item-card" onclick="equipItem(${JSON.stringify(it).replace(/"/g, '&quot;')})"><span class="rarity-${it.rarity || 'common'}">${it.type === "weapon" ? "⚔️" : "🛡️"} ${it.name} +${it.strBonus || it.defBonus}</span></div>`).join('');
         let resHtml = Object.entries(game.resources).filter(([k, v]) => v > 0).map(([r, v]) => `${r}: ${v}`).join(' | ');
         
-        // Админ-панель (только для админа)
-        let adminBlock = isAdmin ? `<div class="admin-panel">
-            <b>👑 АДМИН ПАНЕЛЬ</b><br>
-            <button onclick="adminAddGold(100000)">💰 +100k золота</button>
-            <button onclick="adminAddGold(1000000)">💰 +1M золота</button>
-            <button onclick="adminAddExp(5000)">✨ +5000 опыта</button>
-            <button onclick="adminAddExp(50000)">✨ +50000 опыта</button>
-            <button onclick="adminSetLevel()">⭐ Установить уровень</button>
-            <button onclick="game.travelEnergy=game.maxTravelEnergy; saveGame(); renderGame();">⚡ Восст. энергию</button>
-            <button onclick="game.dungeonFloor+=50; game.maxUnlockedFloor=Math.max(game.maxUnlockedFloor,game.dungeonFloor); updateQuestProgress('dungeon',null,0); saveGame(); renderGame();">📈 +50 этажей</button>
-            <button onclick="adminAddResources()">💎 Миф. ресурсы +10</button>
-            <button onclick="adminAddItem()">⚔️ Выдать предмет</button>
-            <button onclick="adminResetPlayer()">🔄 Сбросить игрока по нику</button>
-            <button onclick="resetGame()">⚠️ Сбросить свой прогресс</button>
-        </div>` : '';
+        // ========== АДМИН-ПАНЕЛЬ (ВИДНА ТОЛЬКО АДМИНУ) ==========
+        let adminBlock = '';
+        if (isAdmin) {
+            adminBlock = `<div class="admin-panel">
+                <b>👑 АДМИН ПАНЕЛЬ</b><br>
+                <button onclick="adminAddGold(100000)">💰 +100k золота</button>
+                <button onclick="adminAddGold(1000000)">💰 +1M золота</button>
+                <button onclick="adminAddExp(5000)">✨ +5000 опыта</button>
+                <button onclick="adminAddExp(50000)">✨ +50000 опыта</button>
+                <button onclick="adminSetLevel()">⭐ Установить уровень</button>
+                <button onclick="game.travelEnergy=game.maxTravelEnergy; saveGame(); renderGame();">⚡ Восст. энергию</button>
+                <button onclick="game.dungeonFloor+=50; game.maxUnlockedFloor=Math.max(game.maxUnlockedFloor,game.dungeonFloor); updateQuestProgress('dungeon',null,0); saveGame(); renderGame();">📈 +50 этажей</button>
+                <button onclick="adminAddResources()">💎 Миф. ресурсы +10</button>
+                <button onclick="adminAddItem()">⚔️ Выдать предмет</button>
+                <button onclick="adminResetPlayer()">🔄 Сбросить игрока по нику</button>
+                <button onclick="resetGame()">⚠️ Сбросить свой прогресс</button>
+            </div>`;
+        }
         
         // Основной HTML с 4 вкладками (Бой, Торговец, Таверна, Инвентарь + Админ если есть)
         let tabsHtml = `
