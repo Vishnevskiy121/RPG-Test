@@ -29,7 +29,7 @@
         .class-option { background: #2a2438; padding: 8px; border-radius: 20px; text-align: center; cursor: pointer; border: 1px solid #f7d44a; font-size: 0.7rem; }
         .class-option.selected { background: #f7d44a; color: #1e1b2b; }
         .shop-item { background: #1e3a2a; padding: 8px 12px; border-radius: 20px; margin: 6px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; font-size: 0.75rem; }
-        .admin-panel { background: #1a1a2a; border-radius: 24px; padding: 12px; margin-top: 12px; border: 1px solid red; }
+        .admin-panel { background: #1a1a2a; border-radius: 24px; padding: 12px; margin-top: 12px; border: 1px solid #ff4444; }
         .admin-panel button { background: #3a2c45; margin: 4px; font-size: 0.7rem; padding: 6px 10px; }
         .craft-item { background: #1e2a3a; border-radius: 16px; padding: 10px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center; }
         .quest-item { background: #2a1e2a; border-radius: 16px; padding: 10px; margin: 6px 0; }
@@ -46,6 +46,11 @@
         .progress-fill { background: #4cff4c; height: 100%; transition: width 0.2s; }
         .save-load-panel { background: #2a1e3a; border-radius: 16px; padding: 10px; margin: 10px 0; }
         .daily-reset { font-size: 0.65rem; color: #f7d44a; text-align: center; margin-top: 8px; }
+        .trader-section { border: 1px solid #f7d44a33; border-radius: 24px; padding: 12px; margin: 8px 0; background: #1a1628aa; }
+        .trader-section h4 { margin: 0 0 8px 0; color: #f7d44a; }
+        hr { border-color: #f7d44a33; margin: 12px 0; }
+        .message-log { background: #000000aa; border-radius: 20px; padding: 10px; font-size: 0.7rem; max-height: 90px; overflow-y: auto; }
+        .fight-block { background: #2a1a2a; border-radius: 28px; padding: 14px; text-align: center; margin: 12px 0; }
     </style>
 </head>
 <body>
@@ -54,12 +59,15 @@
 <script>
     // ========== АДМИН ДОСТУП ==========
     let isAdmin = false;
+    // Проверка через Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe && window.Telegram.WebApp.initDataUnsafe.user) {
         const user = window.Telegram.WebApp.initDataUnsafe.user;
         if (user.username === "dirtyyyyn" || String(user.id) === "1198178866") {
             isAdmin = true;
         }
     }
+    // Для теста в браузере (закомментировано, раскомментировать только для отладки)
+    // isAdmin = true;
     
     // ========== 16 КЛАССОВ ==========
     const CLASSES = {
@@ -81,11 +89,11 @@
         warlock: { name:"Чернокнижник", icon:"🔮", weapon:"Скрижаль проклятий", strBonus:12, hpBonus:5, defBonus:1, crit:15, dodge:6 }
     };
 
-    // ========== ЛОКАЦИИ С МОНСТРАМИ (расширенные) ==========
+    // ========== ЛОКАЦИИ С МОНСТРАМИ ==========
     const LOCATION_MONSTERS = {
-        village: ["Гоблин", "Крыса", "Скелет-новичок", "Разбойник", "Беглый каторжник", "Городской стражник"],
-        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух", "Древесный элементаль", "Лесная ведьма", "Волколак", "Лесной тролль"],
-        swamp: ["Болотная тварь", "Зомби", "Болотный змей", "Гнилой тролль", "Болотный демон", "Кровососущая пиявка", "Призрак болота"],
+        village: ["Гоблин", "Крыса", "Скелет-новичок", "Разбойник", "Беглый каторжник"],
+        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух", "Древесный элементаль", "Волколак", "Лесной тролль"],
+        swamp: ["Болотная тварь", "Зомби", "Болотный змей", "Гнилой тролль", "Болотный демон", "Призрак болота"],
         mountains: ["Горный орк", "Каменный голем", "Пещерный тролль", "Горный дракончик", "Снежный барс", "Каменный великан"],
         desert: ["Пустынный скорпион", "Кочевник-разбойник", "Песчаный демон", "Мумия", "Пустынный червь", "Король скорпионов"],
         frozen: ["Ледяной волк", "Снежный великан", "Белый дракончик", "Вьюжный дух", "Ледяной голем", "Снежная ведьма"],
@@ -94,25 +102,25 @@
         canyon: ["Каньонный стервятник", "Пещерный медведь", "Ветряной призрак", "Каменный скорпион", "Великан-ветер"],
         ruins: ["Древний скелет", "Призрак рыцаря", "Каменный страж", "Дух руин", "Древний голем"],
         castle: ["Закованный рыцарь", "Придворный маг", "Темный стражник", "Королевский убийца", "Тёмный рыцарь"],
-        crypt: ["Могильный червь", "Лич-некромант", "Призрачный воин", "Костяной дракон", "Вампир", "Полтергейст"],
+        crypt: ["Могильный червь", "Лич-некромант", "Призрачный воин", "Костяной дракон", "Вампир"],
         labyrinth: ["Лабиринтный минотавр", "Хаотический демон", "Иллюзия-убийца", "Хранитель лабиринта", "Горгона"],
         abyss: ["Бездонный ужас", "Теневой демон", "Пожиратель душ", "Черный дракон", "Демон бездны"],
         heaven: ["Серафим", "Ангел-целитель", "Небесный лев", "Архангел-страж", "Херувим"],
         hell: ["Адский пес", "Демон-копьеносец", "Инкуб", "Повелитель пламени", "Владыка ада"],
         astral: ["Астральный зверь", "Звездный призрак", "Космический голем", "Маг времени", "Астральный титан"],
-        void: ["Пустотный слизень", "Пожиратель реальности", "Темный двойник", "Властелин пустоты", "Пожиратель миров"],
+        void: ["Пустотный слизень", "Пожиратель реальности", "Темный двойник", "Властелин пустоты"],
         dragonpeak: ["Молодой дракон", "Драконий рыцарь", "Огненный дракон", "Древний дракон", "Король драконов"],
         titangrave: ["Титан-страж", "Глыбовой голем", "Землетрясный дух", "Павший титан", "Титан-разрушитель"],
         elvenforest: ["Лесной эльф", "Дриада", "Единорог", "Древний энт", "Древний эльф"],
-        dwarfmines: ["Гном-боец", "Подземный тролль", "Кристальный голем", "Король гномов", "Пещерный дракон"],
-        orcstronghold: ["Орк-берсерк", "Орк-шаман", "Волк орков", "Вождь орков", "Орк-генерал"],
-        undeadcity: ["Вампир", "Призрак", "Костяной рыцарь", "Лич-король", "Некромант-архимаг"],
-        fairykingdom: ["Фея света", "Пегас", "Цветочный дух", "Королева фей", "Дракон-фея"],
-        shadowrealm: ["Теневой убийца", "Сумрачный волк", "Фантом", "Повелитель теней", "Теневой дракон"],
-        chronos: ["Хранитель времени", "Парадокс", "Двойник времени", "Ткач судеб", "Повелитель времени"],
-        genesis: ["Первобытный зверь", "Древний бог", "Творец звезд", "Великий предок", "Создатель"],
-        valhalla: ["Валькирия", "Эйнхерий", "Громовой воин", "Один", "Тор"],
-        throne: ["Небесный судья", "Космический дракон", "Верховный жрец", "Верховный бог", "Творец вселенной"]
+        dwarfmines: ["Гном-боец", "Подземный тролль", "Кристальный голем", "Король гномов"],
+        orcstronghold: ["Орк-берсерк", "Орк-шаман", "Волк орков", "Вождь орков"],
+        undeadcity: ["Вампир", "Призрак", "Костяной рыцарь", "Лич-король"],
+        fairykingdom: ["Фея света", "Пегас", "Цветочный дух", "Королева фей"],
+        shadowrealm: ["Теневой убийца", "Сумрачный волк", "Фантом", "Повелитель теней"],
+        chronos: ["Хранитель времени", "Парадокс", "Двойник времени", "Ткач судеб"],
+        genesis: ["Первобытный зверь", "Древний бог", "Творец звезд", "Великий предок"],
+        valhalla: ["Валькирия", "Эйнхерий", "Громовой воин", "Один"],
+        throne: ["Небесный судья", "Космический дракон", "Верховный жрец", "Верховный бог"]
     };
     
     const LOCATIONS = {
@@ -150,7 +158,7 @@
     
     // Боссы для каждой локации
     const LOCATION_BOSSES = {
-        village:{name:"Разбойник",hp:80,str:16,exp:150,gold:180},
+        village:{name:"Главарь разбойников",hp:80,str:16,exp:150,gold:180},
         forest:{name:"Лесной тролль",hp:180,str:32,exp:350,gold:400},
         swamp:{name:"Болотный демон",hp:290,str:48,exp:580,gold:650},
         mountains:{name:"Каменный великан",hp:420,str:66,exp:850,gold:950},
@@ -263,7 +271,6 @@
     function updateDailyShop() {
         const today = new Date().toDateString();
         if (game.lastDailyReset !== today) {
-            // Выбираем 4 случайных оружия
             const shuffledWeapons = [...ALL_WEAPONS];
             for (let i = shuffledWeapons.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -271,7 +278,6 @@
             }
             game.dailyWeapons = shuffledWeapons.slice(0, 4);
             
-            // Выбираем 3 случайных брони
             const shuffledArmors = [...ALL_ARMORS];
             for (let i = shuffledArmors.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -519,7 +525,7 @@
         if (game.inCombat) return;
         let healCost = Math.max(50, Math.floor(game.maxHp * 0.08));
         if (game.hp < game.maxHp * 0.2) {
-            game.message = `❌ Мало HP (${Math.floor(game.hp)}/${game.maxHp}), восстановитесь у алхимика за ${healCost}💰!`;
+            game.message = `❌ Мало HP (${Math.floor(game.hp)}/${game.maxHp}), восстановитесь у торговца за ${healCost}💰!`;
             renderGame();
             return;
         }
@@ -650,6 +656,20 @@
         renderGame();
     }
     
+    function buyResource(resName, cost, amount = 1) {
+        if (game.gold < cost) {
+            game.message = `💰 Нужно ${cost} золота!`;
+            renderGame();
+            return;
+        }
+        game.gold -= cost;
+        game.resources[resName] = (game.resources[resName] || 0) + amount;
+        updateQuestProgress("resource", resName, amount);
+        game.message = `🛒 Куплено: ${resName} +${amount} за ${cost}💰`;
+        saveGame();
+        renderGame();
+    }
+    
     function resetGame() {
         if (confirm("Сбросить весь прогресс? Все данные будут потеряны!")) {
             if (game.profileName) localStorage.removeItem("rpg_mega_" + game.profileName);
@@ -699,7 +719,7 @@
     
     // Админ-функции
     function adminAddGold(amount) { game.gold += amount; saveGame(); renderGame(); game.message = `👑 +${amount}💰`; renderGame(); }
-    function adminAddExp(amount) { addExp(amount); saveGame(); renderGame(); }
+    function adminAddExp(amount) { addExp(amount); }
     function adminAddResources() { 
         for(let r of ["Искра богов","Сердце демона","Звездная пыль","Мифический цветок","Кость великана"]) {
             game.resources[r] = (game.resources[r] || 0) + 10;
@@ -724,6 +744,22 @@
         if (name && name.trim()) {
             localStorage.removeItem("rpg_mega_" + name.trim());
             alert(`Прогресс игрока ${name} сброшен!`);
+        }
+    }
+    function adminSetLevel() {
+        let level = parseInt(prompt("Введите уровень:"));
+        if (level && level > 0) {
+            game.level = level;
+            game.exp = 0;
+            game.expToNext = Math.floor(100 * Math.pow(1.18, level - 1));
+            game.maxHp = 100 + (level - 1) * 15;
+            game.hp = game.maxHp;
+            game.maxTravelEnergy = 55 + (level - 1) * 3;
+            game.travelEnergy = game.maxTravelEnergy;
+            saveGame();
+            renderGame();
+            game.message = `👑 Уровень установлен на ${level}!`;
+            renderGame();
         }
     }
     
@@ -820,7 +856,7 @@
             return;
         }
         
-        // Обновляем дневные товары при каждом рендере
+        // Обновляем дневные товары
         updateDailyShop();
         
         let cls = CLASSES[game.class];
@@ -847,40 +883,38 @@
         // Боевой блок
         let fightBlock = game.inCombat ? `<div class="fight-block"><div>${game.combatEnemy.icon || "👾"} ${game.combatEnemy.name}</div><div>❤️ ${Math.max(0, game.enemyCurrentHp)}/${game.combatEnemy.hp}</div><button id="attackBtn" style="background:#8b3c2c;">⚔️ АТАКОВАТЬ</button></div>` : '';
         
-        // Кузнец с дневными товарами
-        let smithHtml = `<div style="margin:12px 0;"><b>⚒️ КУЗНЕЦ БРОНИСЛАВ</b><p>Сегодня в наличии:</p>`;
-        smithHtml += `<div style="font-size:0.7rem; color:#f7d44a;">🔄 Товары обновляются каждый день в 00:00</div>`;
-        
-        // Оружие дня
-        smithHtml += `<div style="margin-top:8px;"><b>⚔️ ОРУЖИЕ:</b></div>`;
+        // ========== ОБЪЕДИНЁННАЯ ВКЛАДКА ТОРГОВЕЦ ==========
+        let traderHtml = `<div style="margin:12px 0;">
+            <div class="trader-section">
+                <h4>⚒️ КУЗНЕЦ БРОНИСЛАВ</h4>
+                <div style="font-size:0.7rem; color:#f7d44a;">🔄 Товары обновляются каждый день в 00:00</div>
+                <div style="margin-top:8px;"><b>⚔️ ОРУЖИЕ:</b></div>`;
         game.dailyWeapons.forEach(w => {
-            smithHtml += `<div class="shop-item"><span class="rarity-${w.rarity}">${w.type === "weapon" ? "⚔️" : "🛡️"} ${w.name}</span> +${w.strBonus || w.defBonus} <button onclick="buyItem(${JSON.stringify(w).replace(/"/g, '&quot;')})">${w.price}💰</button></div>`;
+            traderHtml += `<div class="shop-item"><span class="rarity-${w.rarity}">⚔️ ${w.name}</span> +${w.strBonus} <button onclick="buyItem(${JSON.stringify(w).replace(/"/g, '&quot;')})">${w.price}💰</button></div>`;
         });
-        
-        // Броня дня
-        smithHtml += `<div style="margin-top:8px;"><b>🛡️ БРОНЯ:</b></div>`;
+        traderHtml += `<div style="margin-top:8px;"><b>🛡️ БРОНЯ:</b></div>`;
         game.dailyArmors.forEach(a => {
-            smithHtml += `<div class="shop-item"><span class="rarity-${a.rarity}">🛡️ ${a.name}</span> +${a.defBonus} <button onclick="buyItem(${JSON.stringify(a).replace(/"/g, '&quot;')})">${a.price}💰</button></div>`;
+            traderHtml += `<div class="shop-item"><span class="rarity-${a.rarity}">🛡️ ${a.name}</span> +${a.defBonus} <button onclick="buyItem(${JSON.stringify(a).replace(/"/g, '&quot;')})">${a.price}💰</button></div>`;
         });
-        
-        // Крафт
-        smithHtml += `<hr><b>🔨 КРАФТ (уникальные предметы):</b>`;
+        traderHtml += `<hr><b>🔨 КРАФТ (уникальные предметы):</b>`;
         CRAFT_ITEMS.forEach(item => {
             let reqStr = Object.entries(item.craftCost).map(([r, a]) => `${r}: ${a}`).join(", ");
-            smithHtml += `<div class="craft-item"><div><b class="rarity-${item.rarity}">${item.name}</b> +${item.strBonus || item.defBonus}<br><span style="font-size:0.65rem;">${reqStr}</span></div><button onclick="craftItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">СКРАФТИТЬ</button></div>`;
+            traderHtml += `<div class="craft-item"><div><b class="rarity-${item.rarity}">${item.name}</b> +${item.strBonus || item.defBonus}<br><span style="font-size:0.65rem;">${reqStr}</span></div><button onclick="craftItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">СКРАФТИТЬ</button></div>`;
         });
-        smithHtml += `<div class="daily-reset">⏰ Следующее обновление: завтра в 00:00</div></div>`;
-        
-        // Алхимик
-        let alchemistHtml = `<div style="margin:12px 0;"><b>🧪 АЛХИМИК МЕЛИССА</b>
-        <div class="shop-item">🧴 Лечебное зелье (+${Math.floor(game.maxHp * 0.35)} HP) <button onclick="usePotion()">${healCost}💰</button></div>
-        <div class="shop-item">⚡ Энергетический эликсир <button onclick="restoreEnergy()">${energyCost}💰</button></div>
-        <div class="shop-item">🌿 Целебная трава <button onclick="if(game.gold>=50){game.gold-=50; game.resources['Целебная трава']=(game.resources['Целебная трава']||0)+1; updateQuestProgress('resource','Целебная трава',1); renderGame();}else alert('Мало золота')">50💰</button></div>
-        <div class="shop-item">💎 Железная руда <button onclick="if(game.gold>=80){game.gold-=80; game.resources['Железная руда']=(game.resources['Железная руда']||0)+1; renderGame();}else alert('Мало золота')">80💰</button></div>
-        <div class="shop-item">✨ Малая эссенция <button onclick="if(game.gold>=200){game.gold-=200; game.resources['Малая эссенция']=(game.resources['Малая эссенция']||0)+1; renderGame();}else alert('Мало золота')">200💰</button></div>
+        traderHtml += `</div>
+            <div class="trader-section">
+                <h4>🧪 АЛХИМИК МЕЛИССА</h4>
+                <div class="shop-item">🧴 Лечебное зелье (+${Math.floor(game.maxHp * 0.35)} HP) <button onclick="usePotion()">${healCost}💰</button></div>
+                <div class="shop-item">⚡ Энергетический эликсир <button onclick="restoreEnergy()">${energyCost}💰</button></div>
+                <div class="shop-item">🌿 Целебная трава <button onclick="buyResource('Целебная трава', 50, 1)">50💰</button></div>
+                <div class="shop-item">💎 Железная руда <button onclick="buyResource('Железная руда', 80, 1)">80💰</button></div>
+                <div class="shop-item">✨ Малая эссенция <button onclick="buyResource('Малая эссенция', 200, 1)">200💰</button></div>
+                <div class="shop-item">💎 Мифриловая руда <button onclick="buyResource('Мифриловая руда', 500, 1)">500💰</button></div>
+            </div>
+            <div class="daily-reset">⏰ Следующее обновление товаров: завтра в 00:00</div>
         </div>`;
         
-        // Таверна
+        // Таверна с квестами
         let tavernHtml = `<div style="margin:12px 0;"><b>🍺 ТРАКТИРЩИК ГРОМ</b><p>Что привело тебя, путник? Хочешь заработать?</p>`;
         AVAILABLE_QUESTS.forEach(q => {
             let taken = game.activeQuests.some(aq => aq.id === q.id);
@@ -902,32 +936,33 @@
         let invHtml = game.inventory.map((it, idx) => `<div class="item-card" onclick="equipItem(${JSON.stringify(it).replace(/"/g, '&quot;')})"><span class="rarity-${it.rarity || 'common'}">${it.type === "weapon" ? "⚔️" : "🛡️"} ${it.name} +${it.strBonus || it.defBonus}</span></div>`).join('');
         let resHtml = Object.entries(game.resources).filter(([k, v]) => v > 0).map(([r, v]) => `${r}: ${v}`).join(' | ');
         
-        // Админ-панель
+        // Админ-панель (только для админа)
         let adminBlock = isAdmin ? `<div class="admin-panel">
             <b>👑 АДМИН ПАНЕЛЬ</b><br>
             <button onclick="adminAddGold(100000)">💰 +100k золота</button>
             <button onclick="adminAddGold(1000000)">💰 +1M золота</button>
             <button onclick="adminAddExp(5000)">✨ +5000 опыта</button>
             <button onclick="adminAddExp(50000)">✨ +50000 опыта</button>
+            <button onclick="adminSetLevel()">⭐ Установить уровень</button>
             <button onclick="game.travelEnergy=game.maxTravelEnergy; saveGame(); renderGame();">⚡ Восст. энергию</button>
             <button onclick="game.dungeonFloor+=50; game.maxUnlockedFloor=Math.max(game.maxUnlockedFloor,game.dungeonFloor); updateQuestProgress('dungeon',null,0); saveGame(); renderGame();">📈 +50 этажей</button>
             <button onclick="adminAddResources()">💎 Миф. ресурсы +10</button>
-            <button onclick="adminAddItem()">⚔️ Выдать предмет по нику</button>
+            <button onclick="adminAddItem()">⚔️ Выдать предмет</button>
             <button onclick="adminResetPlayer()">🔄 Сбросить игрока по нику</button>
             <button onclick="resetGame()">⚠️ Сбросить свой прогресс</button>
         </div>` : '';
         
-        // Основной HTML
-        container.innerHTML = `
+        // Основной HTML с 4 вкладками (Бой, Торговец, Таверна, Инвентарь + Админ если есть)
+        let tabsHtml = `
         <div class="tab-bar">
             <div class="tab-btn ${game.activeTab === 'game' ? 'active' : ''}" data-tab="game">⚔️ БОЙ</div>
-            <div class="tab-btn ${game.activeTab === 'inventory' ? 'active' : ''}" data-tab="inventory">📦 ИНВЕНТАРЬ</div>
+            <div class="tab-btn ${game.activeTab === 'trader' ? 'active' : ''}" data-tab="trader">🏪 ТОРГОВЕЦ</div>
             <div class="tab-btn ${game.activeTab === 'tavern' ? 'active' : ''}" data-tab="tavern">🍺 ТАВЕРНА</div>
-            <div class="tab-btn ${game.activeTab === 'smith' ? 'active' : ''}" data-tab="smith">⚒️ КУЗНЕЦ</div>
-            <div class="tab-btn ${game.activeTab === 'alchemist' ? 'active' : ''}" data-tab="alchemist">🧪 АЛХИМИК</div>
+            <div class="tab-btn ${game.activeTab === 'inventory' ? 'active' : ''}" data-tab="inventory">📦 ИНВЕНТАРЬ</div>
             ${isAdmin ? `<div class="tab-btn ${game.activeTab === 'admin' ? 'active' : ''}" data-tab="admin">👑 АДМИН</div>` : ''}
-        </div>
+        </div>`;
         
+        container.innerHTML = tabsHtml + `
         <div id="tab-game" class="tab-content ${game.activeTab === 'game' ? 'active' : ''}">
             <div class="stats-panel">
                 ${['❤️ ' + Math.floor(game.hp) + '/' + game.maxHp, '⚔️ ' + getStrength(), '🛡️ ' + getDefense(), `⭐ Ур.${game.level}`, `💰 ${game.gold}`, `✨ ${game.exp}/${game.expToNext}`].map(s => `<span class="stat">${s}</span>`).join('')}
@@ -956,6 +991,14 @@
             </div>
         </div>
         
+        <div id="tab-trader" class="tab-content ${game.activeTab === 'trader' ? 'active' : ''}">
+            ${traderHtml}
+        </div>
+        
+        <div id="tab-tavern" class="tab-content ${game.activeTab === 'tavern' ? 'active' : ''}">
+            ${tavernHtml}
+        </div>
+        
         <div id="tab-inventory" class="tab-content ${game.activeTab === 'inventory' ? 'active' : ''}">
             <div><b>⚔️ ОРУЖИЕ:</b> <span class="rarity-${game.weapon?.rarity || 'common'}">${game.weapon?.name || "нет"} +${game.weapon?.strBonus || 0}</span><br>
             <b>🛡️ БРОНЯ:</b> <span class="rarity-${game.armor?.rarity || 'common'}">${game.armor?.name || "нет"} +${game.armor?.defBonus || 0}</span></div>
@@ -964,18 +1007,6 @@
             <div class="items-grid" style="display:flex; flex-wrap:wrap; gap:6px;">${invHtml}</div>
             <hr>
             <div><b>🌿 РЕСУРСЫ ДЛЯ КРАФТА:</b><br><span style="font-size:0.7rem;">${resHtml || "Нет ресурсов"}</span></div>
-        </div>
-        
-        <div id="tab-tavern" class="tab-content ${game.activeTab === 'tavern' ? 'active' : ''}">
-            ${tavernHtml}
-        </div>
-        
-        <div id="tab-smith" class="tab-content ${game.activeTab === 'smith' ? 'active' : ''}">
-            ${smithHtml}
-        </div>
-        
-        <div id="tab-alchemist" class="tab-content ${game.activeTab === 'alchemist' ? 'active' : ''}">
-            ${alchemistHtml}
         </div>
         
         <div id="tab-admin" class="tab-content ${game.activeTab === 'admin' ? 'active' : ''}">
@@ -998,11 +1029,12 @@
         });
     }
     
-    // Глобальные функции для вызова из HTML
+    // Глобальные функции
     window.changeLocation = changeLocation;
     window.equipItem = equipItem;
     window.craftItem = craftItem;
     window.buyItem = buyItem;
+    window.buyResource = buyResource;
     window.usePotion = usePotion;
     window.restoreEnergy = restoreEnergy;
     window.takeQuest = takeQuest;
@@ -1014,6 +1046,7 @@
     window.adminAddResources = adminAddResources;
     window.adminAddItem = adminAddItem;
     window.adminResetPlayer = adminResetPlayer;
+    window.adminSetLevel = adminSetLevel;
     
     renderGame();
 </script>
