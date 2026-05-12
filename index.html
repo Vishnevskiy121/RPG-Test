@@ -61,12 +61,8 @@
         .resource-mythic { background: #ff44aa22; border-left: 3px solid #ff44aa; }
         .admin-login { background: #1a1a2a; border-radius: 24px; padding: 20px; text-align: center; margin: 20px 0; border: 1px solid #f7d44a; }
         .item-select-list { max-height: 400px; overflow-y: auto; margin: 10px 0; padding: 10px; background: #1a1628; border-radius: 16px; }
-        .item-select-option { padding: 6px 10px; margin: 4px; background: #2a2438; border-radius: 8px; cursor: pointer; font-size: 0.7rem; display: inline-block; transition: 0.1s; }
-        .item-select-option:hover { background: #f7d44a; color: #1e1b2b; transform: scale(1.02); }
-        .rarity-filter { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; justify-content: center; }
-        .rarity-filter-btn { background: #2a2438; padding: 5px 12px; border-radius: 20px; font-size: 0.7rem; cursor: pointer; }
-        .rarity-filter-btn.active { background: #f7d44a; color: #1e1b2b; }
-        .item-search { width: 100%; padding: 8px; margin: 8px 0; background: #2a2438; border: 1px solid #f7d44a; border-radius: 20px; color: white; }
+        .item-select-option { padding: 6px 10px; margin: 4px; background: #2a2438; border-radius: 8px; cursor: pointer; font-size: 0.7rem; display: inline-block; }
+        .item-select-option:hover { background: #f7d44a; color: #1e1b2b; }
         
         .tutorial-overlay {
             position: fixed;
@@ -100,8 +96,6 @@
         .tutorial-card h2 { color: #f7d44a; text-align: center; margin-top: 0; font-size: 1.5rem; }
         .tutorial-card h3 { color: #ffaa44; margin: 15px 0 5px 0; font-size: 1.1rem; }
         .tutorial-card p { font-size: 0.9rem; line-height: 1.4; margin: 8px 0; color: #ddd; }
-        .tutorial-card ul { margin: 8px 0; padding-left: 20px; }
-        .tutorial-card li { margin: 5px 0; font-size: 0.85rem; }
         .tutorial-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
         .tutorial-buttons button { padding: 10px 20px; font-size: 0.9rem; }
         .tutorial-step { background: #2a2438; border-radius: 20px; padding: 12px; margin: 12px 0; }
@@ -111,24 +105,25 @@
 <div class="game-container" id="rpgGame"></div>
 
 <script>
-    // ========== АДМИН ДОСТУП (по паролю для всех) ==========
+    // ========== АДМИН ДОСТУП (ПО ПАРОЛЮ) ==========
     let isAdmin = false;
-    let adminPassword = "Vlados_Vladosik123";
+    const ADMIN_PASSWORD = "Vlados_Vladosik123";
     
+    // Функция входа в админ-панель
     function adminLogin() {
         let password = prompt("🔐 Введите пароль администратора:");
-        if (password === adminPassword) {
+        if (password === ADMIN_PASSWORD) {
             isAdmin = true;
-            game.message = "👑 Админ-режим активирован! Теперь вам доступны все функции.";
+            game.message = "👑 Админ-режим активирован!";
             renderGame();
         } else {
-            alert("❌ Неверный пароль! Доступ запрещён.");
+            alert("❌ Неверный пароль!");
         }
     }
     
     function adminLogout() {
         isAdmin = false;
-        game.message = "👋 Вы вышли из админ-режима.";
+        game.message = "👋 Админ-режим деактивирован.";
         renderGame();
     }
     
@@ -141,46 +136,34 @@
         mythic: ["Звездная пыль", "Мифический цветок"]
     };
     
-    // ========== ВСЕ ПРЕДМЕТЫ ИГРЫ ДЛЯ ВЫДАЧИ ==========
+    // Все предметы для выдачи
     const ALL_ITEMS_FOR_ADMIN = [
-        // Обычное оружие
         {name:"Ржавый меч",type:"weapon",strBonus:5,rarity:"common"},
         {name:"Короткий меч",type:"weapon",strBonus:8,rarity:"common"},
         {name:"Стальной меч",type:"weapon",strBonus:12,rarity:"common"},
         {name:"Длинный меч",type:"weapon",strBonus:16,rarity:"common"},
-        // Редкое оружие
         {name:"Серебряный клинок",type:"weapon",strBonus:30,rarity:"rare"},
         {name:"Зачарованный меч",type:"weapon",strBonus:40,rarity:"rare"},
         {name:"Ледяной клинок",type:"weapon",strBonus:50,rarity:"rare"},
-        // Эпическое оружие
         {name:"Драконий клинок",type:"weapon",strBonus:100,rarity:"epic"},
         {name:"Молния-меч",type:"weapon",strBonus:120,rarity:"epic"},
         {name:"Святой меч",type:"weapon",strBonus:160,rarity:"epic"},
-        // Легендарное оружие
         {name:"Легенда о герое",type:"weapon",strBonus:250,rarity:"legendary"},
         {name:"Экскалибур",type:"weapon",strBonus:300,rarity:"legendary"},
-        // Крафтовое легендарное оружие
         {name:"Кузнечный шедевр",type:"weapon",strBonus:280,rarity:"legendary"},
-        // Мифическое оружие
         {name:"Космический разрушитель",type:"weapon",strBonus:550,rarity:"mythic"},
         {name:"Бесконечность",type:"weapon",strBonus:750,rarity:"mythic"},
-        // Обычная броня
         {name:"Кожаный доспех",type:"armor",defBonus:5,rarity:"common"},
         {name:"Стеганая броня",type:"armor",defBonus:10,rarity:"common"},
         {name:"Кольчуга",type:"armor",defBonus:18,rarity:"common"},
         {name:"Ламеллярный доспех",type:"armor",defBonus:28,rarity:"common"},
-        // Редкая броня
         {name:"Стальные латы",type:"armor",defBonus:40,rarity:"rare"},
         {name:"Мифриловые латы",type:"armor",defBonus:65,rarity:"rare"},
-        // Эпическая броня
         {name:"Драконья чешуя",type:"armor",defBonus:95,rarity:"epic"},
         {name:"Броня феникса",type:"armor",defBonus:130,rarity:"epic"},
-        // Легендарная броня
         {name:"Легендарная броня",type:"armor",defBonus:200,rarity:"legendary"},
         {name:"Божественный доспех",type:"armor",defBonus:300,rarity:"legendary"},
-        // Крафтовая легендарная броня
         {name:"Титан-доспех",type:"armor",defBonus:250,rarity:"legendary"},
-        // Мифическая броня
         {name:"Астральная броня",type:"armor",defBonus:500,rarity:"mythic"},
         {name:"Панцирь Создателя",type:"armor",defBonus:1000,rarity:"mythic"}
     ];
@@ -194,12 +177,7 @@
                 let save = localStorage.getItem(key);
                 try {
                     let data = JSON.parse(save);
-                    players.push({
-                        name: name,
-                        level: data.level || 1,
-                        gold: data.gold || 0,
-                        class: data.class || "warrior"
-                    });
+                    players.push({ name: name, level: data.level || 1, gold: data.gold || 0, class: data.class || "warrior" });
                 } catch(e) {
                     players.push({ name: name, level: "?", gold: "?" });
                 }
@@ -216,18 +194,13 @@
         }
     }
     
-    // Выдача предмета по нику (с возможностью указать количество)
     function adminGiveItemToPlayer(item) {
         let playerName = prompt("Введите ник игрока:");
         if (!playerName) return;
         let save = localStorage.getItem("rpg_mega_" + playerName);
-        if (!save) {
-            alert("Игрок не найден!");
-            return;
-        }
-        let amount = parseInt(prompt("Введите количество (сколько раз выдать этот предмет):", "1"));
+        if (!save) { alert("Игрок не найден!"); return; }
+        let amount = parseInt(prompt("Введите количество:", "1"));
         if (isNaN(amount) || amount < 1) amount = 1;
-        
         try {
             let playerData = JSON.parse(save);
             if (!playerData.inventory) playerData.inventory = [];
@@ -236,9 +209,7 @@
             }
             localStorage.setItem("rpg_mega_" + playerName, JSON.stringify(playerData));
             game.message = `👑 Выдал ${item.name} x${amount} игроку ${playerName}!`;
-        } catch(e) {
-            alert("Ошибка при выдаче предмета!");
-        }
+        } catch(e) { alert("Ошибка!"); }
         renderGame();
     }
     
@@ -246,11 +217,8 @@
         let playerName = prompt("Введите ник игрока:");
         if (!playerName) return;
         let save = localStorage.getItem("rpg_mega_" + playerName);
-        if (!save) {
-            alert("Игрок не найден!");
-            return;
-        }
-        let resourceName = prompt("Введите название ресурса (Целебная трава, Искра богов и т.д.):");
+        if (!save) { alert("Игрок не найден!"); return; }
+        let resourceName = prompt("Введите название ресурса:");
         let amount = parseInt(prompt("Введите количество:", "10"));
         if (!resourceName || isNaN(amount)) return;
         try {
@@ -289,6 +257,22 @@
         }
     }
     
+    function adminAddGold(amount) { game.gold += amount; saveGame(); renderGame(); game.message = `👑 +${amount}💰`; renderGame(); }
+    function adminAddExp(amount) { addExp(amount); }
+    function adminAddResources() { 
+        for(let r of RESOURCES_BY_RARITY.mythic) game.resources[r] = (game.resources[r] || 0) + 5;
+        for(let r of RESOURCES_BY_RARITY.legendary) game.resources[r] = (game.resources[r] || 0) + 10;
+        saveGame(); renderGame();
+    }
+    function adminAddAllResources() {
+        for (let rarity in RESOURCES_BY_RARITY) {
+            for (let r of RESOURCES_BY_RARITY[rarity]) {
+                game.resources[r] = (game.resources[r] || 0) + 30;
+            }
+        }
+        saveGame(); renderGame();
+    }
+    
     // ========== 16 КЛАССОВ ==========
     const CLASSES = {
         warrior: { name:"Воин", icon:"🗡️", weapon:"Двуручный меч", strBonus:8, hpBonus:15, defBonus:5, crit:9, dodge:5 },
@@ -309,29 +293,29 @@
         warlock: { name:"Чернокнижник", icon:"🔮", weapon:"Скрижаль проклятий", strBonus:12, hpBonus:5, defBonus:1, crit:15, dodge:6 }
     };
 
-    // ========== ЛОКАЦИИ (сокращённо для экономии места, но все работают) ==========
+    // ========== ЛОКАЦИИ ==========
     const LOCATION_MONSTERS = {
         village: ["Гоблин", "Крыса", "Скелет-новичок", "Разбойник"],
-        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух", "Волколак", "Лесной тролль"],
+        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух", "Волколак"],
         swamp: ["Болотная тварь", "Зомби", "Болотный змей", "Гнилой тролль", "Болотный демон"],
-        mountains: ["Горный орк", "Каменный голем", "Пещерный тролль", "Горный дракончик", "Каменный великан"],
-        desert: ["Пустынный скорпион", "Кочевник-разбойник", "Песчаный демон", "Мумия", "Король скорпионов"],
-        frozen: ["Ледяной волк", "Снежный великан", "Белый дракончик", "Вьюжный дух", "Ледяной голем"],
-        volcano: ["Огненный элементаль", "Лавовый слизень", "Огненный гончий", "Вулканический голем", "Огненный гигант"],
-        jungle: ["Ядовитая лягушка", "Ягуар", "Тропический удав", "Шаман племени", "Ягуар-оборотень"],
-        canyon: ["Каньонный стервятник", "Пещерный медведь", "Ветряной призрак", "Каменный скорпион", "Великан-ветер"],
-        ruins: ["Древний скелет", "Призрак рыцаря", "Каменный страж", "Дух руин", "Древний голем"],
-        castle: ["Закованный рыцарь", "Придворный маг", "Темный стражник", "Королевский убийца", "Тёмный рыцарь"],
-        crypt: ["Могильный червь", "Лич-некромант", "Призрачный воин", "Костяной дракон", "Вампир"],
-        labyrinth: ["Лабиринтный минотавр", "Хаотический демон", "Иллюзия-убийца", "Хранитель лабиринта", "Горгона"],
-        abyss: ["Бездонный ужас", "Теневой демон", "Пожиратель душ", "Черный дракон", "Демон бездны"],
-        heaven: ["Серафим", "Ангел-целитель", "Небесный лев", "Архангел-страж", "Херувим"],
-        hell: ["Адский пес", "Демон-копьеносец", "Инкуб", "Повелитель пламени", "Владыка ада"],
-        astral: ["Астральный зверь", "Звездный призрак", "Космический голем", "Маг времени", "Астральный титан"],
+        mountains: ["Горный орк", "Каменный голем", "Пещерный тролль", "Горный дракончик"],
+        desert: ["Пустынный скорпион", "Кочевник-разбойник", "Песчаный демон", "Мумия"],
+        frozen: ["Ледяной волк", "Снежный великан", "Белый дракончик", "Вьюжный дух"],
+        volcano: ["Огненный элементаль", "Лавовый слизень", "Огненный гончий", "Вулканический голем"],
+        jungle: ["Ядовитая лягушка", "Ягуар", "Тропический удав", "Шаман племени"],
+        canyon: ["Каньонный стервятник", "Пещерный медведь", "Ветряной призрак", "Каменный скорпион"],
+        ruins: ["Древний скелет", "Призрак рыцаря", "Каменный страж", "Дух руин"],
+        castle: ["Закованный рыцарь", "Придворный маг", "Темный стражник", "Королевский убийца"],
+        crypt: ["Могильный червь", "Лич-некромант", "Призрачный воин", "Костяной дракон"],
+        labyrinth: ["Лабиринтный минотавр", "Хаотический демон", "Иллюзия-убийца", "Хранитель лабиринта"],
+        abyss: ["Бездонный ужас", "Теневой демон", "Пожиратель душ", "Черный дракон"],
+        heaven: ["Серафим", "Ангел-целитель", "Небесный лев", "Архангел-страж"],
+        hell: ["Адский пес", "Демон-копьеносец", "Инкуб", "Повелитель пламени"],
+        astral: ["Астральный зверь", "Звездный призрак", "Космический голем", "Маг времени"],
         void: ["Пустотный слизень", "Пожиратель реальности", "Темный двойник", "Властелин пустоты"],
-        dragonpeak: ["Молодой дракон", "Драконий рыцарь", "Огненный дракон", "Древний дракон", "Король драконов"],
-        titangrave: ["Титан-страж", "Глыбовой голем", "Землетрясный дух", "Павший титан", "Титан-разрушитель"],
-        elvenforest: ["Лесной эльф", "Дриада", "Единорог", "Древний энт", "Древний эльф"],
+        dragonpeak: ["Молодой дракон", "Драконий рыцарь", "Огненный дракон", "Древний дракон"],
+        titangrave: ["Титан-страж", "Глыбовой голем", "Землетрясный дух", "Павший титан"],
+        elvenforest: ["Лесной эльф", "Дриада", "Единорог", "Древний энт"],
         dwarfmines: ["Гном-боец", "Подземный тролль", "Кристальный голем", "Король гномов"],
         orcstronghold: ["Орк-берсерк", "Орк-шаман", "Волк орков", "Вождь орков"],
         undeadcity: ["Вампир", "Призрак", "Костяной рыцарь", "Лич-король"],
@@ -669,17 +653,19 @@
                 if (game.dungeonFloor > game.maxUnlockedFloor) game.maxUnlockedFloor = game.dungeonFloor;
                 game.message += ` 📈 Этаж ${game.dungeonFloor}!`;
                 updateQuestProgress("dungeon", null, 0);
+                // В подземелье: 30% шанс, любые ресурсы
                 if (Math.random() < 0.3) {
-                    let allResources = [...RESOURCES_BY_RARITY.common, ...RESOURCES_BY_RARITY.rare, ...RESOURCES_BY_RARITY.epic];
+                    let allResources = [...RESOURCES_BY_RARITY.common, ...RESOURCES_BY_RARITY.rare, ...RESOURCES_BY_RARITY.epic, ...RESOURCES_BY_RARITY.legendary, ...RESOURCES_BY_RARITY.mythic];
                     let res = allResources[Math.floor(Math.random() * allResources.length)];
                     game.resources[res] = (game.resources[res] || 0) + 1;
                     updateQuestProgress("resource", res, 1);
                     game.message += ` 📦 +${res}`;
                 }
             } else {
-                if (Math.random() < 0.35) {
-                    let allResources = [...RESOURCES_BY_RARITY.common, ...RESOURCES_BY_RARITY.rare];
-                    let res = allResources[Math.floor(Math.random() * allResources.length)];
+                // В обычных локациях: 15% шанс, только обычные и редкие ресурсы
+                if (Math.random() < 0.15) {
+                    let normalResources = [...RESOURCES_BY_RARITY.common, ...RESOURCES_BY_RARITY.rare];
+                    let res = normalResources[Math.floor(Math.random() * normalResources.length)];
                     game.resources[res] = (game.resources[res] || 0) + 1;
                     updateQuestProgress("resource", res, 1);
                     game.message += ` 🌿 +${res}`;
@@ -855,23 +841,6 @@
         renderGame();
     }
     
-    // Админ-функции
-    function adminAddGold(amount) { game.gold += amount; saveGame(); renderGame(); game.message = `👑 +${amount}💰`; renderGame(); }
-    function adminAddExp(amount) { addExp(amount); }
-    function adminAddResources() { 
-        for(let r of RESOURCES_BY_RARITY.mythic) game.resources[r] = (game.resources[r] || 0) + 5;
-        for(let r of RESOURCES_BY_RARITY.legendary) game.resources[r] = (game.resources[r] || 0) + 10;
-        saveGame(); renderGame();
-    }
-    function adminAddAllResources() {
-        for (let rarity in RESOURCES_BY_RARITY) {
-            for (let r of RESOURCES_BY_RARITY[rarity]) {
-                game.resources[r] = (game.resources[r] || 0) + 30;
-            }
-        }
-        saveGame(); renderGame();
-    }
-    
     function createCharacter(name, cls) {
         if (!name.trim()) return;
         let c = CLASSES[cls];
@@ -908,6 +877,28 @@
         showTutorial();
     }
     
+    // Фразы трактирщика (МЕНЯЮТСЯ при каждом нажатии)
+    const tavernPhrases = [
+        "Хорошего дня, {name}! 🍻",
+        "Осторожнее в пути, путник! 🛡️",
+        "Заходи ещё, выпьем эля! 🍺",
+        "Боги да благословят тебя! ⚡",
+        "Слышал, на востоке появились новые монстры... 👹",
+        "Эй, герой, не хочешь заработать? У меня есть работёнка! 💰",
+        "Говорят, в подземелье нашли древний артефакт... 🏺",
+        "Берегись темных сил, путник! 🌑",
+        "Сегодня эль особенный, угощаю по дружбе! 🍻",
+        "Твоя слава растёт с каждым днём! ⭐",
+        "В таверне сегодня горячий ужин, угощаю! 🍲",
+        "Слухи ходят, что король ищет героев! 👑"
+    ];
+    
+    function talkToTavern() {
+        let randomPhrase = tavernPhrases[Math.floor(Math.random() * tavernPhrases.length)];
+        game.message = `🍺 Гром: ${randomPhrase.replace("{name}", game.profileName)}`;
+        renderGame();
+    }
+    
     function showTutorial() {
         if (game.tutorialShown) return;
         game.tutorialShown = true;
@@ -918,10 +909,10 @@
                 <h2>📜 ДОБРО ПОЖАЛОВАТЬ, ГЕРОЙ!</h2>
                 <div class="tutorial-step"><h3>⚔️ 1. БОЙ</h3><p>Нажимай «БОЙ» — сражайся с монстрами. После 8 побед появится БОСС. Получай ОПЫТ и ЗОЛОТО!</p></div>
                 <div class="tutorial-step"><h3>🗺️ 2. ЛОКАЦИИ</h3><p>Перемещайся по карте. Каждая локация сложнее предыдущей. Нужен определённый уровень.</p></div>
-                <div class="tutorial-step"><h3>🏰 3. ПОДЗЕМЕЛЬЕ</h3><p>Бесконечные этажи. Чем выше — тем сильнее враги и награда!</p></div>
+                <div class="tutorial-step"><h3>🏰 3. ПОДЗЕМЕЛЬЕ</h3><p>Бесконечные этажи. Чем выше — тем сильнее враги и награда! Здесь чаще падают ресурсы.</p></div>
                 <div class="tutorial-step"><h3>🏪 4. ТОРГОВЕЦ</h3><p>У Кузнеца покупай ОРУЖИЕ и БРОНЮ (обновляется каждый день) или крафти уникальные предметы.<br>У Алхимика покупай ЗЕЛЬЯ, ЭНЕРГИЮ и РЕСУРСЫ.</p></div>
-                <div class="tutorial-step"><h3>🍺 5. ТАВЕРНА</h3><p>Бери КВЕСТЫ — получай награды!</p></div>
-                <div class="tutorial-step"><h3>👑 6. АДМИН-ПАНЕЛЬ</h3><p>Вкладка «👑 АДМИН» — введи пароль <b>${adminPassword}</b> для доступа к функциям выдачи предметов, золота и управления игроками.</p></div>
+                <div class="tutorial-step"><h3>🍺 5. ТАВЕРНА</h3><p>Бери КВЕСТЫ — получай награды за убийства, сбор ресурсов и прохождение подземелья.</p></div>
+                <div class="tutorial-step"><h3>📦 6. ИНВЕНТАРЬ</h3><p>Кликай на предмет — экипируй его. Смотри свои ресурсы для крафта.</p></div>
                 <div class="tutorial-buttons"><button onclick="closeTutorial()">✨ ПОНЯЛ, НАЧИНАЮ!</button></div>
             </div>
         `;
@@ -929,13 +920,6 @@
     }
     
     function closeTutorial() { let overlay = document.querySelector('.tutorial-overlay'); if (overlay) overlay.remove(); }
-    
-    const tavernPhrases = [
-        "Хорошего дня, {name}!", "Осторожнее в пути, путник!", "Заходи ещё, выпьем эля!",
-        "Боги да благословят тебя!", "Слышал, на востоке появились новые монстры...",
-        "Эй, герой, не хочешь заработать?", "Говорят, в подземелье нашли древний артефакт..."
-    ];
-    function talkToTavern() { game.message = `🍺 Гром: ${tavernPhrases[Math.floor(Math.random() * tavernPhrases.length)].replace("{name}", game.profileName)}`; renderGame(); }
     
     function renderGame() {
         let container = document.getElementById("rpgGame");
@@ -953,7 +937,7 @@
                 Object.keys(CLASSES).map(k => `<div class="class-option ${selected === k ? 'selected' : ''}" data-class="${k}">${CLASSES[k].icon} ${CLASSES[k].name}<br><span style="font-size:0.6rem;">⚔️ ${CLASSES[k].strBonus} 💪 ${CLASSES[k].hpBonus}</span></div>`).join('') +
                 `</div><input id="pname" placeholder="Имя героя"><button id="createBtn" style="background:#f7d44a;">🚀 НАЧАТЬ</button>`;
             container.innerHTML = clsHtml;
-            document.getElementById("createBtn").onclick = () => { createCharacter(document.getElementById("pname").value, selected); showTutorial(); };
+            document.getElementById("createBtn").onclick = () => { createCharacter(document.getElementById("pname").value, selected); };
             document.querySelectorAll(".class-option").forEach(el => {
                 el.onclick = function() {
                     document.querySelectorAll(".class-option").forEach(c => c.classList.remove("selected"));
@@ -997,7 +981,7 @@
         
         let invHtml = game.inventory.map(it => `<div class="item-card" onclick="equipItem(${JSON.stringify(it).replace(/"/g, '&quot;')})"><span class="rarity-${it.rarity || 'common'}">${it.type === "weapon" ? "⚔️" : "🛡️"} ${it.name} +${it.strBonus || it.defBonus}</span></div>`).join('');
         
-        // Админ-панель
+        // Админ-панель (видна всем, но доступ только по паролю)
         let adminBlock = '';
         if (isAdmin) {
             let players = getAllPlayers();
