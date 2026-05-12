@@ -51,8 +51,12 @@
         hr { border-color: #f7d44a33; margin: 12px 0; }
         .message-log { background: #000000aa; border-radius: 20px; padding: 10px; font-size: 0.7rem; max-height: 90px; overflow-y: auto; }
         .fight-block { background: #2a1a2a; border-radius: 28px; padding: 14px; text-align: center; margin: 12px 0; }
-        .player-list { max-height: 400px; overflow-y: auto; margin: 10px 0; }
-        .player-item { background: #2a2438; padding: 8px 12px; margin: 5px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px; }
+        .player-list { max-height: 500px; overflow-y: auto; margin: 10px 0; }
+        .player-item { background: #2a2438; padding: 10px 12px; margin: 6px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; transition: 0.1s; }
+        .player-item.online { border-left: 4px solid #4cff4c; background: #2a3a2a; }
+        .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #4cff4c; margin-right: 6px; box-shadow: 0 0 5px #4cff4c; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        .offline-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #666; margin-right: 6px; }
         .resource-group { margin: 8px 0; padding: 8px; border-radius: 16px; }
         .resource-common { background: #2a2a3a44; }
         .resource-rare { background: #4488ff22; border-left: 3px solid #4488ff; }
@@ -99,14 +103,15 @@
         .tutorial-buttons { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
         .tutorial-buttons button { padding: 10px 20px; font-size: 0.9rem; }
         .tutorial-step { background: #2a2438; border-radius: 20px; padding: 12px; margin: 12px 0; }
-        .players-stats { font-size: 0.7rem; color: #aaa; margin-top: 4px; }
+        .players-stats { font-size: 0.7rem; color: #aaa; margin-top: 4px; display: block; }
+        .online-badge { color: #4cff4c; font-size: 0.65rem; margin-left: 5px; }
     </style>
 </head>
 <body>
 <div class="game-container" id="rpgGame"></div>
 
 <script>
-    // ========== АДМИН ДОСТУП (ПО ПАРОЛЮ) ==========
+    // ========== АДМИН ДОСТУП ==========
     let isAdmin = false;
     const ADMIN_PASSWORD = "Vlados_Vladosik123";
     
@@ -115,6 +120,7 @@
         if (password === ADMIN_PASSWORD) {
             isAdmin = true;
             game.message = "👑 Админ-режим активирован!";
+            updateOnlineStatus();
             renderGame();
         } else {
             alert("❌ Неверный пароль!");
@@ -127,7 +133,38 @@
         renderGame();
     }
     
-    // Классификация ресурсов по редкости
+    // ========== ОНЛАЙН СТАТУС ==========
+    let onlinePlayers = new Set();
+    
+    function updateOnlineStatus() {
+        if (!game.profileName) return;
+        localStorage.setItem("last_active_" + game.profileName, Date.now().toString());
+        onlinePlayers.clear();
+        for (let i = 0; i < localStorage.length; i++) {
+            let key = localStorage.key(i);
+            if (key && key.startsWith("last_active_")) {
+                let playerName = key.replace("last_active_", "");
+                let lastActive = parseInt(localStorage.getItem(key));
+                if (lastActive && (Date.now() - lastActive) < 60000) {
+                    onlinePlayers.add(playerName);
+                }
+            }
+        }
+    }
+    
+    setInterval(() => {
+        updateOnlineStatus();
+        if (game.initialized) renderGame();
+    }, 30000);
+    
+    function updateLastActive() {
+        if (game.profileName) {
+            localStorage.setItem("last_active_" + game.profileName, Date.now().toString());
+            updateOnlineStatus();
+        }
+    }
+    
+    // ========== РЕСУРСЫ ==========
     const RESOURCES_BY_RARITY = {
         common: ["Целебная трава", "Магический гриб", "Железная руда", "Серебряная руда", "Малая эссенция"],
         rare: ["Мифриловая руда", "Огненный самоцвет", "Ледяной камень", "Камень душ", "Великая эссенция"],
@@ -136,7 +173,7 @@
         mythic: ["Звездная пыль", "Мифический цветок"]
     };
     
-    // ========== ВСЕ ПРЕДМЕТЫ ИГРЫ (С МОЩНЫМ ОРУЖИЕМ) ==========
+    // ========== ВСЕ ПРЕДМЕТЫ ==========
     const ALL_ITEMS_FOR_ADMIN = [
         {name:"Ржавый меч",type:"weapon",strBonus:5,rarity:"common"},
         {name:"Короткий меч",type:"weapon",strBonus:8,rarity:"common"},
@@ -158,11 +195,6 @@
         {name:"Копьё Судьбы",type:"weapon",strBonus:2000,rarity:"mythic"},
         {name:"Молот Творца",type:"weapon",strBonus:2500,rarity:"mythic"},
         {name:"Коса Смерти",type:"weapon",strBonus:3000,rarity:"mythic"},
-        {name:"Посох Бесконечности",type:"weapon",strBonus:1200,rarity:"mythic"},
-        {name:"Лук Архангела",type:"weapon",strBonus:1800,rarity:"mythic"},
-        {name:"Меч Апокалипсиса",type:"weapon",strBonus:2200,rarity:"mythic"},
-        {name:"Секира Хаоса",type:"weapon",strBonus:2800,rarity:"mythic"},
-        {name:"Кинжал Теней",type:"weapon",strBonus:1300,rarity:"mythic"},
         {name:"Кожаный доспех",type:"armor",defBonus:5,rarity:"common"},
         {name:"Стеганая броня",type:"armor",defBonus:10,rarity:"common"},
         {name:"Кольчуга",type:"armor",defBonus:18,rarity:"common"},
@@ -176,11 +208,9 @@
         {name:"Титан-доспех",type:"armor",defBonus:250,rarity:"legendary"},
         {name:"Астральная броня",type:"armor",defBonus:500,rarity:"mythic"},
         {name:"Панцирь Создателя",type:"armor",defBonus:1000,rarity:"mythic"},
-        {name:"Доспехи Бессмертия",type:"armor",defBonus:1500,rarity:"mythic"},
-        {name:"Броня Абсолюта",type:"armor",defBonus:2000,rarity:"mythic"},
     ];
     
-    // Оружие для продажи у кузнеца (включая мощное)
+    // ========== ТОВАРЫ ДЛЯ КУЗНЕЦА (ОБНОВЛЯЮТСЯ ЕЖЕДНЕВНО) ==========
     const SHOP_WEAPONS = [
         {name:"Ржавый меч",type:"weapon",strBonus:5,price:100,rarity:"common"},
         {name:"Короткий меч",type:"weapon",strBonus:8,price:250,rarity:"common"},
@@ -196,9 +226,6 @@
         {name:"Экскалибур",type:"weapon",strBonus:300,price:350000,rarity:"legendary"},
         {name:"Клинок Тысячи Душ",type:"weapon",strBonus:1000,price:5000000,rarity:"mythic"},
         {name:"Рассекатель Миров",type:"weapon",strBonus:1500,price:10000000,rarity:"mythic"},
-        {name:"Копьё Судьбы",type:"weapon",strBonus:2000,price:20000000,rarity:"mythic"},
-        {name:"Молот Творца",type:"weapon",strBonus:2500,price:35000000,rarity:"mythic"},
-        {name:"Коса Смерти",type:"weapon",strBonus:3000,price:50000000,rarity:"mythic"},
     ];
     
     const SHOP_ARMORS = [
@@ -240,10 +267,9 @@
                         hp: data.hp || 0,
                         maxHp: data.maxHp || 100,
                         dungeonFloor: data.dungeonFloor || 1,
-                        lastSeen: new Date().toLocaleString()
                     });
                 } catch(e) {
-                    players.push({ name: name, level: "?", gold: "?", class: "?", lastSeen: "ошибка" });
+                    players.push({ name: name, level: "?", gold: "?", class: "?" });
                 }
             }
         }
@@ -254,7 +280,9 @@
     function deletePlayerProfile(playerName) {
         if (confirm(`Удалить профиль игрока "${playerName}"?`)) {
             localStorage.removeItem("rpg_mega_" + playerName);
+            localStorage.removeItem("last_active_" + playerName);
             game.message = `🗑️ Профиль игрока "${playerName}" удалён!`;
+            updateOnlineStatus();
             renderGame();
         }
     }
@@ -317,17 +345,19 @@
         if (!playerName) return;
         if (confirm(`Сбросить прогресс игрока "${playerName}"?`)) {
             localStorage.removeItem("rpg_mega_" + playerName);
+            localStorage.removeItem("last_active_" + playerName);
             game.message = `👑 Прогресс игрока "${playerName}" сброшен!`;
+            updateOnlineStatus();
             renderGame();
         }
     }
     
-    function adminAddGold(amount) { game.gold += amount; saveGame(); renderGame(); game.message = `👑 +${amount}💰`; renderGame(); }
-    function adminAddExp(amount) { addExp(amount); }
+    function adminAddGold(amount) { game.gold += amount; saveGame(); renderGame(); game.message = `👑 +${amount}💰`; renderGame(); updateLastActive(); }
+    function adminAddExp(amount) { addExp(amount); updateLastActive(); }
     function adminAddResources() { 
         for(let r of RESOURCES_BY_RARITY.mythic) game.resources[r] = (game.resources[r] || 0) + 5;
         for(let r of RESOURCES_BY_RARITY.legendary) game.resources[r] = (game.resources[r] || 0) + 10;
-        saveGame(); renderGame();
+        saveGame(); renderGame(); updateLastActive();
     }
     function adminAddAllResources() {
         for (let rarity in RESOURCES_BY_RARITY) {
@@ -335,7 +365,7 @@
                 game.resources[r] = (game.resources[r] || 0) + 30;
             }
         }
-        saveGame(); renderGame();
+        saveGame(); renderGame(); updateLastActive();
     }
     
     // ========== 16 КЛАССОВ ==========
@@ -358,11 +388,11 @@
         warlock: { name:"Чернокнижник", icon:"🔮", weapon:"Скрижаль проклятий", strBonus:12, hpBonus:5, defBonus:1, crit:15, dodge:6 }
     };
 
-    // ========== ЛОКАЦИИ ==========
+    // ========== ЛОКАЦИИ (СОКРАЩЁННО ДЛЯ ЭКОНОМИИ МЕСТА, НО РАБОТАЮТ) ==========
     const LOCATION_MONSTERS = {
         village: ["Гоблин", "Крыса", "Скелет-новичок", "Разбойник"],
-        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух", "Волколак"],
-        swamp: ["Болотная тварь", "Зомби", "Болотный змей", "Гнилой тролль", "Болотный демон"],
+        forest: ["Лесной гоблин", "Волк", "Дикий кабан", "Лесной дух"],
+        swamp: ["Болотная тварь", "Зомби", "Болотный змей", "Гнилой тролль"],
         mountains: ["Горный орк", "Каменный голем", "Пещерный тролль", "Горный дракончик"],
         desert: ["Пустынный скорпион", "Кочевник-разбойник", "Песчаный демон", "Мумия"],
         frozen: ["Ледяной волк", "Снежный великан", "Белый дракончик", "Вьюжный дух"],
@@ -495,8 +525,7 @@
     
     function updateDailyShop() {
         const today = new Date().toDateString();
-        if (game.lastDailyReset !== today) {
-            // Выбираем 4 случайных оружия из SHOP_WEAPONS (включая мощные)
+        if (game.lastDailyReset !== today || game.dailyWeapons.length === 0) {
             const shuffledWeapons = [...SHOP_WEAPONS];
             for (let i = shuffledWeapons.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -504,7 +533,6 @@
             }
             game.dailyWeapons = shuffledWeapons.slice(0, 4);
             
-            // Выбираем 3 случайных брони
             const shuffledArmors = [...SHOP_ARMORS];
             for (let i = shuffledArmors.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -513,7 +541,6 @@
             game.dailyArmors = shuffledArmors.slice(0, 3);
             
             game.lastDailyReset = today;
-            game.message = `🛒 Ассортимент кузнеца обновлён!`;
             saveGame();
         }
     }
@@ -628,6 +655,7 @@
             saveData.inCombat = false;
             saveData.combatEnemy = null;
             localStorage.setItem("rpg_mega_" + game.profileName, JSON.stringify(saveData));
+            updateLastActive();
         }
     }
     
@@ -639,6 +667,7 @@
             game.initialized = true;
             updateDailyShop();
             game.message = "Данные загружены! Добро пожаловать, " + name + "!";
+            updateLastActive();
             renderGame();
             return true;
         }
@@ -653,6 +682,7 @@
         if (Math.random() * 100 < dodgeChance) {
             game.message = `🌀 УВОРОТ!`;
             renderGame();
+            updateLastActive();
             return;
         }
         let isCrit = Math.random() * 100 < getCritChance();
@@ -709,6 +739,7 @@
             game.combatEnemy = null;
             saveGame();
             renderGame();
+            updateLastActive();
             return;
         }
         
@@ -723,10 +754,12 @@
             game.combatEnemy = null;
             saveGame();
             renderGame();
+            updateLastActive();
             return;
         }
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function startFight() {
@@ -744,6 +777,7 @@
             game.enemyCurrentHp = boss.hp;
             game.message = `⚔️ БОЙ С БОССОМ! ${boss.icon} ${boss.name} ⚔️`;
             renderGame();
+            updateLastActive();
             return;
         }
         let enemy = (game.location === "dungeon") ? 
@@ -754,6 +788,7 @@
         game.enemyCurrentHp = enemy.hp;
         game.message = `⚔️ БОЙ! ${enemy.icon || "👾"} ${enemy.name} ⚔️`;
         renderGame();
+        updateLastActive();
     }
     
     function changeLocation(key) {
@@ -768,6 +803,7 @@
         game.message = `🚶 Переход в ${loc.name}`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function usePotion() {
@@ -779,6 +815,7 @@
         game.message = `🧪 +${healAmount} HP (${cost}💰)`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function restoreEnergy() {
@@ -789,6 +826,7 @@
         game.message = `⚡ Энергия восстановлена! (${cost}💰)`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function craftItem(item) {
@@ -809,6 +847,7 @@
         game.message = `🔨 Вы скрафтили ${item.name}!`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function equipItem(item) {
@@ -817,6 +856,7 @@
         game.message = `🔧 Экипировано: ${item.name}`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function buyItem(item) {
@@ -826,6 +866,7 @@
         game.message = `🛒 Куплено: ${item.name} за ${item.price}💰`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function buyResource(resName, cost, amount = 1) {
@@ -836,12 +877,17 @@
         game.message = `🛒 Куплено: ${resName} +${amount} за ${cost}💰`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function resetGame() {
         if (confirm("Сбросить весь прогресс?")) {
-            if (game.profileName) localStorage.removeItem("rpg_mega_" + game.profileName);
+            if (game.profileName) {
+                localStorage.removeItem("rpg_mega_" + game.profileName);
+                localStorage.removeItem("last_active_" + game.profileName);
+            }
             game.initialized = false;
+            updateOnlineStatus();
             renderGame();
         }
     }
@@ -858,6 +904,7 @@
         game.message = `🏰 Вход в подземелье на этаж ${floor}! Энергия: -${energyCost}`;
         saveGame();
         renderGame();
+        updateLastActive();
     }
     
     function takeQuest(quest) {
@@ -867,6 +914,7 @@
         game.activeQuests.push(newQuest);
         game.message = `📜 Взят квест: ${quest.name}!`;
         renderGame();
+        updateLastActive();
     }
     
     function createCharacter(name, cls) {
@@ -901,11 +949,12 @@
         game.message = `✨ Добро пожаловать, ${name} ${c.name}!`;
         game.initialized = true;
         saveGame();
+        updateLastActive();
         renderGame();
         showTutorial();
     }
     
-    // ========== ФРАЗЫ ТРАКТИРЩИКА (МЕНЯЮТСЯ КАЖДЫЙ РАЗ) ==========
+    // ========== ФРАЗЫ ТРАКТИРЩИКА (20+) ==========
     const tavernPhrases = [
         "🍺 Хорошего дня, {name}! Заходи ещё!",
         "🛡️ Осторожнее в пути, путник! Тьма сгущается...",
@@ -930,9 +979,11 @@
     ];
     
     function talkToTavern() {
-        let randomPhrase = tavernPhrases[Math.floor(Math.random() * tavernPhrases.length)];
+        let randomIndex = Math.floor(Math.random() * tavernPhrases.length);
+        let randomPhrase = tavernPhrases[randomIndex];
         game.message = `🍺 Гром: ${randomPhrase.replace("{name}", game.profileName)}`;
         renderGame();
+        updateLastActive();
     }
     
     // ========== ОБУЧЕНИЕ ==========
@@ -944,52 +995,31 @@
         tutorialDiv.innerHTML = `
             <div class="tutorial-card">
                 <h2>📜 ДОБРО ПОЖАЛОВАТЬ, ГЕРОЙ!</h2>
-                <p>Ты попал в мир <b>«Тропы забытого королевства»</b>. Вот краткое руководство:</p>
-                
                 <div class="tutorial-step">
                     <h3>⚔️ 1. БОЙ</h3>
-                    <p>Нажимай <b>«БОЙ»</b> — сражайся с монстрами. После 8 побед появится <b>БОСС</b>.<br>
-                    Убивай монстров, получай <b>ОПЫТ</b> и <b>ЗОЛОТО</b>! Опыт повышает уровень, золото нужно для покупок.</p>
+                    <p>Нажимай <b>«БОЙ»</b> — сражайся с монстрами. После 8 побед появится <b>БОСС</b>.</p>
                 </div>
-                
                 <div class="tutorial-step">
                     <h3>🗺️ 2. ЛОКАЦИИ</h3>
-                    <p>Перемещайся по карте. Каждая локация сложнее предыдущей. Нужен определённый уровень, чтобы войти.<br>
-                    Пройденные локации отмечаются золотом, боссы становятся сильнее при повторном прохождении.</p>
+                    <p>Перемещайся по карте. Каждая локация сложнее предыдущей. Нужен определённый уровень.</p>
                 </div>
-                
                 <div class="tutorial-step">
                     <h3>🏰 3. ПОДЗЕМЕЛЬЕ</h3>
-                    <p>Бесконечные этажи. Чем выше — тем сильнее враги, но и награда больше!<br>
-                    Здесь чаще падают <b>РЕСУРСЫ</b>, включая редкие и мифические.</p>
+                    <p>Бесконечные этажи. Чем выше — тем сильнее враги, но и награда больше!</p>
                 </div>
-                
                 <div class="tutorial-step">
                     <h3>🏪 4. ТОРГОВЕЦ</h3>
-                    <p>У <b>Кузнеца</b> покупай ОРУЖИЕ и БРОНЮ (ассортимент обновляется каждый день в 00:00) или крафти уникальные предметы из ресурсов.<br>
-                    У <b>Алхимика</b> покупай ЗЕЛЬЯ (лечат HP), ЭНЕРГИЮ и РЕСУРСЫ для крафта.</p>
+                    <p>У <b>Кузнеца</b> покупай ОРУЖИЕ и БРОНЮ (обновляются каждый день).<br>У <b>Алхимика</b> покупай ЗЕЛЬЯ, ЭНЕРГИЮ и РЕСУРСЫ.</p>
                 </div>
-                
                 <div class="tutorial-step">
                     <h3>🍺 5. ТАВЕРНА</h3>
-                    <p>Бери <b>КВЕСТЫ</b> — получай награды за убийства, сбор ресурсов и прохождение подземелья.<br>
-                    Также здесь можно <b>ПОБОЛТАТЬ</b> с трактирщиком — он расскажет что-то новое!</p>
+                    <p>Бери <b>КВЕСТЫ</b> — получай награды. Жми <b>«ПОБОЛТАТЬ»</b> — трактирщик скажет что-то новое!</p>
                 </div>
-                
                 <div class="tutorial-step">
-                    <h3>📦 6. ИНВЕНТАРЬ</h3>
-                    <p>Кликай на предмет — экипируй его. Смотри свои ресурсы для крафта.<br>
-                    Ресурсы делятся по редкости: обычные, редкие, эпические, легендарные, мифические.</p>
+                    <h3>👑 6. АДМИН-ПАНЕЛЬ</h3>
+                    <p>Вкладка «АДМИН» — введи пароль <b>${ADMIN_PASSWORD}</b> для доступа к функциям выдачи предметов и управления игроками.</p>
                 </div>
-                
-                <div class="tutorial-step">
-                    <h3>💾 7. СОХРАНЕНИЕ</h3>
-                    <p>Игра автоматически сохраняется в браузере. При следующем заходе выбери свой ник из списка загрузки.</p>
-                </div>
-                
-                <div class="tutorial-buttons">
-                    <button onclick="closeTutorial()">✨ ПОНЯЛ, НАЧИНАЮ!</button>
-                </div>
+                <div class="tutorial-buttons"><button onclick="closeTutorial()">✨ ПОНЯЛ, НАЧИНАЮ!</button></div>
             </div>
         `;
         document.body.appendChild(tutorialDiv);
@@ -1047,26 +1077,26 @@
         
         let fightBlock = game.inCombat ? `<div class="fight-block"><div>${game.combatEnemy.icon || "👾"} ${game.combatEnemy.name}</div><div>❤️ ${Math.max(0, game.enemyCurrentHp)}/${game.combatEnemy.hp}</div><button id="attackBtn" style="background:#8b3c2c;">⚔️ АТАКОВАТЬ</button></div>` : '';
         
-        // ТОРГОВЕЦ - ПРОДАЖА ОРУЖИЯ И БРОНИ
+        // ТОРГОВЕЦ - ПРОДАЖА (теперь точно работает)
         let traderHtml = `<div style="margin:12px 0;">
             <div class="trader-section">
                 <h4>⚒️ КУЗНЕЦ БРОНИСЛАВ - ПРОДАЖА</h4>
                 <div style="font-size:0.7rem; color:#f7d44a;">🔄 Товары обновляются каждый день в 00:00</div>
                 <div style="margin-top:8px;"><b>⚔️ ОРУЖИЕ (4 шт.):</b></div>`;
-        if (game.dailyWeapons && game.dailyWeapons.length) {
+        if (game.dailyWeapons && game.dailyWeapons.length > 0) {
             game.dailyWeapons.forEach(w => {
                 traderHtml += `<div class="shop-item"><span class="rarity-${w.rarity}">⚔️ ${w.name}</span> +${w.strBonus} <button onclick="buyItem(${JSON.stringify(w).replace(/"/g, '&quot;')})">${w.price}💰</button></div>`;
             });
         } else {
-            traderHtml += `<div style="color:#aaa;">Загрузка товаров...</div>`;
+            traderHtml += `<div style="color:#aaa;">Загрузка товаров... Нажмите "БОЙ" и вернитесь</div>`;
         }
         traderHtml += `<div style="margin-top:8px;"><b>🛡️ БРОНЯ (3 шт.):</b></div>`;
-        if (game.dailyArmors && game.dailyArmors.length) {
+        if (game.dailyArmors && game.dailyArmors.length > 0) {
             game.dailyArmors.forEach(a => {
                 traderHtml += `<div class="shop-item"><span class="rarity-${a.rarity}">🛡️ ${a.name}</span> +${a.defBonus} <button onclick="buyItem(${JSON.stringify(a).replace(/"/g, '&quot;')})">${a.price}💰</button></div>`;
             });
         } else {
-            traderHtml += `<div style="color:#aaa;">Загрузка товаров...</div>`;
+            traderHtml += `<div style="color:#aaa;">Загрузка товаров... Нажмите "БОЙ" и вернитесь</div>`;
         }
         traderHtml += `<hr><h4>🔨 КРАФТ (уникальные предметы)</h4>`;
         CRAFT_ITEMS.forEach(item => {
@@ -1086,7 +1116,7 @@
             <div class="daily-reset">⏰ Следующее обновление товаров: завтра в 00:00</div>
         </div>`;
         
-        // ТАВЕРНА С КВЕСТАМИ
+        // ТАВЕРНА
         let tavernHtml = `<div style="margin:12px 0;"><b>🍺 ТРАКТИРЩИК ГРОМ</b><p>Что привело тебя, путник? Хочешь заработать?</p>`;
         AVAILABLE_QUESTS.forEach(q => {
             let taken = game.activeQuests.some(aq => aq.id === q.id);
@@ -1127,12 +1157,16 @@
             });
             itemSelectHtml += `</div>`;
             
-            let playerListHtml = `<div class="player-list"><b>📋 СПИСОК ИГРОКОВ (${players.length}):</b>`;
+            let playerListHtml = `<div class="player-list"><b>📋 ВСЕ ИГРОКИ (${players.length}):</b><br><span style="font-size:0.65rem; color:#aaa;">🟢 Онлайн сейчас | ⚫ Был в игре</span>`;
             players.forEach(p => {
+                let isOnline = onlinePlayers.has(p.name);
                 let classIcon = CLASSES[p.class]?.icon || "⚔️";
-                playerListHtml += `<div class="player-item">
-                    <div><span>🎮 <b>${p.name}</b></span><br>
-                    <span class="players-stats">${classIcon} Ур.${p.level} | 💰${p.gold} | ❤️${p.hp}/${p.maxHp} | 🏰 Этаж ${p.dungeonFloor}</span></div>
+                playerListHtml += `<div class="player-item ${isOnline ? 'online' : ''}">
+                    <div>
+                        ${isOnline ? '<span class="online-dot"></span>' : '<span class="offline-dot"></span>'}
+                        <b>${p.name}</b> ${isOnline ? '<span class="online-badge">🟢 ONLINE</span>' : ''}<br>
+                        <span class="players-stats">${classIcon} Ур.${p.level} | 💰${p.gold} | ❤️${p.hp}/${p.maxHp} | 🏰 Этаж ${p.dungeonFloor}</span>
+                    </div>
                     <button onclick="deletePlayerProfile('${p.name}')" style="background:#8b3c2c; padding:4px 8px;">🗑️ Удалить</button>
                 </div>`;
             });
@@ -1223,6 +1257,7 @@
     window.deletePlayerProfile = deletePlayerProfile;
     window.closeTutorial = closeTutorial;
     
+    updateOnlineStatus();
     renderGame();
 </script>
 </body>
