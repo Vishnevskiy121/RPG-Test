@@ -253,7 +253,7 @@
     
     const MYTHIC_CRAFT_ITEMS = [...MYTHIC_CRAFT_WEAPONS, ...MYTHIC_CRAFT_ARMORS];
     
-    // АЛХИМИК - ТОЛЬКО ОБЫЧНЫЕ, РЕДКИЕ И ЭПИЧЕСКИЕ РЕСУРСЫ (МИФИЧЕСКИЕ НЕ ПРОДАЮТСЯ)
+    // АЛХИМИК - ТОЛЬКО ОБЫЧНЫЕ, РЕДКИЕ И ЭПИЧЕСКИЕ РЕСУРСЫ (МИФИЧЕСКИХ НЕТ!)
     const ALCHEMIST_ITEMS = [
         {name:"Целебная трава",price:80,resName:"Целебная трава",amount:1,rarity:"common"},
         {name:"Железная руда",price:120,resName:"Железная руда",amount:1,rarity:"common"},
@@ -428,6 +428,7 @@
     function updateDailyAlchemist() {
         const today = new Date().toDateString();
         if (game.lastAlchemistReset !== today || game.dailyAlchemist.length === 0) {
+            // БЕРЁМ ТОЛЬКО ИЗ ALCHEMIST_ITEMS - там нет мифических ресурсов!
             let a = [...ALCHEMIST_ITEMS];
             for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
             game.dailyAlchemist = a.slice(0,8);
@@ -484,7 +485,7 @@
         let bossIndex = (Math.floor(floor / 20) - 1) % DUNGEON_BOSSES_LIST.length;
         if (bossIndex < 0) bossIndex = 0;
         let bossName = DUNGEON_BOSSES_LIST[bossIndex % DUNGEON_BOSSES_LIST.length];
-        let floorMultiplier = 1 + (floor / 60);
+        let floorMultiplier = 1 + (floor / 50);
         let levelBonus = game.level * 3;
         return {
             name: bossName, hp: Math.floor(200 * floorMultiplier + levelBonus + floor/2),
@@ -826,7 +827,7 @@
         game.dailyArmors.forEach(a => { traderHtml += `<div class="shop-item"><span class="rarity-${a.rarity}">🛡️ ${a.name}</span> +${a.defBonus} <button onclick="buyItem(${JSON.stringify(a).replace(/"/g, '&quot;')})">${a.price}💰</button></div>`; });
         traderHtml += `<div class="daily-reset">⏰ Обновление завтра в 00:00</div></div>`;
         
-        // АЛХИМИК (без мифических ресурсов)
+        // АЛХИМИК (БЕЗ МИФИЧЕСКИХ РЕСУРСОВ - ТОЛЬКО ИЗ ALCHEMIST_ITEMS)
         traderHtml += `<div class="trader-section"><h4>🧪 АЛХИМИК МЕЛИССА</h4><div style="font-size:0.7rem; color:#f7d44a;">🔄 Товары обновляются каждый день (макс. 5 шт./день)</div>`;
         traderHtml += `<div class="shop-item">🧴 Лечебное зелье (+${Math.floor(game.maxHp * 0.35)} HP) <button onclick="usePotion()">${healCost}💰</button></div>`;
         traderHtml += `<div class="shop-item">⚡ Энергетический эликсир <button onclick="restoreEnergy()">${energyCost}💰</button></div>`;
